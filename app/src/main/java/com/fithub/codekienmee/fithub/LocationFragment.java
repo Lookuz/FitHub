@@ -13,14 +13,15 @@ import android.widget.ImageButton;
 
 public class LocationFragment extends Fragment {
 
-    private Animation locButtonAnim;
+    private Animation locButtonAnim; // TODO: Animation for Idle Location Button.
     private ImageButton locButton;
 
     // Configure any variables
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        locButtonAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.location_button_anim);
+        this.locButtonAnim = AnimationUtils
+                .loadAnimation(getActivity(), R.anim.location_button_anim);
     }
 
     // Inflate view
@@ -28,10 +29,17 @@ public class LocationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       View locView = inflater.inflate(
+        final View locView = inflater.inflate(
                R.layout.fragment_location_service, container, false);
-        locButton = locView.findViewById(R.id.main_location_button);
-        // Set OnClickListener for locButton here
+        this.locButton = locView.findViewById(R.id.main_location_button);
+        final Animation fadeOutAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
+        this.locButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { // Fades out and replaces current Fragment with MapsFragment
+                // TODO: Add loading progress bar?
+                ((MainPageActivity) getActivity()).initLocation();
+            }
+        });
         return locView;
     }
 
@@ -39,6 +47,6 @@ public class LocationFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        locButton.startAnimation(locButtonAnim);
+        this.locButton.startAnimation(this.locButtonAnim);
     }
 }

@@ -93,6 +93,18 @@ public class MainPageActivity extends AppCompatActivity {
     }
 
     /**
+     * Method that initializes the functioning Maps View from Location Button Fragment.
+     */
+    public void initLocation() {
+        MapsFragment mapsFragment = new MapsFragment();
+
+        this.mFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.fade_out, R.anim.fade_in)
+                .replace(R.id.main_frag_view, mapsFragment)
+                .commit();
+    }
+
+    /**
      * Method to trigger sliding menu bar.
      * @param item Menu Item to be displayed.
      * @return true if menu is displayed.
