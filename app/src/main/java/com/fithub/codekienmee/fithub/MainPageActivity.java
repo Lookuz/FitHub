@@ -11,8 +11,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -96,12 +99,18 @@ public class MainPageActivity extends AppCompatActivity {
      * Method that initializes the functioning Maps View from Location Button Fragment.
      */
     public void initLocation() {
-        MapsFragment mapsFragment = new MapsFragment();
 
-        this.mFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.fade_out, R.anim.fade_in)
-                .replace(R.id.main_frag_view, mapsFragment)
-                .commit();
+        if(this.currFrag instanceof LocationFragment) {
+            MapsFragment mapsFragment = new MapsFragment();
+            mapsFragment.setEnterTransition((Transition) new Fade().
+                    setDuration(500).setStartDelay(1500));
+            this.currFrag.setExitTransition((Transition) new Fade().
+                    setDuration(1000).setInterpolator(new DecelerateInterpolator()));
+
+            this.mFragmentManager.beginTransaction()
+//                .setCustomAnimations(R.anim.fade_out, R.anim.fade_in)
+                    .replace(R.id.main_frag_view, mapsFragment).commit();
+        }
     }
 
     /**
