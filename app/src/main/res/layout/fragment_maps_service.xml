@@ -35,7 +35,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@drawable/post_title_border"
-            android:layout_margin="3dp">
+            android:padding="3dp">
             <android.support.v7.widget.SearchView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -45,6 +45,6 @@
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"></GridLayout>
+            android:layout_weight="3"></GridLayout>
     </LinearLayout>
 </LinearLayout>
