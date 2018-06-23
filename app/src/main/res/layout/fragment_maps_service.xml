@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <!--Maps View-->
-    <android.support.constraint.ConstraintLayout
+    <FrameLayout
         android:id="@+id/frag_location_maps"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -21,58 +21,89 @@
             android:layout_height="match_parent">
         </com.google.android.gms.maps.MapView>
 
-    </android.support.constraint.ConstraintLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:background="@color/red"
-        android:elevation="3dp"
-        android:translationZ="3dp"
-        android:orientation="vertical">
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@drawable/post_title_border"
-            android:padding="3dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp">
-
+            android:layout_height="50dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:background="@drawable/map_search_bar"
+                android:elevation="5dp"
+                android:translationZ="5dp"
                 android:orientation="horizontal">
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_location_searching"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </android.support.constraint.ConstraintLayout>
+
+                <AutoCompleteTextView
+                    android:id="@+id/map_search_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/lato_light" />
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="bottom">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
                 <ImageButton
                     android:id="@+id/map_favourites_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/map_button_background"
+                    android:elevation="5dp"
+                    android:translationZ="5dp"
                     android:src="@drawable/ic_my_favourites"
-                    android:background="@drawable/location_button_background"/>
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
 
-                <android.support.v7.widget.SearchView
-                    android:id="@+id/map_search_bar"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/search_bar_rounded"
-                    android:layout_margin="3dp"
-                    android:layout_weight="8"/>
-
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"   >
                 <ImageButton
                     android:id="@+id/map_center_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/map_button_background"
                     android:src="@drawable/ic_my_location"
-                    android:background="@drawable/location_button_background"/>
-            </LinearLayout>
+                    android:elevation="5dp"
+                    android:translationZ="5dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+            </android.support.constraint.ConstraintLayout>
 
         </LinearLayout>
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"></GridLayout>
-    </LinearLayout>
+
+    </FrameLayout>
 </LinearLayout>

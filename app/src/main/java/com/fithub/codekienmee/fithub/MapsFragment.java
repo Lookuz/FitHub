@@ -13,48 +13,63 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.concurrent.Executor;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private final static int REQUEST_CODE = 1;
-    private final static float DEFAULT_ZOOM = 25;
+    private final static float DEFAULT_ZOOM = 15;
+    private final static Locale DEFAULT_LOCALE = Locale.ENGLISH;
+    // Location bounds to apply search results.
+    // TODO: Restrict results to Singapore.
+    private final static LatLngBounds  LOCATION_BOUNDS= new LatLngBounds(
+            new LatLng(-40, -168), new LatLng(71, 136));
+    private final static FitLocation MOCK_LOCATION =
+            new FitLocation(DEFAULT_LOCALE, "BestGym", "592775", "84845566",
+                    1.333501, 103.788373, "925 Bukit Timah Road");
 
     private MapView mapView; // View that displays the map
     private GoogleMap gMap; // Google Maps
-    private GoogleApiClient googleApiClient;
+    private GeoDataClient geoDataClient;
+    private AutoCompleteTextView searchBar;
     private ImageButton centerUserLocation; // Button to center back on user's location.
+    private ExecutorService executorService;
     private boolean userPermission;
     private FusedLocationProviderClient locationProviderClient; // Client that gets locations
+    // Adapter that sets autocomplete features and filters for Google Locations.
+    private PlaceAutocompleteAdapter autocompleteAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.userPermission = false;
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
+        this.executorService = Executors.newFixedThreadPool(5);
+        this.executorService.submit(new Runnable() {
             @Override
             public void run() { // Initialize GoogleApiClient asynchronously.
-                googleApiClient = new GoogleApiClient
-                        .Builder(getActivity())
-                        .addApi(Places.GEO_DATA_API)
-                        .addApi(Places.PLACE_DETECTION_API)
-                        .build();
+                geoDataClient = Places.getGeoDataClient(getContext());
             }
         });
         this.requestUserPermission();
@@ -67,15 +82,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         this.mapView = (MapView) view.findViewById(R.id.map_view);
         this.mapView.onCreate(savedInstanceState);
-
-        this.mapView.getMapAsync(this);
-        this.centerUserLocation = (ImageButton) view.findViewById(R.id.map_center_button);
-        this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getCurrLocation(); // TODO: Animate centering back on device location.
-            }
-        });
+        this.mapView.getMapAsync(this); // Prepare map functions.
+        this.initWidgets(view); // Initialize widgets on map.
         this.mapView.onResume();
 
         return view;
@@ -101,12 +109,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         }
                     }
                 });
-            } else {
-                Toast.makeText(getActivity(), "Locations permissions not enabled!", Toast.LENGTH_SHORT);
             }
         } catch (SecurityException e) {
             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
         }
+    }
+
+    /**
+     * Method that displays markers of all allowed fitness centre locations.
+     */
+    private void displayLocations() {
+        this.gMap.addMarker(new MarkerOptions()
+                .position(MapsFragment.MOCK_LOCATION.getLocationCoordinates())
+                .title(MOCK_LOCATION.getLocationName()));
     }
 
     /**
@@ -116,6 +131,25 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      */
     private void centerLocation(LatLng latLng, float zoom) {
         this.gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+    }
+
+    /**
+     * Method to initialize widgets for MapsFragment.
+     * Widgets used: AutoCompleteTextView search bar, ImageButton centerUserLocation.
+     */
+    private void initWidgets(View view) {
+        this.searchBar = (AutoCompleteTextView) view.findViewById(R.id.map_search_bar);
+        this.autocompleteAdapter = new PlaceAutocompleteAdapter(getActivity(), geoDataClient,
+                LOCATION_BOUNDS, null);
+        this.searchBar.setAdapter(this.autocompleteAdapter);
+        this.searchBar.setHint("Can't find what you're looking for?");
+        this.centerUserLocation = (ImageButton) view.findViewById(R.id.map_center_button);
+        this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCurrLocation(); // TODO: Animate centering back on device location.
+            }
+        });
     }
 
     /**
@@ -177,6 +211,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             this.gMap.setMyLocationEnabled(true);
             this.gMap.getUiSettings().setAllGesturesEnabled(true);
             this.gMap.getUiSettings().setMyLocationButtonEnabled(false);
+            this.displayLocations(); // Display available locations on map.
         }
     }
 }
