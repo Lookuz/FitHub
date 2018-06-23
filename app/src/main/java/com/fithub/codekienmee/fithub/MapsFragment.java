@@ -13,10 +13,13 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -25,6 +28,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private final static int REQUEST_CODE = 1;
@@ -32,6 +38,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private MapView mapView; // View that displays the map
     private GoogleMap gMap; // Google Maps
+    private GoogleApiClient googleApiClient;
+    private ImageButton centerUserLocation; // Button to center back on user's location.
     private boolean userPermission;
     private FusedLocationProviderClient locationProviderClient; // Client that gets locations
 
@@ -39,6 +47,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.userPermission = false;
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+            @Override
+            public void run() { // Initialize GoogleApiClient asynchronously.
+                googleApiClient = new GoogleApiClient
+                        .Builder(getActivity())
+                        .addApi(Places.GEO_DATA_API)
+                        .addApi(Places.PLACE_DETECTION_API)
+                        .build();
+            }
+        });
         this.requestUserPermission();
     }
 
@@ -51,6 +69,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         this.mapView.onCreate(savedInstanceState);
 
         this.mapView.getMapAsync(this);
+        this.centerUserLocation = (ImageButton) view.findViewById(R.id.map_center_button);
+        this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCurrLocation(); // TODO: Animate centering back on device location.
+            }
+        });
         this.mapView.onResume();
 
         return view;
@@ -82,7 +107,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         } catch (SecurityException e) {
             Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
         }
-
     }
 
     /**
@@ -152,7 +176,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             }
             this.gMap.setMyLocationEnabled(true);
             this.gMap.getUiSettings().setAllGesturesEnabled(true);
-//            this.gMap.getUiSettings().setMyLocationButtonEnabled(false); // TODO: Disable after implementing custom center Location Button.
+            this.gMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
     }
 }
