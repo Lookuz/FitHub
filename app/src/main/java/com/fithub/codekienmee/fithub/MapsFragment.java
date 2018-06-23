@@ -3,8 +3,12 @@ package com.fithub.codekienmee.fithub;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -25,6 +29,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -121,7 +127,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private void displayLocations() {
         this.gMap.addMarker(new MarkerOptions()
                 .position(MapsFragment.MOCK_LOCATION.getLocationCoordinates())
-                .title(MOCK_LOCATION.getLocationName()));
+                .title(MOCK_LOCATION.getLocationName())
+                .icon(this.bitmapDescriptorFromVector(getContext(),
+                        R.drawable.ic_fithub_location_icon_monochrome))); // TODO: Finetune icon for custom marker.
     }
 
     /**
@@ -213,5 +221,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             this.gMap.getUiSettings().setMyLocationButtonEnabled(false);
             this.displayLocations(); // Display available locations on map.
         }
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
+        Bitmap bitmap = Bitmap.createBitmap(168,
+                168, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        vectorDrawable.draw(canvas);
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }
