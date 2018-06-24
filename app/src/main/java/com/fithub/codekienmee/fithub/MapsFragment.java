@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,7 +55,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             new LatLng(-40, -168), new LatLng(71, 136));
     private final static FitLocation MOCK_LOCATION =
             new FitLocation(DEFAULT_LOCALE, "BestGym", "592775", "84845566",
-                    1.333501, 103.788373, "925 Bukit Timah Road");
+                    1.333501, 103.788373, "925 Bukit Timah Road",
+                    "www.mockfitnesswebsite.com");
 
     private MapView mapView; // View that displays the map
     private GoogleMap gMap; // Google Maps
@@ -66,11 +68,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient locationProviderClient; // Client that gets locations
     // Adapter that sets autocomplete features and filters for Google Locations.
     private PlaceAutocompleteAdapter autocompleteAdapter;
+    // HashMap that maps each marker to it's respective FitLocation data.
+    private HashMap<Marker, FitLocation> locationHashMap;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.userPermission = false;
+        this.locationHashMap = new HashMap<>();
         this.executorService = Executors.newFixedThreadPool(5);
         this.executorService.submit(new Runnable() {
             @Override
@@ -123,13 +128,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     /**
      * Method that displays markers of all allowed fitness centre locations.
+     * TODO: initialize for all locations in a list.
      */
     private void displayLocations() {
-        this.gMap.addMarker(new MarkerOptions()
+        // Define settings for adding markers.
+        Marker marker = this.gMap.addMarker(new MarkerOptions()
                 .position(MapsFragment.MOCK_LOCATION.getLocationCoordinates())
                 .title(MOCK_LOCATION.getLocationName())
+                .zIndex(5)
                 .icon(this.bitmapDescriptorFromVector(getContext(),
                         R.drawable.ic_fithub_location_icon_monochrome))); // TODO: Finetune icon for custom marker.
+        // Map a marker to it's respective FitLocation.
+        this.locationHashMap.put(marker, MOCK_LOCATION);
     }
 
     /**
@@ -219,6 +229,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             this.gMap.setMyLocationEnabled(true);
             this.gMap.getUiSettings().setAllGesturesEnabled(true);
             this.gMap.getUiSettings().setMyLocationButtonEnabled(false);
+            this.gMap.setInfoWindowAdapter(new FitInfoWindowAdapter(getContext(),
+                    this.locationHashMap));
             this.displayLocations(); // Display available locations on map.
         }
     }

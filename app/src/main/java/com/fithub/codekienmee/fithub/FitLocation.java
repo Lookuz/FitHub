@@ -17,13 +17,14 @@ public class FitLocation extends Address {
     private String locationAddress;
 
     public FitLocation(Locale locale, String name, String postalCode, String phoneNumber,
-                       double latitude, double longitude, String address) {
+                       double latitude, double longitude, String address, String website) {
         super(locale);
         super.setLatitude(latitude);
         super.setLongitude(longitude);
         super.setFeatureName(name);
         super.setPostalCode(postalCode);
         super.setPhone(phoneNumber);
+        super.setUrl(website);
         super.setCountryCode(FitLocation.LOCAL_COUNTRY_CODE);
         super.setCountryName(FitLocation.LOCAL_COUNTRY_NAME);
         this.locationAddress = address;
@@ -35,6 +36,10 @@ public class FitLocation extends Address {
 
     public LatLng getLocationCoordinates() {
         return new LatLng(this.getLatitude(), this.getLongitude());
+    }
+
+    public String getLocationAddress() {
+        return this.locationAddress;
     }
 
     public String getPhoneNumber() {
