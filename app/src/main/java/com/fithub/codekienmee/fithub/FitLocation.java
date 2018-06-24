@@ -39,10 +39,24 @@ public class FitLocation extends Address {
     }
 
     public String getLocationAddress() {
-        return this.locationAddress;
+        return this.locationAddress.concat("\n" + "Singapore " + this.getPostalCode());
     }
 
     public String getPhoneNumber() {
         return this.getPhone();
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.parseInt(this.getPostalCode());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FitLocation)) {
+            return false;
+        } else {
+            return (((FitLocation) obj).hashCode() == this.hashCode())? true : false;
+        }
     }
 }

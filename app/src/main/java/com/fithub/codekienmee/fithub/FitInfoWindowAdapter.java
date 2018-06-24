@@ -15,12 +15,9 @@ import java.util.HashMap;
 public class FitInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private final View infoWindow; // View to be displayed on infoWindow.
-    // HashMap that maps a marker to it's respective FitLocation data.
-    private HashMap<Marker, FitLocation> locationHashMap;
 
-    public FitInfoWindowAdapter(Context context, HashMap<Marker, FitLocation> locationHashMap) {
+    public FitInfoWindowAdapter(Context context) {
         this.infoWindow = LayoutInflater.from(context).inflate(R.layout.maps_info_window,null);
-        this.locationHashMap = locationHashMap;
     }
 
     /**
@@ -28,7 +25,7 @@ public class FitInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
      */
     private View initInfoWindow(Marker marker, View view) {
 
-        FitLocation location = this.locationHashMap.get(marker);
+        FitLocation location = (FitLocation) marker.getTag();
 
         ((TextView) view.findViewById(R.id.info_window_title)).setText(location.getLocationName());
         ((TextView) view.findViewById(R.id.info_window_address))

@@ -17,6 +17,9 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -68,10 +71,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private ExecutorService executorService;
     private boolean userPermission;
     private FusedLocationProviderClient locationProviderClient; // Client that gets locations
-    // Adapter that sets autocomplete features and filters for Google Locations.
+//     Adapter that sets autocomplete features and filters for Google Locations.
 //    private PlaceAutocompleteAdapter autocompleteAdapter;
     // HashMap that maps each marker to it's respective FitLocation data.
-    private HashMap<Marker, FitLocation> locationHashMap;
+    private HashMap<FitLocation, Marker> locationHashMap;
     // List that stores all the known available locations.
     private List<FitLocation> locationList;
 
@@ -136,18 +139,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     /**
      * Method that displays markers of all allowed fitness centre locations.
-     * TODO: initialize for all locations in a list.
      */
     private void displayLocations() {
-        // Define settings for adding markers.
-        Marker marker = this.gMap.addMarker(new MarkerOptions()
-                .position(MapsFragment.MOCK_LOCATION.getLocationCoordinates())
-                .title(MOCK_LOCATION.getLocationName())
-                .zIndex(5)
-                .icon(this.bitmapDescriptorFromVector(getContext(),
-                        R.drawable.ic_fithub_location_icon_monochrome))); // TODO: Finetune icon for custom marker.
-        // Map a marker to it's respective FitLocation.
-        this.locationHashMap.put(marker, MOCK_LOCATION);
+        for (FitLocation location : this.locationList) {
+            // Define settings for adding markers.
+            Marker marker = this.gMap.addMarker(new MarkerOptions()
+                    .position(location.getLocationCoordinates())
+                    .title(location.getLocationName())
+                    .zIndex(5)
+                    .icon(this.bitmapDescriptorFromVector(getContext(),
+                            R.drawable.ic_fithub_location_icon_monochrome))); // TODO: Fine tune icon for custom marker.
+            // Map a marker to it's respective FitLocation.
+            marker.setTag(location);
+            this.locationHashMap.put(location, marker);
+        }
     }
 
     /**
@@ -164,11 +169,30 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      * Widgets used: AutoCompleteTextView search bar, ImageButton centerUserLocation.
      */
     private void initWidgets(View view) {
+        final SuggestionsAdapter suggestionsAdapter = new SuggestionsAdapter(getContext(),
+                this.locationList);
+
         this.searchBar = (AutoCompleteTextView) view.findViewById(R.id.map_search_bar);
 //        this.autocompleteAdapter = new PlaceAutocompleteAdapter(getActivity(), geoDataClient,
 //                LOCATION_BOUNDS, null);
 //        this.searchBar.setAdapter(this.autocompleteAdapter);
-        this.searchBar.setAdapter(new SuggestionsAdapter(getContext(), this.locationList));
+        this.searchBar.setAdapter(suggestionsAdapter);
+        this.searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                FitLocation location = suggestionsAdapter.getItem(position);
+                if(location != null) {
+                    // Hide soft keyboard
+                    InputMethodManager manager = (InputMethodManager) getActivity()
+                            .getSystemService(Context.INPUT_METHOD_SERVICE);
+                    manager.hideSoftInputFromWindow(getActivity().getWindow()
+                            .getCurrentFocus().getWindowToken(), 0);
+                    Marker marker = locationHashMap.get(location);
+                    centerLocation(marker.getPosition(), 30);
+                    marker.showInfoWindow();
+                }
+            }
+        });
         this.searchBar.setHint("Can't find what you're looking for?");
         this.centerUserLocation = (ImageButton) view.findViewById(R.id.map_center_button);
         this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
@@ -238,8 +262,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             this.gMap.setMyLocationEnabled(true);
             this.gMap.getUiSettings().setAllGesturesEnabled(true);
             this.gMap.getUiSettings().setMyLocationButtonEnabled(false);
-            this.gMap.setInfoWindowAdapter(new FitInfoWindowAdapter(getContext(),
-                    this.locationHashMap));
+            this.gMap.setInfoWindowAdapter(new FitInfoWindowAdapter(getContext()));
             this.displayLocations(); // Display available locations on map.
         }
     }
