@@ -52,8 +52,10 @@
 
             <ProgressBar
                 android:id="@+id/info_window_crowd_level"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:progressDrawable="@drawable/circle_progress_bar"
                 android:max="100"
                 android:progress="60"
                 android:visibility="visible"

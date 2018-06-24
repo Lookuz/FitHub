@@ -38,7 +38,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,15 +69,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private boolean userPermission;
     private FusedLocationProviderClient locationProviderClient; // Client that gets locations
     // Adapter that sets autocomplete features and filters for Google Locations.
-    private PlaceAutocompleteAdapter autocompleteAdapter;
+//    private PlaceAutocompleteAdapter autocompleteAdapter;
     // HashMap that maps each marker to it's respective FitLocation data.
     private HashMap<Marker, FitLocation> locationHashMap;
+    // List that stores all the known available locations.
+    private List<FitLocation> locationList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.userPermission = false;
         this.locationHashMap = new HashMap<>();
+        this.locationList = new ArrayList<>(); // TODO: Initialize list with locations from DB.
+        this.locationList.add(MOCK_LOCATION);
         this.executorService = Executors.newFixedThreadPool(5);
         this.executorService.submit(new Runnable() {
             @Override
@@ -88,8 +94,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_maps_service, container, false);
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_maps_service,
+                container, false);
 
         this.mapView = (MapView) view.findViewById(R.id.map_view);
         this.mapView.onCreate(savedInstanceState);
@@ -157,9 +165,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      */
     private void initWidgets(View view) {
         this.searchBar = (AutoCompleteTextView) view.findViewById(R.id.map_search_bar);
-        this.autocompleteAdapter = new PlaceAutocompleteAdapter(getActivity(), geoDataClient,
-                LOCATION_BOUNDS, null);
-        this.searchBar.setAdapter(this.autocompleteAdapter);
+//        this.autocompleteAdapter = new PlaceAutocompleteAdapter(getActivity(), geoDataClient,
+//                LOCATION_BOUNDS, null);
+//        this.searchBar.setAdapter(this.autocompleteAdapter);
+        this.searchBar.setAdapter(new SuggestionsAdapter(getContext(), this.locationList));
         this.searchBar.setHint("Can't find what you're looking for?");
         this.centerUserLocation = (ImageButton) view.findViewById(R.id.map_center_button);
         this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
