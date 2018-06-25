@@ -8,8 +8,8 @@
     tools:showIn=".ForumFragment"
     tools:context=".ForumFragment"
     android:orientation="vertical"
-    android:elevation="5dp"
-    android:translationZ="5dp"
+    android:elevation="2dp"
+    android:translationZ="2dp"
     android:fontFamily="@font/lato_light"
     android:layout_marginBottom="5dp"
     android:layout_marginTop="5dp"
@@ -29,6 +29,7 @@
             android:id="@+id/post_forum_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
             android:text="Replace with post title" />
     </LinearLayout>
 
@@ -39,14 +40,24 @@
         android:orientation="horizontal">
 
         <!--Author-->
-        <TextView
-            android:id="@+id/post_forum_author"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
-            android:layout_weight="2"
-            android:text="Replace with author's name"
-            android:background="@drawable/post_icon_border"/>
+            android:layout_weight="1"
+            android:background="@drawable/post_icon_border">
+            <TextView
+                android:id="@+id/post_forum_author"
+                android:paddingRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Replace with author's name"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
         <!--Like/Dislike-->
         <LinearLayout
             android:layout_width="0dp"
@@ -104,13 +115,23 @@
         </LinearLayout>
 
         <!--Date-->
-        <TextView
-            android:id="@+id/post_forum_date"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:text="Replace with date" />
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/post_forum_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Replace with date"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
 </LinearLayout>
