@@ -5,10 +5,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Date;
 import java.util.PriorityQueue;
@@ -28,8 +30,9 @@ public class ForumFragment extends Fragment {
      * Inner class that extends the use of ViewHolder.
      * Holds the view for each post.
      */
-    private class PostHolder extends RecyclerView.ViewHolder {
+    private class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        private FitPost post;
         private TextView title;
         private TextView author;
         private TextView date;
@@ -44,18 +47,37 @@ public class ForumFragment extends Fragment {
             this.date = (TextView) itemView.findViewById(R.id.post_forum_date);
             this.numLikes = (TextView) itemView.findViewById(R.id.post_forum_likesNum);
             this.numDislikes = (TextView) itemView.findViewById(R.id.post_forum_dislikesNum);
+            itemView.setOnClickListener(this);
         }
 
         /**
          * Method that binds a FitPost and it's data to the current view holder.
          */
         public void bindPost(FitPost post) {
+            this.post = post;
             this.title.setText(post.getTitle());
             this.author.setText(post.getAuthor());
             this.date.setText(post.getDate().toString()); // TODO: Formatting for date.
             this.numDislikes.setText(Integer.toString(post.getNumDislikes()));
             this.numLikes.setText(Integer.toString(post.getNumLikes()));
             // TODO: set color for thumbs up/down depending on which is more.
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(getContext(), "Post Clicked!", Toast.LENGTH_SHORT).show();
+
+            CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
+            android.support.transition.Transition slideAnim = new android.support.transition.Slide()
+                    .setDuration(100);
+            commentsFragment.setEnterTransition(slideAnim);
+            commentsFragment.setExitTransition(slideAnim);
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .hide(getParentFragment())
+                    .show(commentsFragment)
+                    .addToBackStack(null)
+                    .commit();
         }
     }
 
@@ -117,10 +139,5 @@ public class ForumFragment extends Fragment {
     private void initList() {
         this.postList = new PriorityQueue<>();
         this.postList.offer(MOCK_POST);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 }
