@@ -33,15 +33,18 @@ public class ForumFragment extends Fragment {
     private class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private FitPost post;
+        private ForumFragment parentFragment;
+
         private TextView title;
         private TextView author;
         private TextView date;
         private TextView numLikes;
         private TextView numDislikes;
 
-        public PostHolder(LayoutInflater inflater, ViewGroup parent) {
+        public PostHolder(LayoutInflater inflater, ViewGroup parent, ForumFragment parentFragment) {
             super(inflater.inflate(R.layout.post_view_forum, parent, false));
 
+            this.parentFragment = parentFragment;
             this.title = (TextView) itemView.findViewById(R.id.post_forum_title);
             this.author = (TextView) itemView.findViewById(R.id.post_forum_author);
             this.date = (TextView) itemView.findViewById(R.id.post_forum_date);
@@ -68,14 +71,15 @@ public class ForumFragment extends Fragment {
             Toast.makeText(getContext(), "Post Clicked!", Toast.LENGTH_SHORT).show();
 
             CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
-            android.support.transition.Transition slideAnim = new android.support.transition.Slide()
-                    .setDuration(100);
-            commentsFragment.setEnterTransition(slideAnim);
-            commentsFragment.setExitTransition(slideAnim);
+//            android.support.transition.Transition slideAnim = new android.support.transition.Slide()
+//                    .setDuration(100);
+//            commentsFragment.setEnterTransition(slideAnim);
+//            commentsFragment.setExitTransition(slideAnim);
             getActivity().getSupportFragmentManager()
                     .beginTransaction()
-                    .hide(getParentFragment())
-                    .show(commentsFragment)
+                    .add(R.id.main_frag_view, commentsFragment)
+//                    .hide(this.parentFragment)
+//                    .show(commentsFragment)
                     .addToBackStack(null)
                     .commit();
         }
@@ -88,16 +92,18 @@ public class ForumFragment extends Fragment {
     private class PostAdapter extends RecyclerView.Adapter<PostHolder> {
 
         private PriorityQueue<FitPost> postListInner;
+        private ForumFragment parentFragment;
 
-        public PostAdapter(PriorityQueue<FitPost> postList) {
+        public PostAdapter(PriorityQueue<FitPost> postList, ForumFragment parentFragment) {
             this.postListInner = postList;
+            this.parentFragment = parentFragment;
         }
 
         @Override
         public PostHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
 
-            return new PostHolder(layoutInflater, parent);
+            return new PostHolder(layoutInflater, parent, this.parentFragment);
         }
 
         @Override
@@ -127,7 +133,7 @@ public class ForumFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_forum, container, false);
         this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
         this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.postAdapter = new PostAdapter(this.postList);
+        this.postAdapter = new PostAdapter(this.postList, this);
         this.postRecyclerView.setAdapter(this.postAdapter);
         return view;
     }
@@ -137,7 +143,15 @@ public class ForumFragment extends Fragment {
      * TODO: Set Comparator object for postList.
      */
     private void initList() {
+        FitPost firstPost = new FitPost("Post Title", "Post Content",
+                "Post Author", 10, 1, new Date());
+        FitPost secondPost = new FitPost("Post Title", "Post Content",
+                "Post Author", 10, 1, new Date());
+        FitPost thirdPost = new FitPost("Post Title", "Post Content",
+                "Post Author", 10, 1, new Date());
+        secondPost.addComment(thirdPost);
+        firstPost.addComment(secondPost);
         this.postList = new PriorityQueue<>();
-        this.postList.offer(MOCK_POST);
+        this.postList.offer(firstPost);
     }
 }
