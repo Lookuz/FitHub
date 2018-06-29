@@ -1,16 +1,22 @@
 package com.fithub.codekienmee.fithub;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Slide;
 import android.transition.Transition;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.Date;
 import java.util.PriorityQueue;
@@ -33,23 +39,27 @@ public class ForumFragment extends Fragment {
     private class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private FitPost post;
-        private ForumFragment parentFragment;
 
         private TextView title;
         private TextView author;
         private TextView date;
         private TextView numLikes;
         private TextView numDislikes;
+        private ImageView thumbsUp;
+        private ImageView thumbsDown;
 
-        public PostHolder(LayoutInflater inflater, ViewGroup parent, ForumFragment parentFragment) {
+
+        public PostHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.post_view_forum, parent, false));
 
-            this.parentFragment = parentFragment;
             this.title = (TextView) itemView.findViewById(R.id.post_forum_title);
             this.author = (TextView) itemView.findViewById(R.id.post_forum_author);
             this.date = (TextView) itemView.findViewById(R.id.post_forum_date);
             this.numLikes = (TextView) itemView.findViewById(R.id.post_forum_likesNum);
             this.numDislikes = (TextView) itemView.findViewById(R.id.post_forum_dislikesNum);
+            this.thumbsUp = (ImageView) itemView.findViewById(R.id.post_forum_likesImg);
+            this.thumbsDown = (ImageView) itemView.findViewById(R.id.post_forum_dislikesImg);
+
             itemView.setOnClickListener(this);
         }
 
@@ -63,25 +73,44 @@ public class ForumFragment extends Fragment {
             this.date.setText(post.getDate().toString()); // TODO: Formatting for date.
             this.numDislikes.setText(Integer.toString(post.getNumDislikes()));
             this.numLikes.setText(Integer.toString(post.getNumLikes()));
-            // TODO: set color for thumbs up/down depending on which is more.
+
+            ForumFragment.setLikesColor(this.thumbsUp, this.thumbsDown,
+                    this.post.getNumLikes(), this.post.getNumDislikes());
         }
 
         @Override
         public void onClick(View v) {
             Toast.makeText(getContext(), "Post Clicked!", Toast.LENGTH_SHORT).show();
 
+            /**
+             * Note that use of Slide Transition requires minimum API of 21.
+             */
             CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
-//            android.support.transition.Transition slideAnim = new android.support.transition.Slide()
-//                    .setDuration(100);
-//            commentsFragment.setEnterTransition(slideAnim);
-//            commentsFragment.setExitTransition(slideAnim);
+            Transition slideAnim = new Slide(Gravity.RIGHT).setDuration(200);
+            commentsFragment.setEnterTransition(slideAnim);
+            commentsFragment.setExitTransition(slideAnim);
             getActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.main_frag_view, commentsFragment)
-//                    .hide(this.parentFragment)
-//                    .show(commentsFragment)
                     .addToBackStack(null)
                     .commit();
+        }
+    }
+
+    /**
+     * Method to set the color of thumbs up and down image colors based dynamically based on the
+     * number of likes and dislikes of the post.
+     */
+    public static void setLikesColor(ImageView thumbsUp, ImageView thumbsDown, int likes, int dislikes) {
+        if (likes > dislikes) {
+            thumbsUp.setImageResource(R.drawable.ic_thumb_up_green);
+            thumbsDown.setImageResource(R.drawable.ic_thumb_down_grey);
+        } else if (likes > dislikes) {
+            thumbsUp.setImageResource(R.drawable.ic_thumb_up_grey);
+            thumbsDown.setImageResource(R.drawable.ic_thumb_down_red);
+        } else {
+            thumbsUp.setImageResource(R.drawable.ic_thumb_up_grey);
+            thumbsDown.setImageResource(R.drawable.ic_thumb_down_grey);
         }
     }
 
@@ -92,18 +121,16 @@ public class ForumFragment extends Fragment {
     private class PostAdapter extends RecyclerView.Adapter<PostHolder> {
 
         private PriorityQueue<FitPost> postListInner;
-        private ForumFragment parentFragment;
 
-        public PostAdapter(PriorityQueue<FitPost> postList, ForumFragment parentFragment) {
+        public PostAdapter(PriorityQueue<FitPost> postList) {
             this.postListInner = postList;
-            this.parentFragment = parentFragment;
         }
 
         @Override
         public PostHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
 
-            return new PostHolder(layoutInflater, parent, this.parentFragment);
+            return new PostHolder(layoutInflater, parent);
         }
 
         @Override
@@ -133,7 +160,7 @@ public class ForumFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_forum, container, false);
         this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
         this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.postAdapter = new PostAdapter(this.postList, this);
+        this.postAdapter = new PostAdapter(this.postList);
         this.postRecyclerView.setAdapter(this.postAdapter);
         return view;
     }

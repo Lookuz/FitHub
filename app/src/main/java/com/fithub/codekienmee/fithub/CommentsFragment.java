@@ -57,6 +57,7 @@ public class CommentsFragment extends Fragment {
 
             FitPost comment = getItem(position);
 
+            // Recursively set adapter for cascading comments list.
             TextView poster = view.findViewById(R.id.comment_poster_name);
             poster.setText(comment.getAuthor());
             ListView commentsList = view.findViewById(R.id.comment_commentsList);
@@ -93,8 +94,13 @@ public class CommentsFragment extends Fragment {
     /**
      * Method that initializes the widgets in CommentsFragment.
      */
-    private void init(View view) {
-        this.title = view.findViewById(R.id.comments_title);
+    private void init(View view, FitPost post) {
+        // If not comment, set title.
+        if (post.getTitle() != null) {
+            TextView title = view.findViewById(R.id.comments_title);
+            title.setText(this.post.getTitle());
+        }
+
         this.content = view.findViewById(R.id.comments_content);
         this.author = view.findViewById(R.id.comments_author);
         this.reply = view.findViewById(R.id.comments_reply);
@@ -105,11 +111,31 @@ public class CommentsFragment extends Fragment {
         this.dislikeImage = view.findViewById(R.id.comments_dislikesImg);
         this.comments = view.findViewById(R.id.comments_commentsList);
 
-        this.title.setText(this.post.getTitle());
         this.content.setText(this.post.getContent());
         this.author.setText(this.post.getAuthor());
+        this.numLikes.setText(Integer.toString(this.post.getNumLikes()));
+        this.numDislikes.setText(Integer.toString(this.post.getNumDislikes()));
         // TODO: Set OnClickListener for reply and favourite buttons.
-        // TODO: Dynamically set color for likes/dislikes image.
+        ForumFragment.setLikesColor(this.likeImage, this.dislikeImage,
+                this.post.getNumLikes(), this.post.getNumDislikes());
+    }
+
+    /**
+     * Method that initializes the favourite and comment button.
+     */
+    private void initButtons() {
+        this.reply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Bring up PostFragment.
+            }
+        });
+        this.favourite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Add post to favourite posts.
+            }
+        });
     }
 
     @Override
@@ -122,7 +148,7 @@ public class CommentsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_comments, container, false);
-        this.init(view);
+        this.init(view, this.post);
         this.comments.setAdapter(new PostAdapter(getContext(), 0, this.post.getComments()));
 
         return view;
