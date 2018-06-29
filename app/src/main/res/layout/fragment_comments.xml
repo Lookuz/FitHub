@@ -107,10 +107,9 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/lato_light"
                 android:gravity="center"
-                android:text="Reply"
+                android:text="Comment"
                 android:textSize="10sp"
-                android:visibility="visible"
-                tools:text="Reply!" />
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/comments_favourite"
@@ -121,8 +120,7 @@
                 android:gravity="center"
                 android:text="Favourite!"
                 android:textSize="10sp"
-                android:visibility="visible"
-                tools:text="Favourite!" />
+                android:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 
