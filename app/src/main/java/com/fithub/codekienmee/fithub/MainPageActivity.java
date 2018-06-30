@@ -10,7 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
+import android.transition.Slide;
 import android.transition.Transition;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -122,5 +124,16 @@ public class MainPageActivity extends AppCompatActivity {
             return true;
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void overlayFragment(int resource, Fragment fragment) {
+        Transition slideAnim = new Slide(resource).setDuration(200);
+        fragment.setEnterTransition(slideAnim);
+        fragment.setExitTransition(slideAnim);
+        this.getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.main_frag_view, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

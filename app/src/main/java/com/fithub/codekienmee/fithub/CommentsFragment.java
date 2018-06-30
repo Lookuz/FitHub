@@ -187,14 +187,6 @@ public class CommentsFragment extends Fragment {
         Bundle args = new Bundle();
         args.putBoolean(IS_COMMENT_KEY, true);
         postFragment.setArguments(args);
-
-        Transition slideAnim = new Slide(Gravity.BOTTOM).setDuration(200);
-        postFragment.setEnterTransition(slideAnim);
-        postFragment.setExitTransition(slideAnim);
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.main_frag_view, postFragment)
-                .addToBackStack(null)
-                .commit();
+        ((MainPageActivity) getActivity()).overlayFragment(Gravity.BOTTOM, postFragment);
     }
 }
