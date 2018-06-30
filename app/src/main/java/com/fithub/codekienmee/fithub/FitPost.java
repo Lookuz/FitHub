@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Class that holds the data necessary to display the contents of a post in ForumFragment.
  */
-public class FitPost implements Comparable<FitPost> {
+public class FitPost implements Comparable<FitPost>, PostCallBack {
 
     private String title;
     private String content;
@@ -81,5 +81,13 @@ public class FitPost implements Comparable<FitPost> {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Method to add new comment to this post as it's callback.
+     */
+    @Override
+    public void onCallBack(FitPost post) {
+        this.comments.add(post);
     }
 }

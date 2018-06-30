@@ -1,11 +1,13 @@
 package com.fithub.codekienmee.fithub;
 
 import android.content.Context;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,8 @@ import java.util.List;
  * Class that shows contents of a post and it's comments.
  */
 public class CommentsFragment extends Fragment {
+
+    private static final String IS_COMMENT_KEY = "isComment";
 
     /**
      * Custom Adapter class that determines the view layout in CommentsFragment.
@@ -88,7 +92,7 @@ public class CommentsFragment extends Fragment {
             numDislikes.setText(Integer.toString(comment.getNumDislikes()));
             ForumFragment.setLikesColor(likeImage, dislikeImage,
                     comment.getNumLikes(), comment.getNumDislikes());
-            CommentsFragment.initButtons(reply, favourite);
+            initButtons(reply, favourite, comment);
 
         }
     }
@@ -139,24 +143,24 @@ public class CommentsFragment extends Fragment {
         this.numDislikes.setText(Integer.toString(this.post.getNumDislikes()));
         ForumFragment.setLikesColor(this.likeImage, this.dislikeImage,
                 this.post.getNumLikes(), this.post.getNumDislikes());
-        CommentsFragment.initButtons(this.reply, this.favourite);
+        initButtons(this.reply, this.favourite, this.post);
     }
 
     /**
      * Method that initializes the favourite and comment button.
      * TODO: Set OnClickListener for reply and favourite buttons.
      */
-    private static void initButtons(TextView reply, TextView favourite) {
+    private void initButtons(TextView reply, TextView favourite, final FitPost parent) {
         reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Bring up PostFragment.
+                postComment(parent);
             }
         });
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Add post to favourite posts.
+
             }
         });
     }
@@ -175,5 +179,22 @@ public class CommentsFragment extends Fragment {
         this.comments.setAdapter(new PostAdapter(getContext(), 0, this.post.getComments()));
 
         return view;
+    }
+
+    // TODO: Abstract with a single method with ForumFragment.
+    private void postComment(FitPost parent) {
+        PostFragment postFragment = PostFragment.newInstance(parent);
+        Bundle args = new Bundle();
+        args.putBoolean(IS_COMMENT_KEY, true);
+        postFragment.setArguments(args);
+
+        Transition slideAnim = new Slide(Gravity.BOTTOM).setDuration(200);
+        postFragment.setEnterTransition(slideAnim);
+        postFragment.setExitTransition(slideAnim);
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.main_frag_view, postFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

@@ -58,9 +58,8 @@ public class PostFragment extends Fragment {
      */
     private void initView(View view) {
         this.content = view.findViewById(R.id.post_content);
-        if (!this.isComment) {
-            this.title = view.findViewById(R.id.post_title);
-        } else {
+        this.title = view.findViewById(R.id.post_title);
+        if (this.isComment) {
             this.title.setVisibility(View.GONE);
         }
         this.author = view.findViewById(R.id.post_author);
