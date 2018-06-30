@@ -1,6 +1,5 @@
 package com.fithub.codekienmee.fithub;
 
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -15,21 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class ForumFragment extends Fragment implements PostCallBack {
 
     private final static FitPost MOCK_POST = new FitPost("Post Title", "Post Content",
             "Post Author", 10, 1, new Date());
+    private static final String IS_COMMENT_KEY = "isComment";
 
     private RecyclerView postRecyclerView; //RecyclerView that handles displaying of posts
     private PostAdapter postAdapter;
-    private PriorityQueue<FitPost> postQueue; //Heap that stores Post objects.
+    private List<FitPost> postList;
     private FloatingActionButton newPost;
     private FloatingActionButton filter;
 
@@ -38,8 +37,8 @@ public class ForumFragment extends Fragment implements PostCallBack {
     @Override
     public void onCallBack(FitPost post) {
         if(post != null) {
-            this.postQueue.offer(post);
-            this.postAdapter.notifyDataSetChanged();
+            this.postList.add(post);
+            this.postAdapter.notifyAdapterSetDataChanged();
         }
     }
 
@@ -91,8 +90,6 @@ public class ForumFragment extends Fragment implements PostCallBack {
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getContext(), "Post Clicked!", Toast.LENGTH_SHORT).show();
-
             /**
              * Note that use of Slide Transition requires minimum API of 21.
              */
@@ -116,7 +113,8 @@ public class ForumFragment extends Fragment implements PostCallBack {
      * Method to set the color of thumbs up and down image colors based dynamically based on the
      * number of likes and dislikes of the post.
      */
-    public static void setLikesColor(ImageView thumbsUp, ImageView thumbsDown, int likes, int dislikes) {
+    public static void setLikesColor(ImageView thumbsUp, ImageView thumbsDown,
+                                     int likes, int dislikes) {
         if (likes > dislikes) {
             thumbsUp.setImageResource(R.drawable.ic_thumb_up_green);
             thumbsDown.setImageResource(R.drawable.ic_thumb_down_grey);
@@ -135,10 +133,15 @@ public class ForumFragment extends Fragment implements PostCallBack {
      */
     private class PostAdapter extends RecyclerView.Adapter<PostHolder> {
 
-        private PriorityQueue<FitPost> postListInner;
+        private PriorityQueue<FitPost> postQueueInner;
+        private List<FitPost> postListInner;
 
-        public PostAdapter(PriorityQueue<FitPost> postList) {
+        public PostAdapter(List<FitPost> postList) {
             this.postListInner = postList;
+            this.postQueueInner = new PriorityQueue<>();
+            for (FitPost post : this.postListInner) {
+                this.postQueueInner.offer(post);
+            }
         }
 
         @Override
@@ -150,20 +153,33 @@ public class ForumFragment extends Fragment implements PostCallBack {
 
         @Override
         public void onBindViewHolder(PostHolder holder, int position) {
-            FitPost post = this.postListInner.poll();
+            FitPost post = this.postQueueInner.poll();
             holder.bindPost(post);
         }
 
         @Override
         public int getItemCount() {
-            return postListInner.size();
+            if (this.postListInner != null) {
+                return postListInner.size();
+            } else {
+                return 0;
+            }
+        }
+
+        /**
+         * Custom implementation of notifySetDataChanged() method.
+         */
+        private void notifyAdapterSetDataChanged() {
+            for(FitPost post : this.postListInner) {
+                this.postQueueInner.offer(post);
+            }
+            this.notifyDataSetChanged();
         }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: Initialize PQ with Comparator(default by date)
         this.initList();
     }
 
@@ -179,7 +195,6 @@ public class ForumFragment extends Fragment implements PostCallBack {
 
     /**
      * Initializes the list of posts into postList.
-     * TODO: Set Comparator object for postList.
      */
     private void initList() {
         FitPost firstPost = new FitPost("Post Title", "Post Content",
@@ -190,8 +205,8 @@ public class ForumFragment extends Fragment implements PostCallBack {
                 "Post Author", 4, 0, new Date());
         secondPost.addComment(thirdPost);
         firstPost.addComment(secondPost);
-        this.postQueue = new PriorityQueue<>();
-        this.postQueue.offer(firstPost);
+        this.postList = new ArrayList<>();
+        this.postList.add(firstPost);
     }
 
     /**
@@ -203,14 +218,18 @@ public class ForumFragment extends Fragment implements PostCallBack {
         this.filter = view.findViewById(R.id.forum_filter_posts);
         this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
         this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.postAdapter = new PostAdapter(this.postQueue);
+        this.postAdapter = new PostAdapter(this.postList);
         this.postRecyclerView.setAdapter(this.postAdapter);
 
         final PostCallBack callBack = this;
         this.newPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                transitionFragment(Gravity.BOTTOM, PostFragment.newInstance(callBack));
+                PostFragment postFragment = PostFragment.newInstance(callBack);
+                Bundle args = new Bundle();
+                args.putBoolean(IS_COMMENT_KEY, false);
+                postFragment.setArguments(args);
+                transitionFragment(Gravity.BOTTOM, postFragment);
             }
         });
 

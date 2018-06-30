@@ -26,12 +26,11 @@
         android:id="@+id/forum_filter_posts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="75dp"
         android:layout_gravity="top|end"
         android:src="@drawable/ic_forum_options"
         app:layout_anchor="@id/forum_create_post"
         app:layout_anchorGravity="top"
         android:elevation="5dp"
         android:translationZ="5dp" />
-
 </android.support.design.widget.CoordinatorLayout>
