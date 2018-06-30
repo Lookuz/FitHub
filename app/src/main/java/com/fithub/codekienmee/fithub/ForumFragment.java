@@ -3,6 +3,7 @@ package com.fithub.codekienmee.fithub;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,16 +22,26 @@ import org.w3c.dom.Text;
 import java.util.Date;
 import java.util.PriorityQueue;
 
-public class ForumFragment extends Fragment {
+public class ForumFragment extends Fragment implements PostCallBack {
 
     private final static FitPost MOCK_POST = new FitPost("Post Title", "Post Content",
             "Post Author", 10, 1, new Date());
 
     private RecyclerView postRecyclerView; //RecyclerView that handles displaying of posts
     private PostAdapter postAdapter;
-    private PriorityQueue<FitPost> postList; //Heap that stores Post objects.
+    private PriorityQueue<FitPost> postQueue; //Heap that stores Post objects.
+    private FloatingActionButton newPost;
+    private FloatingActionButton filter;
+
     // Order is determined by Comparator passed in on initialization.
-    // TODO: Replace Object with Post class Object.
+
+    @Override
+    public void onCallBack(FitPost post) {
+        if(post != null) {
+            this.postQueue.offer(post);
+            this.postAdapter.notifyDataSetChanged();
+        }
+    }
 
     /**
      * Inner class that extends the use of ViewHolder.
@@ -86,15 +97,19 @@ public class ForumFragment extends Fragment {
              * Note that use of Slide Transition requires minimum API of 21.
              */
             CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
-            Transition slideAnim = new Slide(Gravity.RIGHT).setDuration(200);
-            commentsFragment.setEnterTransition(slideAnim);
-            commentsFragment.setExitTransition(slideAnim);
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.main_frag_view, commentsFragment)
-                    .addToBackStack(null)
-                    .commit();
+            transitionFragment(Gravity.RIGHT, commentsFragment);
         }
+    }
+
+    private void transitionFragment(int resource, Fragment fragment) {
+        Transition slideAnim = new Slide(resource).setDuration(200);
+        fragment.setEnterTransition(slideAnim);
+        fragment.setExitTransition(slideAnim);
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.main_frag_view, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     /**
@@ -105,7 +120,7 @@ public class ForumFragment extends Fragment {
         if (likes > dislikes) {
             thumbsUp.setImageResource(R.drawable.ic_thumb_up_green);
             thumbsDown.setImageResource(R.drawable.ic_thumb_down_grey);
-        } else if (likes > dislikes) {
+        } else if (likes < dislikes) {
             thumbsUp.setImageResource(R.drawable.ic_thumb_up_grey);
             thumbsDown.setImageResource(R.drawable.ic_thumb_down_red);
         } else {
@@ -158,10 +173,7 @@ public class ForumFragment extends Fragment {
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_forum, container, false);
-        this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
-        this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.postAdapter = new PostAdapter(this.postList);
-        this.postRecyclerView.setAdapter(this.postAdapter);
+        this.initView(view);
         return view;
     }
 
@@ -173,12 +185,40 @@ public class ForumFragment extends Fragment {
         FitPost firstPost = new FitPost("Post Title", "Post Content",
                 "Post Author", 10, 1, new Date());
         FitPost secondPost = new FitPost("Post Title", "Post Content",
-                "Post Author", 10, 1, new Date());
+                "Post Author", 5, 7, new Date());
         FitPost thirdPost = new FitPost("Post Title", "Post Content",
-                "Post Author", 10, 1, new Date());
+                "Post Author", 4, 0, new Date());
         secondPost.addComment(thirdPost);
         firstPost.addComment(secondPost);
-        this.postList = new PriorityQueue<>();
-        this.postList.offer(firstPost);
+        this.postQueue = new PriorityQueue<>();
+        this.postQueue.offer(firstPost);
+    }
+
+    /**
+     * Method to initialize the widgets of this fragment.
+     * Widgets: New Post Button, Filter Button.
+     */
+    private void initView(View view) {
+        this.newPost = view.findViewById(R.id.forum_create_post);
+        this.filter = view.findViewById(R.id.forum_filter_posts);
+        this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
+        this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        this.postAdapter = new PostAdapter(this.postQueue);
+        this.postRecyclerView.setAdapter(this.postAdapter);
+
+        final PostCallBack callBack = this;
+        this.newPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                transitionFragment(Gravity.BOTTOM, PostFragment.newInstance(callBack));
+            }
+        });
+
+        this.filter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 }
