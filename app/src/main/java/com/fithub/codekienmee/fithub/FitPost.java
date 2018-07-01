@@ -88,6 +88,6 @@ public class FitPost implements Comparable<FitPost>, PostCallBack {
      */
     @Override
     public void onCallBack(FitPost post) {
-        this.comments.add(post);
+        this.addComment(post);
     }
 }

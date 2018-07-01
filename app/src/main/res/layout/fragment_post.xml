@@ -83,9 +83,9 @@
             android:id="@+id/post_widget_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
+            android:layout_alignParentBottom="true"
             android:orientation="horizontal"
-            android:layout_alignParentBottom="true">
+            android:paddingBottom="10dp">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -95,8 +95,9 @@
                     android:id="@+id/post_submit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
                     android:background="@color/white"
+                    android:padding="10dp"
+                    android:fontFamily="@font/lato_light"
                     android:text="Submit!"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"

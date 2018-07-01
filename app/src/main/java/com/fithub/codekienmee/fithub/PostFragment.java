@@ -4,6 +4,7 @@ import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,10 @@ import java.util.Date;
 /**
  * Class that displays the functionality of fragment show when creating a new FitPost
  */
-public class PostFragment extends Fragment {
+public class PostFragment extends Fragment implements WarningCallBack, OnPostBackPressed {
 
     private static final String IS_COMMENT_KEY = "isComment";
+    private static final int TYPE_NEW_POST = 1;
 
     private PostCallBack callBack;
     private FitPost post;
@@ -41,6 +43,7 @@ public class PostFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((MainPageActivity) getActivity()).setOnPostBackPressed(this);
         this.post = null;
         this.isComment = getArguments().getBoolean(IS_COMMENT_KEY);
     }
@@ -83,9 +86,7 @@ public class PostFragment extends Fragment {
         String postContent = this.content.getText()
                 .toString();
         // TODO: display empty message error using dialog
-        if (postTitle == null) {
-
-        } else if (postContent == null) {
+        if (postTitle == null || postContent == null) {
 
         } else {
             FitPost newPost = new FitPost(postTitle, postContent,
@@ -97,8 +98,38 @@ public class PostFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        if(post != null)
+        if(post != null) {
             this.callBack.onCallBack(this.post);
+        }
+        ((MainPageActivity) getActivity()).setOnPostBackPressed(null);
         super.onDestroy();
+    }
+
+    /**
+     * Method that specifies callback of result to parent fragment.
+     * Exits the new post without saving is result of exit is true.
+     * @param exit
+     */
+    @Override
+    public void onCallBack(boolean exit) {
+        if (exit) {
+            getActivity().getSupportFragmentManager().popBackStack();
+        } else {
+            return;
+        }
+    }
+
+    /**
+     * Method that determines action taken in this fragment when back button is pressed.
+     */
+    @Override
+    public void onPostBackPressed() {
+        if (title.getText() != null || content.getText() != null) {
+            WarningDialog warningDialog = WarningDialog.newInstance("Warning Message",
+                    TYPE_NEW_POST, this);
+
+            warningDialog.show(((MainPageActivity) getActivity()).getSupportFragmentManager()
+                    .beginTransaction(), "Warning Dialog");
+        }
     }
 }

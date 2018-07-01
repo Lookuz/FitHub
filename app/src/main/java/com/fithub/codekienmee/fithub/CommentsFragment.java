@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,7 +161,7 @@ public class CommentsFragment extends Fragment {
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // TODO: set favourite button.
             }
         });
     }
@@ -181,7 +182,9 @@ public class CommentsFragment extends Fragment {
         return view;
     }
 
-    // TODO: Abstract with a single method with ForumFragment.
+    /**
+     * Method that allows users to post a comment.
+     */
     private void postComment(FitPost parent) {
         PostFragment postFragment = PostFragment.newInstance(parent);
         Bundle args = new Bundle();

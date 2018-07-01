@@ -21,12 +21,27 @@ import android.widget.Toast;
 
 public class MainPageActivity extends AppCompatActivity {
 
+    private OnPostBackPressed onPostBackPressed;
+
     private DrawerLayout mDrawerLayout; // DrawerLayout for sliding menu
     private ActionBarDrawerToggle mTogglebar;
     private android.support.v4.app.FragmentManager mFragmentManager;
     private Fragment currFrag;
     private Button mainLocButton;
     private Button mainForumButton;
+
+    public void setOnPostBackPressed(OnPostBackPressed onPostBackPressed) {
+        this.onPostBackPressed = onPostBackPressed;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(this.onPostBackPressed != null) {
+            this.onPostBackPressed.onPostBackPressed();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +92,6 @@ public class MainPageActivity extends AppCompatActivity {
                 mFragmentManager.beginTransaction()
                         .replace(R.id.main_frag_view, currFrag)
                         .commit();
-                Toast.makeText(MainPageActivity.this,
-                        "LocationFragment activated" ,Toast.LENGTH_SHORT).show();
             }
         });
         this.mainForumButton = (Button)findViewById(R.id.main_forum_button);
@@ -89,8 +102,6 @@ public class MainPageActivity extends AppCompatActivity {
                 mFragmentManager.beginTransaction()
                         .replace(R.id.main_frag_view, currFrag)
                         .commit();
-                Toast.makeText(MainPageActivity.this,
-                        "ForumFragment activated" ,Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -103,7 +114,7 @@ public class MainPageActivity extends AppCompatActivity {
         if(this.currFrag instanceof LocationFragment) {
             MapsFragment mapsFragment = new MapsFragment();
             mapsFragment.setEnterTransition((Transition) new Fade().
-                    setDuration(500).setStartDelay(1500));
+                    setDuration(400).setStartDelay(1200));
             this.currFrag.setExitTransition((Transition) new Fade().
                     setDuration(1000).setInterpolator(new DecelerateInterpolator()));
 
@@ -127,13 +138,17 @@ public class MainPageActivity extends AppCompatActivity {
     }
 
     public void overlayFragment(int resource, Fragment fragment) {
-        Transition slideAnim = new Slide(resource).setDuration(200);
-        fragment.setEnterTransition(slideAnim);
-        fragment.setExitTransition(slideAnim);
+        if (resource != 0) {
+            Transition slideAnim = new Slide(resource).setDuration(200);
+            fragment.setEnterTransition(slideAnim);
+            fragment.setExitTransition(slideAnim);
+        }
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.main_frag_view, fragment)
                 .addToBackStack(null)
                 .commit();
     }
+
+
 }

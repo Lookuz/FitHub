@@ -52,16 +52,11 @@ import java.util.concurrent.Executors;
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private final static int REQUEST_CODE = 1;
-    private final static float DEFAULT_ZOOM = 15;
+    private final static float DEFAULT_ZOOM = 10;
     private final static Locale DEFAULT_LOCALE = Locale.ENGLISH;
     // Location bounds to apply search results.
-    // TODO: Restrict results to Singapore.
     private final static LatLngBounds  LOCATION_BOUNDS= new LatLngBounds(
             new LatLng(-40, -168), new LatLng(71, 136));
-    private final static FitLocation MOCK_LOCATION =
-            new FitLocation(DEFAULT_LOCALE, "BestGym", "592775", "84845566",
-                    1.333501, 103.788373, "925 Bukit Timah Road",
-                    "www.mockfitnesswebsite.com");
 
     private MapView mapView; // View that displays the map
     private GoogleMap gMap; // Google Maps
@@ -84,7 +79,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         this.userPermission = false;
         this.locationHashMap = new HashMap<>();
         this.locationList = new ArrayList<>(); // TODO: Initialize list with locations from DB.
-        this.locationList.add(MOCK_LOCATION);
+        this.initMockLocations();
         this.executorService = Executors.newFixedThreadPool(5);
         this.executorService.submit(new Runnable() {
             @Override
@@ -93,6 +88,61 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             }
         });
         this.requestUserPermission();
+    }
+
+    // For Mocking Only.
+    private void initMockLocations() {
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "HeartBeat@Bedok ActiveSG Gym", "469662", "6443 5511",
+                1.326975, 103.932149, "11 Bedok North Street 1",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Bishan ActiveSG Gym", "579783", "6353 9238",
+                1.355272, 103.850811, "5 Bishan Street 14",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Bukit Gombak ActiveSG Gym", "659081", "6896 2197",
+                1.359667, 103.752228, "810 Bukit Batok West Ave 5",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Choa Chu Kang ActiveSG Gym", "689236", "6767 1735",
+                1.390985, 103.748676, "1 Choa Chu Kang Street 53",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Clementi Sports Centre", "129907", "6776 2560",
+                1.310962, 103.765033, "518 Clementi Avenue 3",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Delta ActiveSG Gym", "158790", "6471 9030",
+                1.289297, 103.820672, "900 Tiong Bahru Rd",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Enabling Village ActiveSG Gym", "159053", "6265 1292",
+                1.287243, 103.814824, "20, Lengkok Bahru, #01-05, Enabling Village",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Hougang ActiveSG Sports Centre", "538832", "6315 8671",
+                1.370726, 103.888364, " 93 Hougang Ave 4",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Jurong East ActiveSG Sports Centre", "609517", "6896 3569",
+                1.346744, 103.729447, "21 Jurong East Street 31 ",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Jurong West ActiveSG Sports Centre", "648965", "6515 5331",
+                1.338574, 103.694113, "20 Jurong West Street 93",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, " Pasir Ris ActiveSG Gym", "519640", "6583 2696",
+                1.374088, 103.951925, "120 Pasir Ris Central",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Sengkang Sports Centre", "544964", "6315 3576",
+                1.396745, 103.886448, "57 Anchorvale Rd",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Tampines ActiveSG Gym", "528523", "6260 1160",
+                1.353908, 103.940558, "1 Tampines Walk, #07-31",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Toa Payoh ActiveSG Gym", "319392", "6256 7153",
+                1.330533, 103.850158, "301 Lorong 6 Toa Payoh",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Woodlands ActiveSG Sports Centre", "738620", "6362 9100",
+                1.434149, 103.779881, "2 Woodlands Street 12",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Yishun ActiveSG Gym", "769130", "6851 8604",
+                1.411751, 103.831227, "101 Yishun Ave 1",
+                "https://www.myactivesg.com"));
+        this.locationList.add(new FitLocation(DEFAULT_LOCALE, "Yio Chu Kang ActiveSG Gym", "569770", "6482 4980",
+                1.377487, 103.849504, "200 Ang Mo Kio Avenue 9",
+                "https://www.myactivesg.com"));
     }
 
     @Nullable
@@ -188,7 +238,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     manager.hideSoftInputFromWindow(getActivity().getWindow()
                             .getCurrentFocus().getWindowToken(), 0);
                     Marker marker = locationHashMap.get(location);
-                    centerLocation(marker.getPosition(), 30);
+                    centerLocation(marker.getPosition(), 15);
                     marker.showInfoWindow();
                 }
             }

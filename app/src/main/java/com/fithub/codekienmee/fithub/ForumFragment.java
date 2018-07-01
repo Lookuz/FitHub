@@ -186,16 +186,33 @@ public class ForumFragment extends Fragment implements PostCallBack {
      * Initializes the list of posts into postList.
      */
     private void initList() {
-        FitPost firstPost = new FitPost("Post Title", "Post Content",
-                "Post Author", 10, 1, new Date());
-        FitPost secondPost = new FitPost("Post Title", "Post Content",
-                "Post Author", 5, 7, new Date());
-        FitPost thirdPost = new FitPost("Post Title", "Post Content",
-                "Post Author", 4, 0, new Date());
+        FitPost firstPost = new FitPost("Top 10 health tips to follow", "Embrace a Healthy Diet Plan\n " +
+                "Move more.\nBe smoke-free.\nScheduled Sleep.\nPrioritize preventive screenings.\nConnect with others.\nStay hydrated.\n" +
+                "Appreciate what you have.\nPick up a hobby\nMeditate",
+                "Health Guru", 10, 1, new Date());
+        FitPost secondPost = new FitPost(null, "Great tips! Will try out 5 and 7!",
+                "Fitness Beginner", 8, 0, new Date());
+        FitPost thirdPost = new FitPost(null, "Didn't work for me..",
+                "Non-Believer", 1, 6, new Date());
         secondPost.addComment(thirdPost);
         firstPost.addComment(secondPost);
+
+        FitPost fourthPost = new FitPost("How to cardio effectively??", "Hi, I am a beginner to fitness, recently" +
+                " started getting into it. Can anyone give tips on how to effectively build up stamina? Thanks!",
+                "Fitness Beginner", 5, 0, new Date());
+
+        FitPost fifthPost = new FitPost("Six Pack Shortcuts", "Hey guys! Wanna build six pack shortcuts in no time?" +
+                " Check out my YouTube videos in the link descriptions in my profile! 100% guaranteed to work!",
+                "Mike Chang", 3, 21, new Date());
+
+        FitPost sixthPost = new FitPost("Looking for Gym Buddy at NUS", "Plz do back day thnx.",
+                "Jag", 0, 0, new Date());
+
         this.postList = new ArrayList<>();
         this.postList.add(firstPost);
+        this.postList.add(fourthPost);
+        this.postList.add(fifthPost);
+        this.postList.add(sixthPost);
     }
 
     /**
