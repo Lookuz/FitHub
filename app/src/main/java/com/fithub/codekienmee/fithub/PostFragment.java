@@ -20,7 +20,6 @@ import java.util.Date;
 public class PostFragment extends Fragment implements WarningCallBack, OnPostBackPressed {
 
     private static final String IS_COMMENT_KEY = "isComment";
-    private static final int TYPE_NEW_POST = 1;
 
     private PostCallBack callBack;
     private FitPost post;
@@ -50,7 +49,8 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
         this.initView(view);
         return view;
@@ -86,8 +86,12 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
         String postContent = this.content.getText()
                 .toString();
         // TODO: display empty message error using dialog
-        if (postTitle == null || postContent == null) {
+        if ((postTitle.equals("") && this.isComment == false)|| postContent.equals("")) {
+            WarningDialog warningDialog = WarningDialog.newInstance(
+                    WarningEnum.EMPTY_POST, this);
 
+            warningDialog.show(((MainPageActivity) getActivity()).getSupportFragmentManager()
+                    .beginTransaction(), "Empty Post Warning");
         } else {
             FitPost newPost = new FitPost(postTitle, postContent,
                     this.author.getText().toString(), new Date());
@@ -125,11 +129,11 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
     @Override
     public void onPostBackPressed() {
         if (title.getText() != null || content.getText() != null) {
-            WarningDialog warningDialog = WarningDialog.newInstance("Warning Message",
-                    TYPE_NEW_POST, this);
+            WarningDialog warningDialog = WarningDialog.newInstance(
+                    WarningEnum.UNSAVED_POST, this);
 
             warningDialog.show(((MainPageActivity) getActivity()).getSupportFragmentManager()
-                    .beginTransaction(), "Warning Dialog");
+                    .beginTransaction(), "Unsaved Post Warning");
         }
     }
 }

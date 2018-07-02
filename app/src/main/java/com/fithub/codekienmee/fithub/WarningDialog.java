@@ -15,23 +15,20 @@ import android.widget.TextView;
 public class WarningDialog extends DialogFragment {
 
     private static final String WARNING_MESSAGE = "Warning Message: ";
-    private static final String MESSAGE_TYPE = "Message Type: ";
-    private static final int TYPE_NEW_POST = 1;
 
     private WarningCallBack parent;
-    private int type;
+    private WarningEnum type;
 
+    private Button cont;
     private Button ok;
     private Button cancel;
     private TextView message;
 
     // TODO: change type to Enum
-    public static WarningDialog newInstance(String warningMessage, int type,
-                                            WarningCallBack parent) {
+    public static WarningDialog newInstance(WarningEnum type, WarningCallBack parent) {
          Bundle args = new Bundle();
-         args.putString(WARNING_MESSAGE, warningMessage);
-         args.putInt(MESSAGE_TYPE, type);
          WarningDialog fragment = new WarningDialog();
+         fragment.type = type;
          fragment.parent = parent;
          fragment.setArguments(args);
          return fragment;
@@ -40,7 +37,6 @@ public class WarningDialog extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.type = getArguments().getInt(MESSAGE_TYPE);
     }
 
     @Nullable
@@ -55,30 +51,58 @@ public class WarningDialog extends DialogFragment {
 
     /**
      * Initializes view and widgets.
-     * @param view
      */
     private void initView(View view) {
         this.cancel = view.findViewById(R.id.warning_cancel);
-        this.ok = view.findViewById(R.id.warning_ok);
+        this.cont = view.findViewById(R.id.warning_cont);
         this.message = view.findViewById(R.id.warning_message);
+        this.ok = view.findViewById(R.id.warning_ok);
 
-        this.message.setText(this.getArguments().getString(WARNING_MESSAGE));
-        if (this.type == TYPE_NEW_POST) {
-            this.cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    parent.onCallBack(false);
-                    dismiss();
-                }
-            });
-
-            this.ok.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    parent.onCallBack(true);
-                    dismiss();
-                }
-            });
+        this.message.setText(getString(this.type.getWarningMessage()));
+        switch (this.type) {
+            case UNSAVED_POST: // Unsaved Post Error
+                this.initUnsavedWarning(view);
+                break;
+            case EMPTY_POST: // Empty Post Error
+                this.initEmptyPostWarning(view);
+                break;
         }
+    }
+
+    /**
+     * Initializes widgets for Unsaved Post Warning.
+     */
+    private void initUnsavedWarning(View view) {
+        view.findViewById(R.id.warning_empty_post_bar).setVisibility(View.GONE);
+
+        this.cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parent.onCallBack(false);
+                dismiss();
+            }
+        });
+
+        this.cont.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parent.onCallBack(true);
+                dismiss();
+            }
+        });
+    }
+
+    /**
+     * Initializes widgets for Empty Post Warning.
+     */
+    private void initEmptyPostWarning(View view) {
+        view.findViewById(R.id.warning_new_post_bar).setVisibility(View.GONE);
+        this.ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parent.onCallBack(false);
+                dismiss();
+            }
+        });
     }
 }

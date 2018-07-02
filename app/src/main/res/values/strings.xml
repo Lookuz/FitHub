@@ -9,12 +9,30 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
 
+    <!--Profile-->
     <string name="nav_account">My Profile</string>
     <string name="nav_favourites">Favourite Posts</string>
     <string name="nav_locations">Saved Locations</string>
     <string name="nav_schedule">My Schedule</string>
     <string name="nav_settings">Settings</string>
 
+    <!--Warning Dialogs-->
+    <string name="unsaved_post_warning">You are exiting without saving your changes!
+        Do you wish to continue?</string>
+    <string name="empty_post_warning">Cannot post without empty title or body!</string>
+    <string name="warning_cancel">Cancel</string>
+    <string name="warning_continue">Continue</string>
+    <string name="warning_ok">Okay</string>
+    
+    <!--Forum-->
+    <string name="forum_reply">Comment</string>
+    <string name="forum_favourite">Favourite!</string>
+
+    <!--Post-->
+    <string name="post_title">Post Title</string>
+    <string name="post_body">Share your thoughts!</string>
+    <string name="post_submit">Submit!</string>
+    
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
