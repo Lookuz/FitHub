@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">FitHub</string>
 
+    <!--Start Up Page-->
     <string name="title_activity_start_up_page">Start Up Page</string>
     <string name="title_activity_main_page">Main Page</string>
+    <string name="start_up_log_in">Log In</string>
+    <string name="start_up_sign_up">Sign Up</string>
 
     <string name="main_location_button">GET FIT NOW!</string>
     <string name="main_forum_button">SEE WHAT OTHERS ARE DOING!</string>
@@ -15,6 +18,9 @@
     <string name="nav_locations">Saved Locations</string>
     <string name="nav_schedule">My Schedule</string>
     <string name="nav_settings">Settings</string>
+
+    <!--Maps-->
+    <string name="maps_hint">Can\'t find what you\'re looking for?</string>
 
     <!--Warning Dialogs-->
     <string name="unsaved_post_warning">You are exiting without saving your changes!

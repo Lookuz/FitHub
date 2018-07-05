@@ -243,7 +243,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
-        this.searchBar.setHint("Can't find what you're looking for?");
+        this.searchBar.setHint(R.string.maps_hint);
         this.centerUserLocation = (ImageButton) view.findViewById(R.id.map_center_button);
         this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -317,6 +317,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Method that converts vector to bitmap.
+     */
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
         Bitmap bitmap = Bitmap.createBitmap(168,

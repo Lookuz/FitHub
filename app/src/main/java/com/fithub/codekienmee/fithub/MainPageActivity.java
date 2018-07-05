@@ -1,23 +1,25 @@
 package com.fithub.codekienmee.fithub;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
-import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainPageActivity extends AppCompatActivity {
 
@@ -26,9 +28,46 @@ public class MainPageActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout; // DrawerLayout for sliding menu
     private ActionBarDrawerToggle mTogglebar;
     private android.support.v4.app.FragmentManager mFragmentManager;
-    private Fragment currFrag;
-    private Button mainLocButton;
-    private Button mainForumButton;
+    private Fragment mainLocationFrag;
+    private Fragment mainForumFrag;
+    private TabLayout mainTabLayout;
+
+    /**
+     * Custom ViewPagerAdapter class made to synchronize the ViewPager class
+     * with FitLocation and FitForum
+     */
+    private class FitViewPagerAdapter extends FragmentPagerAdapter {
+
+        private List<Fragment> fragmentList;
+        private List<String> fragmentTitles;
+
+        public FitViewPagerAdapter(FragmentManager fm) {
+            super(fm);
+            this.fragmentList = new ArrayList<>();
+            this.fragmentTitles = new ArrayList<>();
+
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            this.fragmentList.add(fragment);
+            this.fragmentTitles.add(title);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return this.fragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return this.fragmentList.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return this.fragmentTitles.get(position).toString();
+        }
+    }
 
     public void setOnPostBackPressed(OnPostBackPressed onPostBackPressed) {
         this.onPostBackPressed = onPostBackPressed;
@@ -47,16 +86,12 @@ public class MainPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
-        this.configureMenu();
-        this.configureWidgets();
 
         this.mFragmentManager = getSupportFragmentManager();
-        if(this.currFrag == null) {
-            this.currFrag = new LocationFragment();
-            this.mFragmentManager.beginTransaction()
-                    .add(R.id.main_frag_view, currFrag)
-                    .commit();
-        }
+        this.mainLocationFrag = new LocationFragment();
+        this.mainForumFrag = new ForumFragment();
+        this.configureMenu();
+        this.configureWidgets();
     }
 
     /**
@@ -81,45 +116,32 @@ public class MainPageActivity extends AppCompatActivity {
     /**
      * Private method that configures widgets in the Activity.
      * Widgets: Location Button, Forum Button, Search Bar(?)
-     * TODO: Enable smooth switching between fragments without destroying state.
+     * TODO: Enable separate backstacks for each ViewPager Tab
      */
     private void configureWidgets() {
-        this.mainLocButton = (Button)findViewById(R.id.main_location_button);
-        this.mainLocButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currFrag = new LocationFragment();
-                mFragmentManager.beginTransaction()
-                        .replace(R.id.main_frag_view, currFrag)
-                        .commit();
-            }
-        });
-        this.mainForumButton = (Button)findViewById(R.id.main_forum_button);
-        this.mainForumButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currFrag = new ForumFragment();
-                mFragmentManager.beginTransaction()
-                        .replace(R.id.main_frag_view, currFrag)
-                        .commit();
-            }
-        });
+
+        this.mainTabLayout = (TabLayout)findViewById(R.id.main_tab_layout);
+        ViewPager viewPager = findViewById(R.id.main_view_pager);
+        FitViewPagerAdapter viewPagerAdapter = new FitViewPagerAdapter(this.mFragmentManager);
+        viewPagerAdapter.addFragment(this.mainLocationFrag, "FitLocation");
+        viewPagerAdapter.addFragment(this.mainForumFrag, "FitForum");
+
+        viewPager.setAdapter(viewPagerAdapter);
+        this.mainTabLayout.setupWithViewPager(viewPager);
     }
 
     /**
      * Method that initializes the functioning Maps View from Location Button Fragment.
      */
     public void initLocation() {
-
-        if(this.currFrag instanceof LocationFragment) {
+        if(this.mainLocationFrag != null) {
             MapsFragment mapsFragment = new MapsFragment();
             mapsFragment.setEnterTransition((Transition) new Fade().
                     setDuration(400).setStartDelay(1200));
-            this.currFrag.setExitTransition((Transition) new Fade().
+            this.mainLocationFrag.setExitTransition((Transition) new Fade().
                     setDuration(1000).setInterpolator(new DecelerateInterpolator()));
 
             this.mFragmentManager.beginTransaction()
-//                .setCustomAnimations(R.anim.fade_out, R.anim.fade_in)
                     .replace(R.id.main_frag_view, mapsFragment).commit();
         }
     }
@@ -149,6 +171,4 @@ public class MainPageActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
     }
-
-
 }

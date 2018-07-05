@@ -12,6 +12,9 @@ import org.w3c.dom.Text;
 
 import java.util.HashMap;
 
+/**
+ * Custom InfoWindowAdapter for display FitLocation on Maps.
+ */
 public class FitInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private final View infoWindow; // View to be displayed on infoWindow.

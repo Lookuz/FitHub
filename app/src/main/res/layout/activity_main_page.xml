@@ -69,37 +69,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/darkRed"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:orientation="horizontal">
 
             <!--Location Services Button-->
-            <Button
-                android:id="@+id/main_location_button"
+            <android.support.design.widget.TabLayout
+                android:id="@+id/main_tab_layout"
+                app:tabBackground="@color/darkRed"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="0dp"
-                android:layout_weight="1"
-                android:background="@drawable/main_button_ripple"
-                android:fontFamily="@font/lato_light"
-                android:padding="0dp"
-                android:text="@string/main_location_button"
-                android:textStyle="bold"
-                tools:text="@string/main_location_button" />
-
-            <!--Forum and Posts Button-->
-            <Button
-                android:id="@+id/main_forum_button"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="0dp"
-                android:layout_weight="1"
-                android:background="@drawable/main_button_ripple"
-                android:fontFamily="@font/lato_light"
-                android:padding="0dp"
-                android:text="@string/main_forum_button"
-                android:textStyle="bold"
-                tools:text="@string/main_forum_button" />
-
+                android:layout_height="wrap_content"
+                app:tabMode="fixed"></android.support.design.widget.TabLayout>
         </LinearLayout>
 
         <!--View for location based service and forum-->
@@ -107,6 +85,10 @@
             android:id="@+id/main_frag_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <android.support.v4.view.ViewPager
+                android:id="@+id/main_view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></android.support.v4.view.ViewPager>
         </FrameLayout>
 
     </LinearLayout>

@@ -4,11 +4,14 @@ import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 
 public class LocationFragment extends Fragment {
@@ -36,7 +39,6 @@ public class LocationFragment extends Fragment {
         this.locButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { // Fades out and replaces current Fragment with MapsFragment
-                // TODO: Add loading progress bar?
                 ((MainPageActivity) getActivity()).initLocation();
             }
         });

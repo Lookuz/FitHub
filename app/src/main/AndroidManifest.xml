@@ -34,10 +34,10 @@
             android:label="@string/title_activity_start_up_page"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
-                <action android:name="com.fithub.codekienmee.fithub.StartUpActivity" />
-                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<action android:name="com.fithub.codekienmee.fithub.StartUpActivity" />-->
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -45,10 +45,10 @@
             android:label="@string/title_activity_main_page"
             android:theme="@style/AppTheme">
             <intent-filter>
-                <!--<action android:name="com.fithub.codekienmee.fithub.MainPageActivity" />-->
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.fithub.codekienmee.fithub.MainPageActivity" />
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
