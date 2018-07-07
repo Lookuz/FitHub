@@ -17,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -52,7 +51,7 @@ import java.util.concurrent.Executors;
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private final static int REQUEST_CODE = 1;
-    private final static float DEFAULT_ZOOM = 10;
+    private final static float DEFAULT_ZOOM = 15;
     private final static Locale DEFAULT_LOCALE = Locale.ENGLISH;
     // Location bounds to apply search results.
     private final static LatLngBounds  LOCATION_BOUNDS= new LatLngBounds(
@@ -87,6 +86,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 geoDataClient = Places.getGeoDataClient(getContext());
             }
         });
+
         this.requestUserPermission();
     }
 

@@ -1,6 +1,5 @@
 package com.fithub.codekienmee.fithub;
 
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +8,7 @@ import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
@@ -41,10 +41,16 @@ public class LocationFragment extends Fragment {
                 MapsFragment mapsFragment = new MapsFragment();
                 mapsFragment.setEnterTransition((Transition) new Fade()
                         .setDuration(400).setStartDelay(1200));
-                LocationFragment.this.setExitTransition((Transition) new Fade()
-                        .setDuration(1000).setInterpolator(new DecelerateInterpolator()));
+                Animation animation = new AlphaAnimation(1.0f, 0.0f);
+                animation.setDuration(1000);
+                animation.setInterpolator(new DecelerateInterpolator());
+                v.startAnimation(animation);
+                v.setVisibility(View.GONE);
+                v.setClickable(false);
 
-                ((ContainerFragment) getParentFragment()).replaceFragment(mapsFragment, 0);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.frag_location, mapsFragment)
+                        .commit();
             }
         });
         return locView;

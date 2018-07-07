@@ -31,17 +31,12 @@ public class ContainerFragment extends Fragment {
         private List<Fragment> fragmentList;
         private List<String> fragmentTitles;
         private FragmentManager fragmentManager;
-        private Fragment locationFragment;
-        private Fragment forumFragment;
 
         public FitViewPagerAdapter(FragmentManager fm) {
             super(fm);
             this.fragmentManager = fm;
             this.fragmentList = new ArrayList<>();
             this.fragmentTitles = new ArrayList<>();
-            this.locationFragment = new LocationFragment();
-            this.forumFragment = new ForumFragment();
-
         }
 
         public void addFragment(Fragment fragment, String title) {
@@ -51,62 +46,17 @@ public class ContainerFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    return this.locationFragment;
-                case 1:
-                    return this.forumFragment;
-                default:
-                    return null;
-            }
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            if (object instanceof ForumFragment) {
-                return POSITION_UNCHANGED;
-            } else {
-                return POSITION_NONE;
-            }
+            return this.fragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return this.fragmentList.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch(position) {
-                case 0:
-                    return getString(R.string.fitlocation);
-                case 1:
-                    return getString(R.string.fitforum);
-                default:
-                    return null;
-            }
-        }
-
-        private void replaceFragment(Fragment fragment, int position) {
-            switch (position) {
-                case 0:
-                    if (this.locationFragment != null) {
-                        this.fragmentManager.beginTransaction()
-                                .remove(this.locationFragment).commit();
-                        this.locationFragment = fragment;
-                        notifyDataSetChanged();
-                    }
-                    break;
-                case 1:
-                    if (this.forumFragment != null) {
-                        this.fragmentManager.beginTransaction()
-                                .remove(this.forumFragment).commit();
-                        this.forumFragment = fragment;
-                        notifyDataSetChanged();
-                    }
-                    break;
-            }
-            notifyDataSetChanged();
+            return this.fragmentTitles.get(position);
         }
     }
 
@@ -117,8 +67,8 @@ public class ContainerFragment extends Fragment {
     public static ContainerFragment newInstance() {
          Bundle args = new Bundle();
          ContainerFragment fragment = new ContainerFragment();
-        fragment.setArguments(args);
-        return fragment;
+         fragment.setArguments(args);
+         return fragment;
     }
 
     @Override
@@ -162,12 +112,5 @@ public class ContainerFragment extends Fragment {
                 .add(R.id.fragment_forum, fragment)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    /**
-     * Method that replaces an existing fragment with a new one
-     */
-    public void replaceFragment(Fragment fragment, int position) {
-        this.viewPagerAdapter.replaceFragment(fragment, position);
     }
 }

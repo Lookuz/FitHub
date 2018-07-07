@@ -28,18 +28,6 @@
 
     </android.support.constraint.ConstraintLayout>
 
-
-    <!--<FrameLayout-->
-        <!--android:id="@+id/start_up_frag_view"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/start_up_logo" >-->
-
-    <!--</FrameLayout>-->
-
     <ViewFlipper
         android:id="@+id/start_up_view_flipper"
         android:layout_width="match_parent"
