@@ -1,10 +1,9 @@
 package com.fithub.codekienmee.fithub;
 
-import android.media.Image;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.view.LayoutInflater;
@@ -36,12 +35,16 @@ public class LocationFragment extends Fragment {
         final View locView = inflater.inflate(
                R.layout.fragment_location_service, container, false);
         this.locButton = locView.findViewById(R.id.main_location_button);
-        final Animation fadeOutAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
         this.locButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { // Fades out and replaces current Fragment with MapsFragment
-                ((MainPageActivity) getActivity()).initLocation();
+                MapsFragment mapsFragment = new MapsFragment();
+                mapsFragment.setEnterTransition((Transition) new Fade()
+                        .setDuration(400).setStartDelay(1200));
+                LocationFragment.this.setExitTransition((Transition) new Fade()
+                        .setDuration(1000).setInterpolator(new DecelerateInterpolator()));
 
+                ((ContainerFragment) getParentFragment()).replaceFragment(mapsFragment, 0);
             }
         });
         return locView;

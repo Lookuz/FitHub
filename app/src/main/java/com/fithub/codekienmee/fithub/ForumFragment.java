@@ -94,7 +94,9 @@ public class ForumFragment extends Fragment implements PostCallBack {
              * Note that use of Slide Transition requires minimum API of 21.
              */
             CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
-            ((MainPageActivity) getActivity()).overlayFragment(Gravity.RIGHT, commentsFragment);
+//            ((MainPageActivity) getActivity()).overlayFragment(Gravity.RIGHT, commentsFragment);
+            setSlideAnim(Gravity.RIGHT, commentsFragment);
+            ((ContainerFragment) getParentFragment()).overlayFragment(commentsFragment);
         }
     }
 
@@ -235,7 +237,8 @@ public class ForumFragment extends Fragment implements PostCallBack {
                 Bundle args = new Bundle();
                 args.putBoolean(IS_COMMENT_KEY, false);
                 postFragment.setArguments(args);
-                ((MainPageActivity) getActivity()).overlayFragment(Gravity.BOTTOM, postFragment);
+                setSlideAnim(Gravity.BOTTOM, postFragment);
+                ((ContainerFragment) getParentFragment()).overlayFragment(postFragment);
             }
         });
 
@@ -245,5 +248,14 @@ public class ForumFragment extends Fragment implements PostCallBack {
 
             }
         });
+    }
+
+    /**
+     * Method to set sliding animation for fragments.
+     */
+    public static void setSlideAnim(int resource, Fragment fragment) {
+        Transition slideAnim = new Slide(resource).setDuration(200);
+        fragment.setEnterTransition(slideAnim);
+        fragment.setExitTransition(slideAnim);
     }
 }

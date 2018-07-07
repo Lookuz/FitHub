@@ -190,6 +190,7 @@ public class CommentsFragment extends Fragment {
         Bundle args = new Bundle();
         args.putBoolean(IS_COMMENT_KEY, true);
         postFragment.setArguments(args);
-        ((MainPageActivity) getActivity()).overlayFragment(Gravity.BOTTOM, postFragment);
+        ForumFragment.setSlideAnim(Gravity.BOTTOM, postFragment);
+        ((ContainerFragment) getParentFragment()).overlayFragment(postFragment);
     }
 }

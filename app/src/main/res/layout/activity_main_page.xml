@@ -64,31 +64,31 @@
         </android.support.v7.widget.Toolbar>
 
         <!--Buttons for functions-->
-        <LinearLayout
-            android:id="@+id/main_nav_buttons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/darkRed"
-            android:orientation="horizontal">
+        <!--<LinearLayout-->
+            <!--android:id="@+id/main_nav_buttons"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@color/darkRed"-->
+            <!--android:orientation="horizontal">-->
 
-            <!--Location Services Button-->
-            <android.support.design.widget.TabLayout
-                android:id="@+id/main_tab_layout"
-                app:tabBackground="@color/darkRed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:tabMode="fixed"></android.support.design.widget.TabLayout>
-        </LinearLayout>
+            <!--&lt;!&ndash;Location Services Button&ndash;&gt;-->
+            <!--<android.support.design.widget.TabLayout-->
+                <!--android:id="@+id/main_tab_layout"-->
+                <!--app:tabBackground="@color/darkRed"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--app:tabMode="fixed"></android.support.design.widget.TabLayout>-->
+        <!--</LinearLayout>-->
 
         <!--View for location based service and forum-->
         <FrameLayout
             android:id="@+id/main_frag_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <android.support.v4.view.ViewPager
-                android:id="@+id/main_view_pager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+            <!--<android.support.v4.view.ViewPager-->
+                <!--android:id="@+id/main_view_pager"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"></android.support.v4.view.ViewPager>-->
         </FrameLayout>
 
     </LinearLayout>

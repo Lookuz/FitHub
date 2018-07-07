@@ -11,10 +11,10 @@
     <string name="start_up_options_email">With Email</string>
     <string name="start_up_options_phone">With Phone</string>
 
-    <string name="main_location_button">GET FIT NOW!</string>
-    <string name="main_forum_button">SEE WHAT OTHERS ARE DOING!</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="fitlocation">FitLocation</string>
+    <string name="fitforum">FitForum</string>
 
     <!--Profile-->
     <string name="nav_account">My Profile</string>
