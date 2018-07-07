@@ -4,6 +4,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ public class LocationFragment extends Fragment {
             @Override
             public void onClick(View v) { // Fades out and replaces current Fragment with MapsFragment
                 ((MainPageActivity) getActivity()).initLocation();
+
             }
         });
         return locView;
