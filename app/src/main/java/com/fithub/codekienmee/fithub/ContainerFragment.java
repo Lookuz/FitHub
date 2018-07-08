@@ -13,6 +13,7 @@ import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,6 @@ import java.util.Stack;
  * Fragment that holds the fragments for ViewPager to use in MainPageActivity.
  */
 public class ContainerFragment extends Fragment implements OnPostBackPressed {
-
-    private ForumFragment forumFragment;
 
     /**
      * Custom ViewPagerAdapter class made to synchronize the ViewPager class
@@ -63,6 +62,7 @@ public class ContainerFragment extends Fragment implements OnPostBackPressed {
         }
     }
 
+    private ForumFragment forumFragment;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private FitViewPagerAdapter viewPagerAdapter;
@@ -72,6 +72,10 @@ public class ContainerFragment extends Fragment implements OnPostBackPressed {
          ContainerFragment fragment = new ContainerFragment();
          fragment.setArguments(args);
          return fragment;
+    }
+
+    public ForumFragment getForumFragment() {
+        return forumFragment;
     }
 
     @Override
@@ -124,12 +128,21 @@ public class ContainerFragment extends Fragment implements OnPostBackPressed {
     @Override
     public boolean onPostBackPressed() {
         if (!this.forumFragment.getPostStack().isEmpty()) {
-            ((OnPostBackPressed) this.forumFragment.getPostStack().pop()).onPostBackPressed();
+            ((OnPostBackPressed) this.forumFragment.getPostStack().peek())
+                    .onPostBackPressed();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void popBackStack() {
+        if (!this.forumFragment.getPostStack().isEmpty()) {
+            this.forumFragment.getPostStack().pop();
+            this.getChildFragmentManager().popBackStack();
             if (this.forumFragment.getPostStack().isEmpty()) {
                 this.forumFragment.onResume();
             }
-            return true;
         }
-        return false;
     }
 }

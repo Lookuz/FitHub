@@ -42,7 +42,6 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((MainPageActivity) getActivity()).setOnPostBackPressed(this);
         this.post = null;
         this.isComment = getArguments().getBoolean(IS_COMMENT_KEY);
     }
@@ -96,7 +95,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
             FitPost newPost = new FitPost(postTitle, postContent,
                     this.author.getText().toString(), new Date());
             this.post = newPost;
-            getParentFragment().getChildFragmentManager().popBackStack();
+            ((ContainerFragment) getParentFragment()).popBackStack();
         }
     }
 
@@ -106,7 +105,6 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
             this.callBack.onCallBack(this.post);
         }
 
-        ((MainPageActivity) getActivity()).setOnPostBackPressed(null);
         super.onDestroy();
     }
 
@@ -118,7 +116,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
     @Override
     public void onCallBack(boolean exit) {
         if (exit) {
-            getFragmentManager().popBackStack();
+            ((ContainerFragment) getParentFragment()).popBackStack();
         } else {
             return;
         }
@@ -136,6 +134,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
             warningDialog.show(getFragmentManager()
                     .beginTransaction(), "Unsaved Post Warning");
         }
+
         return true;
     }
 }

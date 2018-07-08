@@ -197,7 +197,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
 
     @Override
     public boolean onPostBackPressed() {
-        getFragmentManager().popBackStack();
+        ((ContainerFragment) getParentFragment()).popBackStack();
         return true;
     }
 }

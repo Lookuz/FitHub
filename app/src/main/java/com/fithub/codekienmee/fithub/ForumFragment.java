@@ -185,7 +185,6 @@ public class ForumFragment extends Fragment implements PostCallBack {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_forum, container, false);
         this.initView(view);
         return view;

@@ -9,21 +9,15 @@ import android.view.MenuItem;
 
 public class MainPageActivity extends AppCompatActivity {
 
-    private OnPostBackPressed onPostBackPressed;
-
     private DrawerLayout mDrawerLayout; // DrawerLayout for sliding menu
     private ActionBarDrawerToggle mTogglebar;
     private android.support.v4.app.FragmentManager mFragmentManager;
     // Container Fragment to hold child Location and Forum Fragments
     private ContainerFragment containerFragment;
 
-    public void setOnPostBackPressed(OnPostBackPressed onPostBackPressed) {
-        this.onPostBackPressed = onPostBackPressed;
-    }
-
     @Override
     public void onBackPressed() {
-        if(this.containerFragment != null) {
+        if (this.containerFragment != null) {
             if (!this.containerFragment.onPostBackPressed()) {
                 super.onBackPressed();
             }
@@ -56,7 +50,7 @@ public class MainPageActivity extends AppCompatActivity {
      * Private method that configures the DrawerLayout, NavigationView and navigation ActionBar.
      */
     private void configureMenu() {
-        Toolbar navHeader = (Toolbar)findViewById(R.id.main_tool_bar);
+        Toolbar navHeader = (Toolbar) findViewById(R.id.main_tool_bar);
         this.mDrawerLayout = (DrawerLayout) findViewById(R.id.main_page_activity);
         setSupportActionBar(navHeader);
         if (navHeader != null) {
@@ -65,21 +59,21 @@ public class MainPageActivity extends AppCompatActivity {
             getSupportActionBar().setHomeButtonEnabled(true);
         }
 
-        this.mTogglebar = new ActionBarDrawerToggle(MainPageActivity.this,
-               this.mDrawerLayout ,navHeader, R.string.open, R.string.close);
+        this.mTogglebar = new ActionBarDrawerToggle(
+                MainPageActivity.this, this.mDrawerLayout, navHeader, R.string.open, R.string.close);
         this.mDrawerLayout.addDrawerListener(mTogglebar);
         this.mTogglebar.syncState();
     }
 
     /**
      * Method to trigger sliding menu bar.
+     *
      * @param item Menu Item to be displayed.
      * @return true if menu is displayed.
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (this.mTogglebar.onOptionsItemSelected(item))
-            return true;
+        if (this.mTogglebar.onOptionsItemSelected(item)) return true;
 
         return super.onOptionsItemSelected(item);
     }
