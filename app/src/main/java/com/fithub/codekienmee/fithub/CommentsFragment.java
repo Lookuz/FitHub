@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Class that shows contents of a post and it's comments.
  */
-public class CommentsFragment extends Fragment {
+public class CommentsFragment extends Fragment implements OnPostBackPressed {
 
     private static final String IS_COMMENT_KEY = "isComment";
 
@@ -193,5 +193,11 @@ public class CommentsFragment extends Fragment {
         postFragment.setArguments(args);
         ForumFragment.setSlideAnim(Gravity.BOTTOM, postFragment);
         ((ContainerFragment) getParentFragment()).overlayFragment(postFragment);
+    }
+
+    @Override
+    public boolean onPostBackPressed() {
+        getFragmentManager().popBackStack();
+        return true;
     }
 }

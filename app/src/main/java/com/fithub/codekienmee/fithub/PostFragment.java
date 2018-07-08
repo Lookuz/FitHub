@@ -96,7 +96,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
             FitPost newPost = new FitPost(postTitle, postContent,
                     this.author.getText().toString(), new Date());
             this.post = newPost;
-            getActivity().getSupportFragmentManager().popBackStack();
+            getParentFragment().getChildFragmentManager().popBackStack();
         }
     }
 
@@ -128,7 +128,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
      * Method that determines action taken in this fragment when back button is pressed.
      */
     @Override
-    public void onPostBackPressed() {
+    public boolean onPostBackPressed() {
         if (title.getText() != null || content.getText() != null) {
             WarningDialog warningDialog = WarningDialog.newInstance(
                     WarningEnum.UNSAVED_POST, this);
@@ -136,5 +136,6 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
             warningDialog.show(getFragmentManager()
                     .beginTransaction(), "Unsaved Post Warning");
         }
+        return true;
     }
 }

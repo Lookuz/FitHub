@@ -23,8 +23,10 @@ public class MainPageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(this.onPostBackPressed != null) {
-            this.onPostBackPressed.onPostBackPressed();
+        if(this.containerFragment != null) {
+            if (!this.containerFragment.onPostBackPressed()) {
+                super.onBackPressed();
+            }
         } else {
             // TODO: Double tap back to exit.
             super.onBackPressed();

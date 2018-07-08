@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Stack;
 
 public class ForumFragment extends Fragment implements PostCallBack {
 
@@ -31,6 +32,7 @@ public class ForumFragment extends Fragment implements PostCallBack {
     private List<FitPost> postList;
     private FloatingActionButton newPost;
     private FloatingActionButton filter;
+    private Stack<Fragment> postStack;
 
     // Order is determined by Comparator passed in on initialization.
 
@@ -40,6 +42,10 @@ public class ForumFragment extends Fragment implements PostCallBack {
             this.postList.add(post);
             this.postAdapter.notifyAdapterSetDataChanged();
         }
+    }
+
+    public Stack<Fragment> getPostStack() {
+        return postStack;
     }
 
     /**
@@ -94,9 +100,9 @@ public class ForumFragment extends Fragment implements PostCallBack {
              * Note that use of Slide Transition requires minimum API of 21.
              */
             CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
-//            ((MainPageActivity) getActivity()).overlayFragment(Gravity.RIGHT, commentsFragment);
             setSlideAnim(Gravity.RIGHT, commentsFragment);
             ((ContainerFragment) getParentFragment()).overlayFragment(commentsFragment);
+            onPause();
         }
     }
 
@@ -172,6 +178,7 @@ public class ForumFragment extends Fragment implements PostCallBack {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.initList();
+        this.postStack = new Stack<>();
     }
 
     @Nullable
@@ -239,13 +246,14 @@ public class ForumFragment extends Fragment implements PostCallBack {
                 postFragment.setArguments(args);
                 setSlideAnim(Gravity.BOTTOM, postFragment);
                 ((ContainerFragment) getParentFragment()).overlayFragment(postFragment);
+                onPause();
             }
         });
 
         this.filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // TODO: Add filter post functionality
             }
         });
     }
@@ -257,5 +265,19 @@ public class ForumFragment extends Fragment implements PostCallBack {
         Transition slideAnim = new Slide(resource).setDuration(200);
         fragment.setEnterTransition(slideAnim);
         fragment.setExitTransition(slideAnim);
+    }
+
+    @Override
+    public void onPause() {
+        this.newPost.hide();
+        this.filter.hide();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        this.newPost.show();
+        this.filter.show();
+        super.onResume();
     }
 }

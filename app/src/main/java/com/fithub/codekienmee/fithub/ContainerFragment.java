@@ -16,11 +16,14 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Fragment that holds the fragments for ViewPager to use in MainPageActivity.
  */
-public class ContainerFragment extends Fragment {
+public class ContainerFragment extends Fragment implements OnPostBackPressed {
+
+    private ForumFragment forumFragment;
 
     /**
      * Custom ViewPagerAdapter class made to synchronize the ViewPager class
@@ -99,7 +102,10 @@ public class ContainerFragment extends Fragment {
     private void initWidgets() {
         this.viewPagerAdapter = new FitViewPagerAdapter(getChildFragmentManager());
         this.viewPagerAdapter.addFragment(new LocationFragment(), "FitLocation");
-        this.viewPagerAdapter.addFragment(new ForumFragment(), "FitForum");
+        if (this.forumFragment == null) {
+            this.forumFragment = new ForumFragment();
+            this.viewPagerAdapter.addFragment(this.forumFragment, "FitForum");
+        }
         this.viewPager.setAdapter(viewPagerAdapter);
         this.tabLayout.setupWithViewPager(this.viewPager);
     }
@@ -112,5 +118,18 @@ public class ContainerFragment extends Fragment {
                 .add(R.id.fragment_forum, fragment)
                 .addToBackStack(null)
                 .commit();
+        this.forumFragment.getPostStack().push(fragment);
+    }
+
+    @Override
+    public boolean onPostBackPressed() {
+        if (!this.forumFragment.getPostStack().isEmpty()) {
+            ((OnPostBackPressed) this.forumFragment.getPostStack().pop()).onPostBackPressed();
+            if (this.forumFragment.getPostStack().isEmpty()) {
+                this.forumFragment.onResume();
+            }
+            return true;
+        }
+        return false;
     }
 }
