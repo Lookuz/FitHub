@@ -75,6 +75,8 @@ public class StartUpActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), MainPageActivity.class);
                     startActivity(intent);
+                    // IMPORTANT TO USE FINISH HERE SO BACK IN MAIN ACTIVITY DOESN'T GO BACK TO THIS PAGE.
+                    finish();
                 }
             });
             facebookOption.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +84,7 @@ public class StartUpActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), MainPageActivity.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             emailOption.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +92,7 @@ public class StartUpActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), MainPageActivity.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             phoneOption.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +100,7 @@ public class StartUpActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), MainPageActivity.class);
                     startActivity(intent);
+                    finish();
                 }
             });
         }

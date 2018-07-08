@@ -26,6 +26,7 @@ public class MainPageActivity extends AppCompatActivity {
         if(this.onPostBackPressed != null) {
             this.onPostBackPressed.onPostBackPressed();
         } else {
+            // TODO: Double tap back to exit.
             super.onBackPressed();
         }
     }

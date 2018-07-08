@@ -198,7 +198,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     .title(location.getLocationName())
                     .zIndex(5)
                     .icon(this.bitmapDescriptorFromVector(getContext(),
-                            R.drawable.ic_fithub_location_icon_monochrome))); // TODO: Fine tune icon for custom marker.
+                            R.drawable.ic_fithub_location_icon_monochrome)));
             // Map a marker to it's respective FitLocation.
             marker.setTag(location);
             this.locationHashMap.put(location, marker);

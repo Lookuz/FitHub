@@ -85,12 +85,12 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
                 .toString();
         String postContent = this.content.getText()
                 .toString();
-        // TODO: display empty message error using dialog
-        if ((postTitle.equals("") && this.isComment == false)|| postContent.equals("")) {
+
+        if ((postTitle.equals("") && this.isComment == false) || postContent.equals("")) {
             WarningDialog warningDialog = WarningDialog.newInstance(
                     WarningEnum.EMPTY_POST, this);
 
-            warningDialog.show(((MainPageActivity) getActivity()).getSupportFragmentManager()
+            warningDialog.show(getFragmentManager()
                     .beginTransaction(), "Empty Post Warning");
         } else {
             FitPost newPost = new FitPost(postTitle, postContent,
@@ -105,6 +105,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
         if(post != null) {
             this.callBack.onCallBack(this.post);
         }
+
         ((MainPageActivity) getActivity()).setOnPostBackPressed(null);
         super.onDestroy();
     }
@@ -117,7 +118,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
     @Override
     public void onCallBack(boolean exit) {
         if (exit) {
-            getActivity().getSupportFragmentManager().popBackStack();
+            getFragmentManager().popBackStack();
         } else {
             return;
         }
@@ -132,7 +133,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
             WarningDialog warningDialog = WarningDialog.newInstance(
                     WarningEnum.UNSAVED_POST, this);
 
-            warningDialog.show(((MainPageActivity) getActivity()).getSupportFragmentManager()
+            warningDialog.show(getFragmentManager()
                     .beginTransaction(), "Unsaved Post Warning");
         }
     }
