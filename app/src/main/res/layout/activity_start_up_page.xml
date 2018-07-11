@@ -61,6 +61,12 @@
 
                     <EditText
                         android:id="@+id/start_up_user"
+                        android:singleLine="true"
+                        android:fontFamily="@font/lato_light"
+                        android:hint="User Email"
+                        android:textSize="12sp"
+                        android:gravity="center"
+                        android:imeOptions="actionDone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -79,6 +85,13 @@
 
                     <EditText
                         android:id="@+id/start_up_password"
+                        android:singleLine="true"
+                        android:fontFamily="@font/lato_light"
+                        android:imeOptions="actionDone"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:textSize="12sp"
+                        android:gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -141,6 +154,7 @@
                     android:layout_weight="1">
 
                     <ImageButton
+                        android:id="@+id/start_up_facebook"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:background="@color/transparent"
@@ -159,6 +173,7 @@
                     android:layout_weight="1">
 
                     <ImageButton
+                        android:id="@+id/start_up_google"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:background="@color/transparent"
@@ -177,6 +192,7 @@
                     android:layout_weight="1">
 
                     <ImageButton
+                        android:id="@+id/start_up_twitter"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:background="@color/transparent"
