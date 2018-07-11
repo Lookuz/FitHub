@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "386635405380",
+    "firebase_url": "https://fithub-207813.firebaseio.com",
+    "project_id": "fithub-207813",
+    "storage_bucket": "fithub-207813.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386635405380:android:af40c5a0a45b4784",
+        "android_client_info": {
+          "package_name": "com.fithub.codekienmee.fithub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "386635405380-vnacs9c1q4j5sh0fe9n9rv7ojhct3rmj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fithub.codekienmee.fithub",
+            "certificate_hash": "4b6f3b1d8c08f8d5858f0c182eab513e2b657c13"
+          }
+        },
+        {
+          "client_id": "386635405380-6u5kjts4ch9mlotkji4o8h0b7vr14n0t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtskzogF5FzsdvIXPj4FLzGgkH_KbtoDk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "386635405380-6u5kjts4ch9mlotkji4o8h0b7vr14n0t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
