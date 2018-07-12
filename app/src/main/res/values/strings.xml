@@ -32,6 +32,9 @@
     <string name="unsaved_post_warning">You are exiting without saving your changes!
         Do you wish to continue?</string>
     <string name="empty_post_warning">Cannot post without empty title or body!</string>
+    <string name="empty_fields_warning">User and Password fields cannot be empty.</string>
+    <string name="incorrect_cred_warning">User or Password is incorrect. Please try again.</string>
+    <string name="google_sign_in_warning">Sign in with Google unsuccessful.</string>
     <string name="warning_cancel">Cancel</string>
     <string name="warning_continue">Continue</string>
     <string name="warning_ok">Okay</string>
@@ -44,7 +47,4 @@
     <string name="post_title">Post Title</string>
     <string name="post_body">Share your thoughts!</string>
     <string name="post_submit">Submit!</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
