@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/start_up_log_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_user"/>
+
+                <EditText
+                    android:id="@+id/start_up_user"
+                    android:singleLine="true"
+                    android:fontFamily="@font/lato_light"
+                    android:hint="User Email"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:imeOptions="actionDone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_password"/>
+
+                <EditText
+                    android:id="@+id/start_up_password"
+                    android:singleLine="true"
+                    android:fontFamily="@font/lato_light"
+                    android:imeOptions="actionDone"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/start_up_submit"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/ic_arrow_forward"
+                android:background="@drawable/map_button_background"
+                android:elevation="4dp"
+                android:translationZ="4dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/start_up_divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="20dp"
+                android:layout_weight="4"
+                android:background="@color/black_overlay"></LinearLayout>
+
+            <TextView
+                android:id="@+id/start_up_or"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/lato_light"
+                android:text="@string/start_up_or"
+                android:textAlignment="center" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="4"
+                android:background="@color/black_overlay"></LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/start_up_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/start_up_facebook"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@color/transparent"
+                    android:elevation="3dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_facebook"
+                    android:translationZ="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/start_up_google"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@color/transparent"
+                    android:elevation="3dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_google_plus"
+                    android:translationZ="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/start_up_twitter"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@color/transparent"
+                    android:elevation="3dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_twitter"
+                    android:translationZ="3dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/start_up_others"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/start_up_sign_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:fontFamily="@font/lato_light"
+                android:text="@string/start_up_sign_up" />
+
+            <TextView
+                android:id="@+id/start_up_forgot_pw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:fontFamily="@font/lato_light"
+                android:text="@string/start_up_forgot_pw" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

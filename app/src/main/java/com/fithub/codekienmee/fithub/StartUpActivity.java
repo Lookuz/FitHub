@@ -1,6 +1,7 @@
 package com.fithub.codekienmee.fithub;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -118,12 +119,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         this.initLogInGoogle();
         this.initLogInFacebook();
         this.initLogInTwitter();
-        this.signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        this.initSignUp();
         this.forgotPW.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,7 +147,6 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
     @Override
     protected void onDestroy() {
-        FirebaseAuth.getInstance().signOut();
         super.onDestroy();
     }
 
@@ -276,6 +271,25 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
             }
         });
 
+    }
+
+    /**
+     * Method to sign up.
+     */
+    private void initSignUp() {
+        this.signUp = findViewById(R.id.start_up_sign_up);
+        this.signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewFlipper.showNext();
+                EditText name = findViewById(R.id.sign_up_name);
+                EditText email = findViewById(R.id.sign_up_email);
+                EditText password = findViewById(R.id.sign_up_password);
+
+                ImageButton submit = findViewById(R.id.sign_up_submit);
+                // TODO: sign up using firebase.
+            }
+        });
     }
 
     @Override
