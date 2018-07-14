@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DebugUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -35,6 +36,17 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.TwitterAuthCredential;
+import com.google.firebase.auth.TwitterAuthProvider;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import java.util.Arrays;
 
@@ -49,6 +61,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
     private CallbackManager callbackManager;
+    private TwitterAuthClient twitterAuthClient;
 
     private ViewFlipper viewFlipper;
     private ImageButton submit;
@@ -64,6 +77,13 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+        TwitterConfig config = new TwitterConfig.Builder(this)
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(getString(R.string.com_twitter_sdk_android_CONSUMER_KEY),
+                        getString(R.string.com_twitter_sdk_android_CONSUMER_SECRET)))
+                .debug(true)
+                .build();
+        Twitter.initialize(config);
         setContentView(R.layout.activity_start_up_page);
         this.firebaseAuth = FirebaseAuth.getInstance();
         AppEventsLogger.activateApp(this);
@@ -97,12 +117,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         this.initLogInEmail();
         this.initLogInGoogle();
         this.initLogInFacebook();
-        this.signInTwitter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        this.initLogInTwitter();
         this.signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,9 +251,37 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         });
     }
 
+    /**
+     * Method to sign in via Twitter
+     */
+    private void initLogInTwitter() {
+
+        this.twitterAuthClient = new TwitterAuthClient();
+
+        this.signInTwitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                twitterAuthClient.authorize(StartUpActivity.this,
+                        new Callback<TwitterSession>() {
+                    @Override
+                    public void success(Result<TwitterSession> result) {
+                        authWithProvider(result.data);
+                    }
+
+                    @Override
+                    public void failure(TwitterException exception) {
+                        // TODO: Handle Twitter log in failure.
+                    }
+                });
+            }
+        });
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         this.callbackManager.onActivityResult(requestCode, resultCode, data);
+        this.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
         switch(requestCode) {
@@ -270,6 +313,10 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                     ((GoogleSignInAccount) token).getIdToken(), null);
         } else if (token instanceof AccessToken) {
             credential = FacebookAuthProvider.getCredential(((AccessToken) token).getToken());
+        } else if (token instanceof TwitterSession) {
+            credential = TwitterAuthProvider.getCredential(
+                    ((TwitterSession) token).getAuthToken().token,
+                    ((TwitterSession) token).getAuthToken().secret);
         }
 
         try {

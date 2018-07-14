@@ -2,6 +2,8 @@
     <string name="app_name">FitHub</string>
     <string name="facebook_app_id">168841043810182</string>
     <string name="fb_login_protocol_scheme">fb168841043810182</string>
+    <string name="com.twitter.sdk.android.CONSUMER.KEY">RXRarfDk5LJKdVaefkSoagkra</string>
+    <string name="com.twitter.sdk.android.CONSUMER.SECRET">86czgoSaTcdVACY4Hp0D2PhDI7FoH8YPfsf6x7DUthYL3W0Xv9</string>
 
     <!--Start Up Page-->
     <string name="title_activity_start_up_page">Start Up Page</string>

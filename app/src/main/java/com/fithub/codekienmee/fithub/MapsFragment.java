@@ -238,7 +238,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     manager.hideSoftInputFromWindow(getActivity().getWindow()
                             .getCurrentFocus().getWindowToken(), 0);
                     Marker marker = locationHashMap.get(location);
-                    centerLocation(marker.getPosition(), 15);
+                    centerLocation(marker.getPosition(), 12);
                     marker.showInfoWindow();
                 }
             }
