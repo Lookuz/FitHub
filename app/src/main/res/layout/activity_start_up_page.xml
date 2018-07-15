@@ -41,6 +41,10 @@
             layout="@layout/sign_up_screen" >
         </include>
 
+        <include
+            layout="@layout/start_up_loading_screen">
+        </include>
+
     </ViewFlipper>
 
 </LinearLayout>

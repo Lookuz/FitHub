@@ -1,12 +1,10 @@
 package com.fithub.codekienmee.fithub;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DebugUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -37,7 +35,6 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.TwitterAuthCredential;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
@@ -80,10 +77,10 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         FacebookSdk.sdkInitialize(getApplicationContext());
         TwitterConfig config = new TwitterConfig.Builder(this)
                 .logger(new DefaultLogger(Log.DEBUG))
-                .twitterAuthConfig(new TwitterAuthConfig(getString(R.string.com_twitter_sdk_android_CONSUMER_KEY),
+                .twitterAuthConfig(new TwitterAuthConfig(
+                        getString(R.string.com_twitter_sdk_android_CONSUMER_KEY),
                         getString(R.string.com_twitter_sdk_android_CONSUMER_SECRET)))
-                .debug(true)
-                .build();
+                .debug(true).build();
         Twitter.initialize(config);
         setContentView(R.layout.activity_start_up_page);
         this.firebaseAuth = FirebaseAuth.getInstance();
@@ -91,6 +88,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
         this.initView();
     }
+
     /**
      * Method to initialize widgets.
      * Widgets: Log In Button, Sign In Options, Sign Up, Forgot Password.
@@ -166,28 +164,26 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                 String user = StartUpActivity.this.user.getText().toString();
                 String password = StartUpActivity.this.password.getText().toString();
                 if (user.equals("") || password.equals("")) {
-                    WarningDialog warningDialog = WarningDialog.newInstance(WarningEnum.EMPTY_FIELDS,
-                            StartUpActivity.this);
+                    WarningDialog warningDialog = WarningDialog
+                            .newInstance(WarningEnum.EMPTY_FIELDS, StartUpActivity.this);
 
                     warningDialog.show(getSupportFragmentManager(), "Empty Fields Warning");
                 } else {
                     firebaseAuth.signInWithEmailAndPassword(user, password)
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    // TODO: Transition into loading screen.
-                                    if(task.isSuccessful()) {
-                                        startActivity(new Intent(getApplicationContext(), MainPageActivity.class));
-                                    } else {
-                                        WarningDialog warningDialog = WarningDialog
-                                                .newInstance(WarningEnum.INCORRECT_CRED,
-                                                        StartUpActivity.this);
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            // TODO: Transition into loading screen.
+                            if (task.isSuccessful()) {
+                                startActivity(new Intent(getApplicationContext(), MainPageActivity.class));
+                            } else {
+                                WarningDialog warningDialog = WarningDialog.newInstance(
+                                        WarningEnum.INCORRECT_CRED, StartUpActivity.this);
 
-                                        warningDialog.show(getSupportFragmentManager(),
-                                                "Incorrect Credentials Warning");
-                                    }
-                                }
-                            });
+                                warningDialog.show(getSupportFragmentManager(), "Incorrect Credentials Warning");
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -226,7 +222,8 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                 LoginManager.getInstance().logInWithReadPermissions(StartUpActivity.this,
                         Arrays.asList("email", "public_profile"));
 
-                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                LoginManager.getInstance().registerCallback(callbackManager,
+                        new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         authWithProvider(loginResult.getAccessToken());
@@ -282,12 +279,39 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
             @Override
             public void onClick(View v) {
                 viewFlipper.showNext();
-                EditText name = findViewById(R.id.sign_up_name);
-                EditText email = findViewById(R.id.sign_up_email);
-                EditText password = findViewById(R.id.sign_up_password);
-
                 ImageButton submit = findViewById(R.id.sign_up_submit);
-                // TODO: sign up using firebase.
+
+                submit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String name = ((EditText) findViewById(R.id.sign_up_name))
+                                .getText().toString();
+                        final String email = ((EditText) findViewById(R.id.sign_up_email))
+                                .getText().toString();
+                        final String password = ((EditText) findViewById(R.id.sign_up_password))
+                                .getText().toString();
+
+                        if (name.equals("") || email.equals("") || password.equals("")) {
+                            // TODO: show warning dialog for empty fields.
+                        } else {
+                            showLoadingScreen(getString(R.string.start_up_signing_up));
+                            firebaseAuth.createUserWithEmailAndPassword(email, password)
+                                    .addOnCompleteListener(StartUpActivity.this,
+                                            new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // TODO: Show success(Tick?)
+                                        TextView loadingMessage = findViewById(R.id.start_up_loading_message);
+                                        loadingMessage.setText(getString(R.string.start_up_sign_up_success));
+                                    } else {
+                                        // TODO: Show warning dialog for sign up failed.
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
     }
@@ -298,7 +322,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         this.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch(requestCode) {
+        switch (requestCode) {
             case RC_SIGN_IN:
                 // TODO: Change to async task and combine with loading screen.
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -328,14 +352,13 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         } else if (token instanceof AccessToken) {
             credential = FacebookAuthProvider.getCredential(((AccessToken) token).getToken());
         } else if (token instanceof TwitterSession) {
-            credential = TwitterAuthProvider.getCredential(
-                    ((TwitterSession) token).getAuthToken().token,
-                    ((TwitterSession) token).getAuthToken().secret);
+            credential = TwitterAuthProvider.getCredential(((TwitterSession) token)
+                    .getAuthToken().token, ((TwitterSession) token).getAuthToken().secret);
         }
 
         try {
-            this.firebaseAuth.signInWithCredential(credential)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            this.firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this,
+                    new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
@@ -352,6 +375,17 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Method to initialize loading screen for logging in/signing up.
+     */
+    private void showLoadingScreen(String message) {
+        Log.d("Loading Screen", "On Click");
+        this.viewFlipper.setDisplayedChild(
+                this.viewFlipper.indexOfChild(findViewById(R.id.start_up_loading_screen)));
+        TextView loadingMessage = findViewById(R.id.start_up_loading_message);
+        loadingMessage.setText(message);
     }
 
     @Override

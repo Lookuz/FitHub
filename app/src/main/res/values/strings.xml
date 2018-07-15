@@ -16,6 +16,11 @@
     <string name="start_up_options_facebook">With Facebook</string>
     <string name="start_up_options_email">With Email</string>
     <string name="start_up_options_phone">With Phone</string>
+    <string name="start_up_loading_placeholder">Loading Message</string>
+    <string name="start_up_logging_in">Logging you in..</string>
+    <string name="start_up_signing_up">Signing you up..</string>
+    <string name="start_up_sign_up_success">Sign up successful!</string>
+    <string name="start_up_logged_in">Welcome, </string>
 
     <string name="open">Open</string>
     <string name="close">Close</string>
