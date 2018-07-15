@@ -1,12 +1,15 @@
 package com.fithub.codekienmee.fithub;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -52,7 +55,8 @@ import java.util.Arrays;
  * Class that displays start-up UI.
  * Functionality: Sign Up/ Log In Options.
  */
-public class StartUpActivity extends AppCompatActivity implements WarningCallBack, GoogleApiClient.OnConnectionFailedListener {
+public class StartUpActivity extends AppCompatActivity implements WarningCallBack,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final int RC_SIGN_IN = 100;
 
@@ -133,10 +137,9 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user == null) {
-                    // Not signed in. Display log in page.
-                } else {
-                    // Already signed in. Sign in straight to main activity.
+                if (user != null) { // Checks if there is currently a signed in user.
+                    showLoadingScreen(getString(R.string.start_up_logging_in));
+                    startActivity(new Intent(StartUpActivity.this, MainPageActivity.class));
                 }
             }
         };
@@ -152,6 +155,9 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
     public void onCallBack(boolean exit) {
         this.user.getText().clear();
         this.password.getText().clear();
+        ((EditText) findViewById(R.id.sign_up_name)).getText().clear();
+        ((EditText) findViewById(R.id.sign_up_email)).getText().clear();
+        ((EditText) findViewById(R.id.sign_up_password)).getText().clear();
     }
 
     /**
@@ -169,18 +175,21 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
                     warningDialog.show(getSupportFragmentManager(), "Empty Fields Warning");
                 } else {
+                    showLoadingScreen(getString(R.string.start_up_logging_in));
                     firebaseAuth.signInWithEmailAndPassword(user, password)
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            // TODO: Transition into loading screen.
                             if (task.isSuccessful()) {
-                                startActivity(new Intent(getApplicationContext(), MainPageActivity.class));
+                                startActivity(new Intent(getApplicationContext(),
+                                        MainPageActivity.class));
+                                finish();
                             } else {
                                 WarningDialog warningDialog = WarningDialog.newInstance(
                                         WarningEnum.INCORRECT_CRED, StartUpActivity.this);
 
-                                warningDialog.show(getSupportFragmentManager(), "Incorrect Credentials Warning");
+                                warningDialog.show(getSupportFragmentManager(),
+                                        "Incorrect Credentials Warning");
                             }
                         }
                     });
@@ -292,8 +301,18 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                                 .getText().toString();
 
                         if (name.equals("") || email.equals("") || password.equals("")) {
-                            // TODO: show warning dialog for empty fields.
+                            WarningDialog warningDialog = WarningDialog.newInstance(
+                                    WarningEnum.EMPTY_SIGN_IN, StartUpActivity.this);
+
+                            warningDialog.show(getSupportFragmentManager().beginTransaction(),
+                                    "Empty Sign In");
                         } else {
+                            // Hide Keyboard
+                            InputMethodManager manager = (InputMethodManager)StartUpActivity
+                                    .this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            manager.hideSoftInputFromWindow(StartUpActivity.this.getWindow()
+                                    .getCurrentFocus().getWindowToken(), 0);
+
                             showLoadingScreen(getString(R.string.start_up_signing_up));
                             firebaseAuth.createUserWithEmailAndPassword(email, password)
                                     .addOnCompleteListener(StartUpActivity.this,
@@ -305,7 +324,11 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                                         TextView loadingMessage = findViewById(R.id.start_up_loading_message);
                                         loadingMessage.setText(getString(R.string.start_up_sign_up_success));
                                     } else {
-                                        // TODO: Show warning dialog for sign up failed.
+                                        WarningDialog warningDialog = WarningDialog.newInstance(
+                                                WarningEnum.FAILED_SIGN_IN, StartUpActivity.this);
+
+                                        warningDialog.show(getSupportFragmentManager().beginTransaction(),
+                                                "Failed Sign In");
                                     }
                                 }
                             });
@@ -324,14 +347,13 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
         switch (requestCode) {
             case RC_SIGN_IN:
-                // TODO: Change to async task and combine with loading screen.
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                 try {
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     this.authWithProvider(account);
                 } catch (ApiException e) {
-                    e.printStackTrace();
-                    // TODO: Handle exception.
+                    Snackbar.make(findViewById(R.id.start_up_activity),
+                            R.string.start_up_google_play_failed, Snackbar.LENGTH_SHORT).show();
                 }
                 return;
             default:
@@ -357,6 +379,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         }
 
         try {
+            showLoadingScreen(getString(R.string.start_up_logging_in));
             this.firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this,
                     new OnCompleteListener<AuthResult>() {
                 @Override
@@ -364,8 +387,9 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                     if (task.isSuccessful()) {
                         Log.d("Facebook", "Log In Successful");
                         FirebaseUser user = firebaseAuth.getCurrentUser();
-                        startActivity(new Intent(getApplicationContext(), MainPageActivity.class));
-                        // TODO: update UI with new user.
+                        startActivity(new Intent(StartUpActivity.this,
+                                MainPageActivity.class));
+                        finish();
                     } else {
                         Log.d("Facebook", "Log In Unsuccessful");
                         Snackbar.make(findViewById(R.id.start_up_activity), R.string.google_sign_in_warning, Snackbar.LENGTH_SHORT).show();
@@ -390,6 +414,6 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        // TODO: Handle connection failed.
     }
 }

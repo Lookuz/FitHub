@@ -23,8 +23,6 @@ import java.util.Stack;
 
 public class ForumFragment extends Fragment implements PostCallBack {
 
-    private final static FitPost MOCK_POST = new FitPost("Post Title", "Post Content",
-            "Post Author", 10, 1, new Date());
     private static final String IS_COMMENT_KEY = "isComment";
 
     private RecyclerView postRecyclerView; //RecyclerView that handles displaying of posts
@@ -86,7 +84,7 @@ public class ForumFragment extends Fragment implements PostCallBack {
             this.post = post;
             this.title.setText(post.getTitle());
             this.author.setText(post.getAuthor());
-            this.date.setText(post.getDate().toString()); // TODO: Formatting for date.
+            this.date.setText(post.getDate());
             this.numDislikes.setText(Integer.toString(post.getNumDislikes()));
             this.numLikes.setText(Integer.toString(post.getNumLikes()));
 

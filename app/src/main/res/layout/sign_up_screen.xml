@@ -32,6 +32,8 @@
 
             <EditText
                 android:id="@+id/sign_up_name"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:layout_margin="5dp"
                 android:fontFamily="@font/lato_light"
                 android:textSize="14sp"
@@ -63,6 +65,8 @@
 
             <EditText
                 android:id="@+id/sign_up_email"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:layout_margin="5dp"
                 android:fontFamily="@font/lato_light"
                 android:textSize="14sp"
@@ -94,6 +98,9 @@
 
             <EditText
                 android:id="@+id/sign_up_password"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
                 android:layout_margin="5dp"
                 android:fontFamily="@font/lato_light"
                 android:textSize="14sp"

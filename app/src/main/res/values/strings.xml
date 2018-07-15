@@ -21,11 +21,13 @@
     <string name="start_up_signing_up">Signing you up..</string>
     <string name="start_up_sign_up_success">Sign up successful!</string>
     <string name="start_up_logged_in">Welcome, </string>
+    <string name="start_up_google_play_failed">Failed to connect to Google Play services</string>
 
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="fitlocation">FitLocation</string>
     <string name="fitforum">FitForum</string>
+    <string name="double_tap_back">Pres the back button again to exit!</string>
 
     <!--Profile-->
     <string name="nav_account">My Profile</string>
@@ -47,6 +49,8 @@
     <string name="warning_cancel">Cancel</string>
     <string name="warning_continue">Continue</string>
     <string name="warning_ok">Okay</string>
+    <string name="empty_sign_in">Please fill in all fields.</string>
+    <string name="failed_sign_in">Sign up could not be processed.</string>
 
     <!--Forum-->
     <string name="forum_reply">Comment</string>

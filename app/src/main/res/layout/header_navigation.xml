@@ -3,15 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/orange">
 
     <ImageView
+        android:id="@+id/nav_profile_pic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/start_up_logo"
-        android:background="@drawable/ic_fithub_logo_monochrome_slogan"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/profile_background_circular"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_user"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

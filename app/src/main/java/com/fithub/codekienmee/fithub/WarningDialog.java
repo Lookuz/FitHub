@@ -24,7 +24,6 @@ public class WarningDialog extends DialogFragment {
     private Button cancel;
     private TextView message;
 
-    // TODO: change type to Enum
     public static WarningDialog newInstance(WarningEnum type, WarningCallBack parent) {
          Bundle args = new Bundle();
          WarningDialog fragment = new WarningDialog();
@@ -64,8 +63,9 @@ public class WarningDialog extends DialogFragment {
                 this.iniOptionalWarning(view);
                 break;
             case EMPTY_POST: case EMPTY_FIELDS: case INCORRECT_CRED:
-                this.initCompulsoryWarning(view);
-                break;
+                case FAILED_SIGN_IN: case EMPTY_SIGN_IN:
+                    this.initCompulsoryWarning(view);
+                    break;
         }
     }
 

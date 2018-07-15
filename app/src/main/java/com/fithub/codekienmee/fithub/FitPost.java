@@ -2,6 +2,8 @@ package com.fithub.codekienmee.fithub;
 
 import android.support.annotation.NonNull;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,8 +62,9 @@ public class FitPost implements Comparable<FitPost>, PostCallBack {
         return numDislikes;
     }
 
-    public Date getDate() {
-        return date;
+    public String getDate() {
+        DateFormat dateFormat = new SimpleDateFormat("EEE d MMMM yyyy hh:mm aaa");
+        return dateFormat.format(this.date);
     }
 
     public List<FitPost> getComments() {

@@ -184,7 +184,6 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
 
     /**
      * Method that allows users to post a comment.
-     * TODO: hide and reshow new post and filter buttons.
      */
     private void postComment(FitPost parent) {
         PostFragment postFragment = PostFragment.newInstance(parent);
