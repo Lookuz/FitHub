@@ -39,6 +39,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -323,6 +324,15 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                                         // TODO: Show success(Tick?)
                                         TextView loadingMessage = findViewById(R.id.start_up_loading_message);
                                         loadingMessage.setText(getString(R.string.start_up_sign_up_success));
+                                        // Update name.
+                                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                                        user.updateProfile(new UserProfileChangeRequest.Builder()
+                                                .setDisplayName(name)
+                                                .build());
+
+                                        showLoadingScreen(getString(R.string.start_up_logging_in));
+                                        startActivity(new Intent(StartUpActivity.this,
+                                                MainPageActivity.class));
                                     } else {
                                         WarningDialog warningDialog = WarningDialog.newInstance(
                                                 WarningEnum.FAILED_SIGN_IN, StartUpActivity.this);
