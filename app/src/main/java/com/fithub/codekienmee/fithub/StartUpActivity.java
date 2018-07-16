@@ -141,6 +141,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                 if (user != null) { // Checks if there is currently a signed in user.
                     showLoadingScreen(getString(R.string.start_up_logging_in));
                     startActivity(new Intent(StartUpActivity.this, MainPageActivity.class));
+                    finish();
                 }
             }
         };
@@ -395,13 +396,12 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        Log.d("Facebook", "Log In Successful");
                         FirebaseUser user = firebaseAuth.getCurrentUser();
+                        showLoadingScreen(getString(R.string.start_up_logged_in).concat(user.getDisplayName()));
                         startActivity(new Intent(StartUpActivity.this,
                                 MainPageActivity.class));
                         finish();
                     } else {
-                        Log.d("Facebook", "Log In Unsuccessful");
                         Snackbar.make(findViewById(R.id.start_up_activity), R.string.google_sign_in_warning, Snackbar.LENGTH_SHORT).show();
                     }
                 }

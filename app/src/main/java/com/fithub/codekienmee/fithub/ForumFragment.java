@@ -62,7 +62,6 @@ public class ForumFragment extends Fragment implements PostCallBack {
         private ImageView thumbsUp;
         private ImageView thumbsDown;
 
-
         public PostHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.post_view_forum, parent, false));
 

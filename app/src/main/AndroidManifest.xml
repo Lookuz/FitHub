@@ -13,9 +13,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_fithub_location_icon_monochrome"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_fithub_location_icon_monochrome"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data

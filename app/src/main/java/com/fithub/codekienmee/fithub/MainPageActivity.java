@@ -1,20 +1,31 @@
 package com.fithub.codekienmee.fithub;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Stack;
+
 public class MainPageActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
+    private FitUser user; // Current User.
+    private Stack<Fragment> fragmentStack;
 
     private DrawerLayout drawerLayout; // DrawerLayout for sliding menu
     private ActionBarDrawerToggle togglebar;
@@ -25,7 +36,13 @@ public class MainPageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (this.containerFragment != null) {
+        if(this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            this.drawerLayout.closeDrawers();
+        } else if (this.fragmentManager.getBackStackEntryCount() > 1 &&
+                !(this.getCurrentFragment() instanceof ContainerFragment)) {
+            fragmentManager.popBackStack();
+            this.fragmentStack.pop();
+        } else if (this.containerFragment != null) {
             if (!this.containerFragment.onPostBackPressed()) {
                 super.onBackPressed();
             }
@@ -34,12 +51,24 @@ public class MainPageActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Method to get current fragment at the top of the FragmentManager stack.
+     */
+    private Fragment getCurrentFragment() {
+        String fragmentTag = this.fragmentManager
+                .getBackStackEntryAt(this.fragmentManager.getBackStackEntryCount() - 1)
+                .getName();
+        return this.fragmentManager.findFragmentByTag(fragmentTag);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
+        this.fragmentStack = new Stack<>();
         this.firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = this.firebaseAuth.getCurrentUser();
+        this.getUser();
+        this.configureMenu();
 
         if (savedInstanceState == null) {
             this.fragmentManager = getSupportFragmentManager();
@@ -48,10 +77,21 @@ public class MainPageActivity extends AppCompatActivity {
             this.fragmentManager.beginTransaction()
                     .replace(R.id.main_frag_view, this.containerFragment)
                     .commit();
-            this.configureMenu();
         } else {
             this.containerFragment = (ContainerFragment) getSupportFragmentManager()
                     .getFragments().get(0);
+        }
+    }
+
+    /**
+     * Gets the current signed in user and set's it's profile if any.
+     */
+    private void getUser() {
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null) {
+            this.user = new FitUser(fbUser);
+        } else {
+            this.user = null;
         }
     }
 
@@ -71,8 +111,20 @@ public class MainPageActivity extends AppCompatActivity {
         }
         this.initNavMenu();
 
-        this.togglebar = new ActionBarDrawerToggle(
-                MainPageActivity.this, this.drawerLayout, navHeader, R.string.open, R.string.close);
+        this.togglebar = new ActionBarDrawerToggle(MainPageActivity.this, this.drawerLayout,
+                navHeader, R.string.open, R.string.close){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                drawerView.bringToFront();
+                drawerView.requestLayout();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
         this.drawerLayout.addDrawerListener(togglebar);
         this.togglebar.syncState();
     }
@@ -82,21 +134,49 @@ public class MainPageActivity extends AppCompatActivity {
      */
     private void initNavMenu() {
         if (this.navigationView != null) {
-            this.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            this.navigationView.setNavigationItemSelectedListener(
+                    new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     // TODO: Create Fragments for menu items.
                     switch ((item.getItemId())) {
                         case R.id.nav_account:
+                            onMenuItemClick(new ProfileFragment());
+                            break;
                         case R.id.nav_favourites:
                         case R.id.nav_locations:
                         case R.id.nav_schedule:
                         case R.id.nav_settings:
+                            break;
+                        case R.id.nav_exit:
+                            Log.d("NavMenu", "Clicked");
+                            firebaseAuth.getInstance().signOut();
+                            startActivity(new Intent(MainPageActivity.this, StartUpActivity.class));
+                            finish();
+
                     }
                     return true;
                 }
             });
         }
+    }
+
+    /**
+     * Method to switch menu item fragments on click.
+     */
+    private void onMenuItemClick(Fragment fragment) {
+        if (!this.fragmentStack.isEmpty()) {
+            this.fragmentManager.popBackStack();
+            this.fragmentStack.pop();
+        }
+
+        ForumFragment.setSlideAnim(Gravity.BOTTOM, fragment);
+        this.fragmentManager.beginTransaction()
+                .add(R.id.main_frag_view, fragment)
+                .addToBackStack(null)
+                .commit();
+        this.fragmentStack.push(fragment);
+        this.drawerLayout.closeDrawers();
     }
 
     /**
