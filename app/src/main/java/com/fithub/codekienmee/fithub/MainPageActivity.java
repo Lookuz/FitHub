@@ -18,14 +18,22 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Stack;
 
 public class MainPageActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser fbUser;
     private FitUser user; // Current User.
     private Stack<Fragment> fragmentStack;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
     private DrawerLayout drawerLayout; // DrawerLayout for sliding menu
     private ActionBarDrawerToggle togglebar;
@@ -66,8 +74,8 @@ public class MainPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
         this.fragmentStack = new Stack<>();
-        this.firebaseAuth = FirebaseAuth.getInstance();
-        this.getUser();
+        this.user = new FitUser();
+        this.initFirebase();
         this.configureMenu();
 
         if (savedInstanceState == null) {
@@ -84,15 +92,25 @@ public class MainPageActivity extends AppCompatActivity {
     }
 
     /**
-     * Gets the current signed in user and set's it's profile if any.
+     * Initializes firebase tools.
      */
-    private void getUser() {
-        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fbUser != null) {
-            this.user = new FitUser(fbUser);
-        } else {
-            this.user = null;
-        }
+    private void initFirebase() {
+        this.firebaseAuth = FirebaseAuth.getInstance();
+        this.fbUser = this.firebaseAuth.getCurrentUser();
+        this.firebaseDatabase = FirebaseDatabase.getInstance();
+        this.databaseReference = this.firebaseDatabase.getReference();
+        this.databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
+                user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /**
@@ -141,12 +159,14 @@ public class MainPageActivity extends AppCompatActivity {
                     // TODO: Create Fragments for menu items.
                     switch ((item.getItemId())) {
                         case R.id.nav_account:
-                            onMenuItemClick(new ProfileFragment());
+                            onMenuItemClick(ProfileFragment.newInstance(user));
                             break;
                         case R.id.nav_favourites:
-                        case R.id.nav_locations:
+                            break;
                         case R.id.nav_schedule:
+                            break;
                         case R.id.nav_settings:
+                            onMenuItemClick(SettingsFragment.newInstance(user));
                             break;
                         case R.id.nav_exit:
                             Log.d("NavMenu", "Clicked");
@@ -166,8 +186,15 @@ public class MainPageActivity extends AppCompatActivity {
      */
     private void onMenuItemClick(Fragment fragment) {
         if (!this.fragmentStack.isEmpty()) {
-            this.fragmentManager.popBackStack();
-            this.fragmentStack.pop();
+            // Same item
+            if (this.fragmentStack.peek().getClass().equals(fragment.getClass())) {
+                this.drawerLayout.closeDrawers();
+                return;
+            } else {
+                // Remove previous menu item.
+                this.fragmentManager.popBackStack();
+                this.fragmentStack.pop();
+            }
         }
 
         ForumFragment.setSlideAnim(Gravity.BOTTOM, fragment);

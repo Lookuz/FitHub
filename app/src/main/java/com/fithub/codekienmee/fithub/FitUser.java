@@ -1,23 +1,37 @@
 package com.fithub.codekienmee.fithub;
 
-import com.google.firebase.auth.FirebaseUser;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Class that displays details of a user's profile.
  */
 public class FitUser {
 
-    private FirebaseUser user; // user account in firebase.
-
     private String name;
     private String email;
-    private final String uid;
+    private List<FitPost> favouritePosts;
+    private List<FitLocation> favouriteLocations;
+    private HashMap<String, Boolean> userSettings;
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public FitUser(FirebaseUser user) {
-        this.name = user.getDisplayName();
-        this.email = user.getEmail();
-        this.uid = user.getUid();
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFavouritePosts(List<FitPost> favouritePosts) {
+        this.favouritePosts = favouritePosts;
+    }
+
+    public void setFavouriteLocations(List<FitLocation> favouriteLocations) {
+        this.favouriteLocations = favouriteLocations;
+    }
+
+    public void setUserSettings(HashMap<String, Boolean> userSettings) {
+        this.userSettings = userSettings;
     }
 
     public String getName() {
@@ -28,7 +42,15 @@ public class FitUser {
         return email;
     }
 
-    public String getUid() {
-        return uid;
+    public List<FitPost> getFavouritePosts() {
+        return favouritePosts;
+    }
+
+    public List<FitLocation> getFavouriteLocations() {
+        return favouriteLocations;
+    }
+
+    public HashMap<String, Boolean> getUserSettings() {
+        return userSettings;
     }
 }

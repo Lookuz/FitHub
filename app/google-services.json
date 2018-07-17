@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "386635405380-eqqfml247ko14q7mbu0r1bctpklrrntt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fithub.codekienmee.fithub",
+            "certificate_hash": "196743eab05c89479bc1ddb3214afde30225a531"
+          }
+        },
+        {
           "client_id": "386635405380-6u5kjts4ch9mlotkji4o8h0b7vr14n0t.apps.googleusercontent.com",
           "client_type": 3
         }

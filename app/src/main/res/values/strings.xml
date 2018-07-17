@@ -27,12 +27,11 @@
     <string name="close">Close</string>
     <string name="fitlocation">FitLocation</string>
     <string name="fitforum">FitForum</string>
-    <string name="double_tap_back">Pres the back button again to exit!</string>
+    <string name="double_tap_back">Press the back button again to exit!</string>
 
     <!--Profile-->
     <string name="nav_account">My Profile</string>
-    <string name="nav_favourites">Favourite Posts</string>
-    <string name="nav_locations">Saved Locations</string>
+    <string name="nav_favourites">Favourites</string>
     <string name="nav_schedule">My Schedule</string>
     <string name="nav_settings">Settings</string>
 

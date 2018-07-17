@@ -7,23 +7,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-/**
- * Fragment that displays the profile page of current signed in FitUser.
- */
-public class ProfileFragment extends Fragment {
-    
-    private FitUser user;
+import java.util.HashMap;
 
-    private TextView name;
+public class SettingsFragment extends Fragment {
 
-    public static ProfileFragment newInstance(FitUser user) {
+    private HashMap<String, Boolean> userSettings;
+
+    public static SettingsFragment newInstance(FitUser user) {
 
         Bundle args = new Bundle();
-        
-        ProfileFragment fragment = new ProfileFragment();
-        fragment.user = user;
+
+        SettingsFragment fragment = new SettingsFragment();
+        fragment.userSettings = user.getUserSettings();
         fragment.setArguments(args);
         return fragment;
     }
@@ -36,15 +32,8 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        this.initView(view);
+        View view = inflater.inflate(R.layout.settings_fragment, container, false);
 
         return view;
-    }
-
-    private void initView(View view) {
-        this.name = view.findViewById(R.id.profile_user_name);
-
-        this.name.setText(user.getName());
     }
 }
