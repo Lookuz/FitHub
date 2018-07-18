@@ -30,6 +30,18 @@ public class FitLocation extends Address {
         this.locationAddress = address;
     }
 
+    public static String getLocalCountryName() {
+        return LOCAL_COUNTRY_NAME;
+    }
+
+    public static String getLocalCountryCode() {
+        return LOCAL_COUNTRY_CODE;
+    }
+
+    public void setLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
+    }
+
     public String getLocationName() {
         return this.getFeatureName();
     }

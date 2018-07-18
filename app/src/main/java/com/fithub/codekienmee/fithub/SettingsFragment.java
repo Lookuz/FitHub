@@ -9,10 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsFragment extends Fragment {
 
-    private HashMap<String, Boolean> userSettings;
+    private Map<String, Boolean> userSettings;
 
     public static SettingsFragment newInstance(FitUser user) {
 

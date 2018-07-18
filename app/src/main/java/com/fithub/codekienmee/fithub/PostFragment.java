@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -93,7 +95,7 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
                     .beginTransaction(), "Empty Post Warning");
         } else {
             FitPost newPost = new FitPost(postTitle, postContent,
-                    this.author.getText().toString(), new Date());
+                    this.author.getText().toString(), getDate(new Date()));
             this.post = newPost;
             ((ContainerFragment) getParentFragment()).popBackStack();
         }
@@ -136,5 +138,10 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
         }
 
         return true;
+    }
+
+    public String getDate(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("EEE d MMMM yyyy hh:mm aaa");
+        return dateFormat.format(date);
     }
 }

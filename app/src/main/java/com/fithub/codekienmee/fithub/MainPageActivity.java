@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 
 public class MainPageActivity extends AppCompatActivity {
@@ -41,6 +43,10 @@ public class MainPageActivity extends AppCompatActivity {
     private android.support.v4.app.FragmentManager fragmentManager;
     // Container Fragment to hold child Location and Forum Fragments
     private ContainerFragment containerFragment;
+
+    public FitUser getUser() {
+        return user;
+    }
 
     @Override
     public void onBackPressed() {
@@ -102,8 +108,20 @@ public class MainPageActivity extends AppCompatActivity {
         this.databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
-                user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
+                // If user not in Firebase DB, update.
+                if (!dataSnapshot.child("users").hasChild(fbUser.getUid())) {
+                    user.setName(fbUser.getDisplayName());
+                    user.setEmail(fbUser.getEmail());
+                    databaseReference.child("users").child(fbUser.getUid()).setValue(user);
+                } else {
+                    // Else pull information from DB.
+                    user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
+                    user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
+                    user.setFavouriteLocations(new ArrayList<FitLocation>());
+                    user.setFavouritePosts(new ArrayList<FitPost>());
+                    user.setUserSettings(new HashMap<String, Boolean>());
+                    databaseReference.child("users").child(fbUser.getUid()).setValue(user);
+                }
             }
 
             @Override

@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.transition.Slide;
-import android.transition.Transition;
+import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +40,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
 
         @Override
         public int getCount() {
-            return this.postList.size();
+            return (this.postList == null) ? 0 : this.postList.size();
         }
 
         @Nullable
@@ -63,11 +61,12 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
             FitPost comment = getItem(position);
 
             // Recursively set adapter for cascading comments list.
-            this.initView(view, comment);
+            PostAdapter postAdapterInner = new PostAdapter(getContext(), 0,
+                    comment.getComments());
+            this.initView(view, comment, postAdapterInner);
             ListView commentsList = view.findViewById(R.id.comment_commentsList);
             if(comment.getComments() != null) {
-                commentsList.setAdapter(new PostAdapter(getContext(), 0,
-                        comment.getComments()));
+                commentsList.setAdapter(postAdapterInner);
             } else {
                 commentsList.setVisibility(View.GONE);
             }
@@ -77,7 +76,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         /**
          * Method to initialize the view of each comment card.
          */
-        private void initView(View view, FitPost comment) {
+        private void initView(View view, FitPost comment, PostAdapter postAdapterInner) {
             TextView poster = view.findViewById(R.id.comment_poster_name);
             TextView content = view.findViewById(R.id.comment_content);
             TextView reply = view.findViewById(R.id.comment_reply);
@@ -93,12 +92,18 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
             numDislikes.setText(Integer.toString(comment.getNumDislikes()));
             ForumFragment.setLikesColor(likeImage, dislikeImage,
                     comment.getNumLikes(), comment.getNumDislikes());
-            initButtons(reply, favourite, comment);
+            initButtons(reply, favourite, likeImage, dislikeImage, comment, postAdapterInner);
 
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
         }
     }
 
     private FitPost post;
+    private FitUser user;
 
     private TextView title;
     private TextView content;
@@ -110,6 +115,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     private ImageView likeImage;
     private ImageView dislikeImage;
     private ListView comments;
+    private PostAdapter postAdapter;
 
     public static CommentsFragment newInstance(FitPost post) {
         CommentsFragment commentsFragment = new CommentsFragment();
@@ -121,7 +127,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     /**
      * Method that initializes the widgets in CommentsFragment.
      */
-    private void init(View view) {
+    private void initView(View view) {
         // If not comment, set title.
         if (this.post.getTitle() != null) {
             this.title = view.findViewById(R.id.comments_title);
@@ -137,6 +143,8 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         this.likeImage = view.findViewById(R.id.comments_likesImg);
         this.dislikeImage = view.findViewById(R.id.comments_dislikesImg);
         this.comments = view.findViewById(R.id.comments_commentsList);
+        this.postAdapter = new PostAdapter(getContext(), 0, this.post.getComments());
+        this.comments.setAdapter(this.postAdapter);
 
         this.content.setText(this.post.getContent());
         this.author.setText(this.post.getAuthor());
@@ -144,14 +152,15 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         this.numDislikes.setText(Integer.toString(this.post.getNumDislikes()));
         ForumFragment.setLikesColor(this.likeImage, this.dislikeImage,
                 this.post.getNumLikes(), this.post.getNumDislikes());
-        initButtons(this.reply, this.favourite, this.post);
+        initButtons(this.reply, this.favourite, this.likeImage, this.dislikeImage,
+                this.post, this.postAdapter);
     }
 
     /**
-     * Method that initializes the favourite and comment button.
-     * TODO: Set OnClickListener for reply and favourite buttons.
+     * Method that initializes the like, dislike, favourite and comment button.
      */
-    private void initButtons(TextView reply, TextView favourite, final FitPost parent) {
+    private void initButtons(TextView reply, TextView favourite, ImageView likeImage,
+                             ImageView dislikeImage, final FitPost parent, final PostAdapter postAdapter) {
         reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,13 +170,31 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: set favourite button.
+                favouritePost(parent);
+            }
+        });
+        likeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+                public void onClick(View v) {
+                Log.d("Like Button: ", "Clicked");
+                parent.evalLike(user);
+                postAdapter.notifyDataSetChanged();
+            }
+        });
+
+        dislikeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Dislike Button: ", "Clicked");
+                parent.evalDislike(user);
+                postAdapter.notifyDataSetChanged();
             }
         });
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        this.user= ((MainPageActivity) getActivity()).getUser();
         super.onCreate(savedInstanceState);
     }
 
@@ -176,8 +203,8 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_comments, container, false);
-        this.init(view);
-        this.comments.setAdapter(new PostAdapter(getContext(), 0, this.post.getComments()));
+        this.initView(view);
+//        this.comments.setAdapter(new PostAdapter(getContext(), 0, this.post.getComments()));
 
         return view;
     }
@@ -192,6 +219,19 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         postFragment.setArguments(args);
         ForumFragment.setSlideAnim(Gravity.BOTTOM, postFragment);
         ((ContainerFragment) getParentFragment()).overlayFragment(postFragment);
+    }
+
+    /**
+     * Method to favourite post to user's list of posts.
+     */
+    private void favouritePost(FitPost post) {
+        FitUser user = ((MainPageActivity) getActivity()).getUser();
+        if (user == null) {
+            Log.d("Favourite Post: ", "No User logged in");
+            return;
+        } else {
+            user.favouritePost(post);
+        }
     }
 
     @Override

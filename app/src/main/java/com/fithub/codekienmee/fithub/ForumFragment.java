@@ -1,6 +1,8 @@
 package com.fithub.codekienmee.fithub;
 
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -8,12 +10,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Slide;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -127,15 +137,10 @@ public class ForumFragment extends Fragment implements PostCallBack {
      */
     private class PostAdapter extends RecyclerView.Adapter<PostHolder> {
 
-        private PriorityQueue<FitPost> postQueueInner;
         private List<FitPost> postListInner;
 
         public PostAdapter(List<FitPost> postList) {
             this.postListInner = postList;
-            this.postQueueInner = new PriorityQueue<>();
-            for (FitPost post : this.postListInner) {
-                this.postQueueInner.offer(post);
-            }
         }
 
         @Override
@@ -147,7 +152,7 @@ public class ForumFragment extends Fragment implements PostCallBack {
 
         @Override
         public void onBindViewHolder(PostHolder holder, int position) {
-            FitPost post = this.postQueueInner.poll();
+            FitPost post = this.postListInner.get(position);
             holder.bindPost(post);
         }
 
@@ -164,9 +169,6 @@ public class ForumFragment extends Fragment implements PostCallBack {
          * Custom implementation of notifySetDataChanged() method.
          */
         private void notifyAdapterSetDataChanged() {
-            for(FitPost post : this.postListInner) {
-                this.postQueueInner.offer(post);
-            }
             this.notifyDataSetChanged();
         }
     }
@@ -174,7 +176,8 @@ public class ForumFragment extends Fragment implements PostCallBack {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.initList();
+        this.postList = new ArrayList<>();
+//        this.initList();
         this.postStack = new Stack<>();
     }
 
@@ -188,39 +191,6 @@ public class ForumFragment extends Fragment implements PostCallBack {
     }
 
     /**
-     * Initializes the list of posts into postList.
-     */
-    private void initList() {
-        FitPost firstPost = new FitPost("Top 10 health tips to follow", "Embrace a Healthy Diet Plan\n " +
-                "Move more.\nBe smoke-free.\nScheduled Sleep.\nPrioritize preventive screenings.\nConnect with others.\nStay hydrated.\n" +
-                "Appreciate what you have.\nPick up a hobby\nMeditate",
-                "Health Guru", 10, 1, new Date());
-        FitPost secondPost = new FitPost(null, "Great tips! Will try out 5 and 7!",
-                "Fitness Beginner", 8, 0, new Date());
-        FitPost thirdPost = new FitPost(null, "Didn't work for me..",
-                "Non-Believer", 1, 6, new Date());
-        secondPost.addComment(thirdPost);
-        firstPost.addComment(secondPost);
-
-        FitPost fourthPost = new FitPost("How to cardio effectively??", "Hi, I am a beginner to fitness, recently" +
-                " started getting into it. Can anyone give tips on how to effectively build up stamina? Thanks!",
-                "Fitness Beginner", 5, 0, new Date());
-
-        FitPost fifthPost = new FitPost("Six Pack Shortcuts", "Hey guys! Wanna build six pack shortcuts in no time?" +
-                " Check out my YouTube videos in the link descriptions in my profile! 100% guaranteed to work!",
-                "Mike Chang", 3, 21, new Date());
-
-        FitPost sixthPost = new FitPost("Looking for Gym Buddy at NUS", "Plz do back day thnx.",
-                "Jag", 0, 0, new Date());
-
-        this.postList = new ArrayList<>();
-        this.postList.add(firstPost);
-        this.postList.add(fourthPost);
-        this.postList.add(fifthPost);
-        this.postList.add(sixthPost);
-    }
-
-    /**
      * Method to initialize the widgets of this fragment.
      * Widgets: New Post Button, Filter Button.
      */
@@ -229,8 +199,26 @@ public class ForumFragment extends Fragment implements PostCallBack {
         this.filter = view.findViewById(R.id.forum_filter_posts);
         this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
         this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.postAdapter = new PostAdapter(this.postList);
-        this.postRecyclerView.setAdapter(this.postAdapter);
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.child("posts").getChildren()) {
+                    FitPost post = ds.getValue(FitPost.class);
+                    postList.add(post);
+
+                    postAdapter = new PostAdapter(postList);
+                    postRecyclerView.setAdapter(postAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+//        this.postAdapter = new PostAdapter(this.postList);
+//        this.postRecyclerView.setAdapter(this.postAdapter);
 
         final PostCallBack callBack = this;
         this.newPost.setOnClickListener(new View.OnClickListener() {
@@ -264,6 +252,13 @@ public class ForumFragment extends Fragment implements PostCallBack {
     }
 
     @Override
+    public void onStart() {
+        this.postAdapter = new PostAdapter(this.postList);
+        this.postRecyclerView.setAdapter(this.postAdapter);
+        super.onStart();
+    }
+
+    @Override
     public void onPause() {
         this.newPost.hide();
         this.filter.hide();
@@ -274,6 +269,7 @@ public class ForumFragment extends Fragment implements PostCallBack {
     public void onResume() {
         this.newPost.show();
         this.filter.show();
+        this.postAdapter.notifyAdapterSetDataChanged();
         super.onResume();
     }
 }
