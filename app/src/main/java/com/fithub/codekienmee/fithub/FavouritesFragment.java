@@ -69,16 +69,14 @@ public class FavouritesFragment extends ListFragment {
         CommentsFragment commentsFragment = CommentsFragment.newInstance(post);
         setSlideAnim(Gravity.RIGHT, commentsFragment);
         getFragmentManager().beginTransaction()
-                .replace(R.id.favourites_fragment, commentsFragment)
+                .add(R.id.favourites_fragment, commentsFragment)
                 .addToBackStack(null)
                 .commit();
         this.fragmentStack.push(commentsFragment);
-        Log.d("FavouritesFragment: ", "Stack added");
     }
 
     public boolean onBackPressed() {
         if (!this.fragmentStack.isEmpty()) {
-            Log.d("FavouritesFragment: ", "Removing top element");
             getFragmentManager().popBackStack();
             this.fragmentStack.pop();
             return true;

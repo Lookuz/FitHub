@@ -52,38 +52,24 @@ public class MainPageActivity extends AppCompatActivity {
     public void onBackPressed() {
         if(this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             this.drawerLayout.closeDrawers();
-        } else if (this.fragmentManager.getBackStackEntryCount() > 0 &&
-                !(this.getCurrentFragment() instanceof ContainerFragment)) {
+        } else if (this.fragmentStack.size() > 0 &&
+                !(this.fragmentStack.peek() instanceof ContainerFragment)) {
 
             if (this.fragmentStack.peek() instanceof FavouritesFragment &&
                     ((FavouritesFragment) this.fragmentStack.peek()).onBackPressed()) {
                 return;
             } else {
-                Log.d("OnBackPressed: ", "Removing previous menu item");
                 this.fragmentManager.popBackStack();
                 this.fragmentStack.pop();
             }
 
         } else if (this.containerFragment != null) {
-            Log.d("OnBackPressed: ", "ContainerFragment.onBackPressed()");
             if (!this.containerFragment.onPostBackPressed()) {
-                Log.d("OnBackPressed: ", "super.onBackPressed");
                 super.onBackPressed();
             }
         } else {
-            Log.d("OnBackPressed: ", "super.onBackPressed");
             super.onBackPressed();
         }
-    }
-
-    /**
-     * Method to get current fragment at the top of the FragmentManager stack.
-     */
-    private Fragment getCurrentFragment() {
-        String fragmentTag = this.fragmentManager
-                .getBackStackEntryAt(this.fragmentManager.getBackStackEntryCount() - 1)
-                .getName();
-        return this.fragmentManager.findFragmentByTag(fragmentTag);
     }
 
     @Override

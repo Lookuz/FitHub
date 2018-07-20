@@ -4,12 +4,13 @@ import android.location.Address;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 /**
  * Class that encapsulates data for a fitness center identified by FitHub.
  */
-public class FitLocation extends Address {
+public class FitLocation extends Address implements Serializable {
 
     private final static String LOCAL_COUNTRY_NAME = "Singapore";
     private final static String LOCAL_COUNTRY_CODE = "+65";

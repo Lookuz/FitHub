@@ -168,13 +168,16 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                     postComment(parent);
                 }
             });
-            favourite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("Favourite Button: ", "Clicked");
-                    favouritePost(parent);
-                }
-            });
+            if (parent.getTitle() == null) { // If post is a comment, disable favourite.
+                 favourite.setVisibility(View.GONE);
+            } else {
+                favourite.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        favouritePost(parent);
+                    }
+                });
+            }
             likeImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
