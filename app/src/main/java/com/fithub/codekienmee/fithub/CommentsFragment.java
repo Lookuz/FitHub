@@ -161,35 +161,38 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
      */
     private void initButtons(TextView reply, TextView favourite, ImageView likeImage,
                              ImageView dislikeImage, final FitPost parent, final PostAdapter postAdapter) {
-        reply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                postComment(parent);
-            }
-        });
-        favourite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                favouritePost(parent);
-            }
-        });
-        likeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
+        if (((MainPageActivity) getActivity()).hasUser()) {
+            reply.setOnClickListener(new View.OnClickListener() {
+                @Override
                 public void onClick(View v) {
-                Log.d("Like Button: ", "Clicked");
-                parent.evalLike(user);
-                postAdapter.notifyDataSetChanged();
-            }
-        });
+                    postComment(parent);
+                }
+            });
+            favourite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("Favourite Button: ", "Clicked");
+                    favouritePost(parent);
+                }
+            });
+            likeImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    parent.evalLike(user);
+                    postAdapter.notifyDataSetChanged();
+                }
+            });
 
-        dislikeImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("Dislike Button: ", "Clicked");
-                parent.evalDislike(user);
-                postAdapter.notifyDataSetChanged();
-            }
-        });
+            dislikeImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    parent.evalDislike(user);
+                    postAdapter.notifyDataSetChanged();
+                }
+            });
+        } else {
+            // TODO: Disable buttons.
+        }
     }
 
     @Override
@@ -204,7 +207,6 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_comments, container, false);
         this.initView(view);
-//        this.comments.setAdapter(new PostAdapter(getContext(), 0, this.post.getComments()));
 
         return view;
     }
@@ -232,6 +234,14 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         } else {
             user.favouritePost(post);
         }
+    }
+
+    /**
+     * Method to update the number of Likes and Dislikes in post.
+     */
+    private void updateLikes(FitPost parent, TextView likes, TextView dislikes) {
+        likes.setText(parent.getNumLikes());
+        dislikes.setText(parent.getNumDislikes());
     }
 
     @Override

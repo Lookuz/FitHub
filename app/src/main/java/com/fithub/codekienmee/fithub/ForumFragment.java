@@ -31,18 +31,16 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Stack;
 
-public class ForumFragment extends Fragment implements PostCallBack {
+public class ForumFragment extends ListFragment implements PostCallBack {
 
     private static final String IS_COMMENT_KEY = "isComment";
 
-    private RecyclerView postRecyclerView; //RecyclerView that handles displaying of posts
-    private PostAdapter postAdapter;
-    private List<FitPost> postList;
+//    private RecyclerView postRecyclerView; //RecyclerView that handles displaying of posts
+//    private PostAdapter postAdapter;
+//    private List<FitPost> postList;
     private FloatingActionButton newPost;
     private FloatingActionButton filter;
     private Stack<Fragment> postStack;
-
-    // Order is determined by Comparator passed in on initialization.
 
     @Override
     public void onCallBack(FitPost post) {
@@ -56,62 +54,62 @@ public class ForumFragment extends Fragment implements PostCallBack {
         return postStack;
     }
 
-    /**
-     * Inner class that extends the use of ViewHolder.
-     * Holds the view for each post.
-     */
-    private class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-        private FitPost post;
-
-        private TextView title;
-        private TextView author;
-        private TextView date;
-        private TextView numLikes;
-        private TextView numDislikes;
-        private ImageView thumbsUp;
-        private ImageView thumbsDown;
-
-        public PostHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.post_view_forum, parent, false));
-
-            this.title = (TextView) itemView.findViewById(R.id.post_forum_title);
-            this.author = (TextView) itemView.findViewById(R.id.post_forum_author);
-            this.date = (TextView) itemView.findViewById(R.id.post_forum_date);
-            this.numLikes = (TextView) itemView.findViewById(R.id.post_forum_likesNum);
-            this.numDislikes = (TextView) itemView.findViewById(R.id.post_forum_dislikesNum);
-            this.thumbsUp = (ImageView) itemView.findViewById(R.id.post_forum_likesImg);
-            this.thumbsDown = (ImageView) itemView.findViewById(R.id.post_forum_dislikesImg);
-
-            itemView.setOnClickListener(this);
-        }
-
-        /**
-         * Method that binds a FitPost and it's data to the current view holder.
-         */
-        public void bindPost(FitPost post) {
-            this.post = post;
-            this.title.setText(post.getTitle());
-            this.author.setText(post.getAuthor());
-            this.date.setText(post.getDate());
-            this.numDislikes.setText(Integer.toString(post.getNumDislikes()));
-            this.numLikes.setText(Integer.toString(post.getNumLikes()));
-
-            ForumFragment.setLikesColor(this.thumbsUp, this.thumbsDown,
-                    this.post.getNumLikes(), this.post.getNumDislikes());
-        }
-
-        @Override
-        public void onClick(View v) {
-            /**
-             * Note that use of Slide Transition requires minimum API of 21.
-             */
-            CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
-            setSlideAnim(Gravity.RIGHT, commentsFragment);
-            ((ContainerFragment) getParentFragment()).overlayFragment(commentsFragment);
-            onPause();
-        }
-    }
+//    /**
+//     * Inner class that extends the use of ViewHolder.
+//     * Holds the view for each post.
+//     */
+//    private class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+//
+//        private FitPost post;
+//
+//        private TextView title;
+//        private TextView author;
+//        private TextView date;
+//        private TextView numLikes;
+//        private TextView numDislikes;
+//        private ImageView thumbsUp;
+//        private ImageView thumbsDown;
+//
+//        public PostHolder(LayoutInflater inflater, ViewGroup parent) {
+//            super(inflater.inflate(R.layout.post_view_forum, parent, false));
+//
+//            this.title = (TextView) itemView.findViewById(R.id.post_forum_title);
+//            this.author = (TextView) itemView.findViewById(R.id.post_forum_author);
+//            this.date = (TextView) itemView.findViewById(R.id.post_forum_date);
+//            this.numLikes = (TextView) itemView.findViewById(R.id.post_forum_likesNum);
+//            this.numDislikes = (TextView) itemView.findViewById(R.id.post_forum_dislikesNum);
+//            this.thumbsUp = (ImageView) itemView.findViewById(R.id.post_forum_likesImg);
+//            this.thumbsDown = (ImageView) itemView.findViewById(R.id.post_forum_dislikesImg);
+//
+//            itemView.setOnClickListener(this);
+//        }
+//
+//        /**
+//         * Method that binds a FitPost and it's data to the current view holder.
+//         */
+//        public void bindPost(FitPost post) {
+//            this.post = post;
+//            this.title.setText(post.getTitle());
+//            this.author.setText(post.getAuthor());
+//            this.date.setText(post.getDate());
+//            this.numDislikes.setText(Integer.toString(post.getNumDislikes()));
+//            this.numLikes.setText(Integer.toString(post.getNumLikes()));
+//
+//            ForumFragment.setLikesColor(this.thumbsUp, this.thumbsDown,
+//                    this.post.getNumLikes(), this.post.getNumDislikes());
+//        }
+//
+//        @Override
+//        public void onClick(View v) {
+//            /**
+//             * Note that use of Slide Transition requires minimum API of 21.
+//             */
+//            CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
+//            setSlideAnim(Gravity.RIGHT, commentsFragment);
+//            ((ContainerFragment) getParentFragment()).overlayFragment(commentsFragment);
+//            onPause();
+//        }
+//    }
 
     /**
      * Method to set the color of thumbs up and down image colors based dynamically based on the
@@ -131,53 +129,52 @@ public class ForumFragment extends Fragment implements PostCallBack {
         }
     }
 
-    /**
-     * Inner class that extends the use of Adapter.
-     * Connects the respective ViewHolder class to the RecyclerView
-     */
-    private class PostAdapter extends RecyclerView.Adapter<PostHolder> {
-
-        private List<FitPost> postListInner;
-
-        public PostAdapter(List<FitPost> postList) {
-            this.postListInner = postList;
-        }
-
-        @Override
-        public PostHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-
-            return new PostHolder(layoutInflater, parent);
-        }
-
-        @Override
-        public void onBindViewHolder(PostHolder holder, int position) {
-            FitPost post = this.postListInner.get(position);
-            holder.bindPost(post);
-        }
-
-        @Override
-        public int getItemCount() {
-            if (this.postListInner != null) {
-                return postListInner.size();
-            } else {
-                return 0;
-            }
-        }
-
-        /**
-         * Custom implementation of notifySetDataChanged() method.
-         */
-        private void notifyAdapterSetDataChanged() {
-            this.notifyDataSetChanged();
-        }
-    }
+//    /**
+//     * Inner class that extends the use of Adapter.
+//     * Connects the respective ViewHolder class to the RecyclerView
+//     */
+//    private class PostAdapter extends RecyclerView.Adapter<PostHolder> {
+//
+//        private List<FitPost> postListInner;
+//
+//        public PostAdapter(List<FitPost> postList) {
+//            this.postListInner = postList;
+//        }
+//
+//        @Override
+//        public PostHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+//
+//            return new PostHolder(layoutInflater, parent);
+//        }
+//
+//        @Override
+//        public void onBindViewHolder(PostHolder holder, int position) {
+//            FitPost post = this.postListInner.get(position);
+//            holder.bindPost(post);
+//        }
+//
+//        @Override
+//        public int getItemCount() {
+//            if (this.postListInner != null) {
+//                return postListInner.size();
+//            } else {
+//                return 0;
+//            }
+//        }
+//
+//        /**
+//         * Custom implementation of notifySetDataChanged() method.
+//         */
+//        private void notifyAdapterSetDataChanged() {
+//            this.notifyDataSetChanged();
+//        }
+//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.postList = new ArrayList<>();
-//        this.initList();
         this.postStack = new Stack<>();
     }
 
@@ -206,10 +203,10 @@ public class ForumFragment extends Fragment implements PostCallBack {
                 for (DataSnapshot ds : dataSnapshot.child("posts").getChildren()) {
                     FitPost post = ds.getValue(FitPost.class);
                     postList.add(post);
-
+                }
                     postAdapter = new PostAdapter(postList);
                     postRecyclerView.setAdapter(postAdapter);
-                }
+
             }
 
             @Override
@@ -217,22 +214,24 @@ public class ForumFragment extends Fragment implements PostCallBack {
 
             }
         });
-//        this.postAdapter = new PostAdapter(this.postList);
-//        this.postRecyclerView.setAdapter(this.postAdapter);
 
-        final PostCallBack callBack = this;
-        this.newPost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PostFragment postFragment = PostFragment.newInstance(callBack);
-                Bundle args = new Bundle();
-                args.putBoolean(IS_COMMENT_KEY, false);
-                postFragment.setArguments(args);
-                setSlideAnim(Gravity.BOTTOM, postFragment);
-                ((ContainerFragment) getParentFragment()).overlayFragment(postFragment);
-                onPause();
-            }
-        });
+        if (((MainPageActivity) getActivity()).hasUser()){
+            final PostCallBack callBack = this;
+            this.newPost.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PostFragment postFragment = PostFragment.newInstance(callBack);
+                    Bundle args = new Bundle();
+                    args.putBoolean(IS_COMMENT_KEY, false);
+                    postFragment.setArguments(args);
+                    setSlideAnim(Gravity.BOTTOM, postFragment);
+                    ((ContainerFragment) getParentFragment()).overlayFragment(postFragment);
+                    onPause();
+                }
+            });
+        } else {
+            // TODO: Gray out button.
+        }
 
         this.filter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,14 +241,14 @@ public class ForumFragment extends Fragment implements PostCallBack {
         });
     }
 
-    /**
-     * Method to set sliding animation for fragments.
-     */
-    public static void setSlideAnim(int resource, Fragment fragment) {
-        Transition slideAnim = new Slide(resource).setDuration(200);
-        fragment.setEnterTransition(slideAnim);
-        fragment.setExitTransition(slideAnim);
-    }
+//    /**
+//     * Method to set sliding animation for fragments.
+//     */
+//    public static void setSlideAnim(int resource, Fragment fragment) {
+//        Transition slideAnim = new Slide(resource).setDuration(200);
+//        fragment.setEnterTransition(slideAnim);
+//        fragment.setExitTransition(slideAnim);
+//    }
 
     @Override
     public void onStart() {
@@ -271,5 +270,16 @@ public class ForumFragment extends Fragment implements PostCallBack {
         this.filter.show();
         this.postAdapter.notifyAdapterSetDataChanged();
         super.onResume();
+    }
+
+    @Override
+    public void onPostClick(FitPost post) {
+        /**
+         * Note that use of Slide Transition requires minimum API of 21.
+         */
+        CommentsFragment commentsFragment = CommentsFragment.newInstance(post);
+        setSlideAnim(Gravity.RIGHT, commentsFragment);
+        ((ContainerFragment) getParentFragment()).overlayFragment(commentsFragment);
+        onPause();
     }
 }

@@ -62,6 +62,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private GeoDataClient geoDataClient;
     private AutoCompleteTextView searchBar;
     private ImageButton centerUserLocation; // Button to center back on user's location.
+    private ImageButton favouriteLocation;
     private ExecutorService executorService;
     private boolean userPermission;
     private FusedLocationProviderClient locationProviderClient; // Client that gets locations
@@ -71,11 +72,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private HashMap<FitLocation, Marker> locationHashMap;
     // List that stores all the known available locations.
     private List<FitLocation> locationList;
+    private FitUser user;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.userPermission = false;
+        this.user = ((MainPageActivity) getActivity()).getUser();
         this.locationHashMap = new HashMap<>();
         this.locationList = new ArrayList<>(); // TODO: Initialize list with locations from DB.
         this.initMockLocations();
@@ -245,10 +248,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         });
         this.searchBar.setHint(R.string.maps_hint);
         this.centerUserLocation = (ImageButton) view.findViewById(R.id.map_center_button);
+        this.favouriteLocation = (ImageButton) view.findViewById(R.id.map_favourites_button);
+
         this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getCurrLocation(); // TODO: Animate centering back on device location.
+            }
+        });
+        this.favouriteLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: show list of favourite locations.
             }
         });
     }

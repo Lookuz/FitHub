@@ -70,6 +70,8 @@ public class PostFragment extends Fragment implements WarningCallBack, OnPostBac
         this.submit = view.findViewById(R.id.post_submit);
         this.profilePic = view.findViewById(R.id.post_profile_pic);
 
+        // TODO: Setting profile pic.
+        this.author.setText(((MainPageActivity) getActivity()).getUser().getName());
         this.submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

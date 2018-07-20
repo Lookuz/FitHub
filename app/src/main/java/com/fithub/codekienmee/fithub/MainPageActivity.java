@@ -52,15 +52,26 @@ public class MainPageActivity extends AppCompatActivity {
     public void onBackPressed() {
         if(this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             this.drawerLayout.closeDrawers();
-        } else if (this.fragmentManager.getBackStackEntryCount() > 1 &&
+        } else if (this.fragmentManager.getBackStackEntryCount() > 0 &&
                 !(this.getCurrentFragment() instanceof ContainerFragment)) {
-            fragmentManager.popBackStack();
-            this.fragmentStack.pop();
+
+            if (this.fragmentStack.peek() instanceof FavouritesFragment &&
+                    ((FavouritesFragment) this.fragmentStack.peek()).onBackPressed()) {
+                return;
+            } else {
+                Log.d("OnBackPressed: ", "Removing previous menu item");
+                this.fragmentManager.popBackStack();
+                this.fragmentStack.pop();
+            }
+
         } else if (this.containerFragment != null) {
+            Log.d("OnBackPressed: ", "ContainerFragment.onBackPressed()");
             if (!this.containerFragment.onPostBackPressed()) {
+                Log.d("OnBackPressed: ", "super.onBackPressed");
                 super.onBackPressed();
             }
         } else {
+            Log.d("OnBackPressed: ", "super.onBackPressed");
             super.onBackPressed();
         }
     }
@@ -91,14 +102,16 @@ public class MainPageActivity extends AppCompatActivity {
             this.fragmentManager.beginTransaction()
                     .replace(R.id.main_frag_view, this.containerFragment)
                     .commit();
+            this.fragmentStack.push(this.containerFragment);
         } else {
-            this.containerFragment = (ContainerFragment) getSupportFragmentManager()
-                    .getFragments().get(0);
+            this.containerFragment = (ContainerFragment) this.fragmentManager
+                    .getFragments()
+                    .get(0);
         }
     }
 
     /**
-     * Initializes firebase tools.
+     * Initializes Firebase tools.
      */
     private void initFirebase() {
         this.firebaseAuth = FirebaseAuth.getInstance();
@@ -180,6 +193,7 @@ public class MainPageActivity extends AppCompatActivity {
                             onMenuItemClick(ProfileFragment.newInstance(user));
                             break;
                         case R.id.nav_favourites:
+                            onMenuItemClick(FavouritesFragment.newInstance());
                             break;
                         case R.id.nav_schedule:
                             break;
@@ -206,10 +220,12 @@ public class MainPageActivity extends AppCompatActivity {
         if (!this.fragmentStack.isEmpty()) {
             // Same item
             if (this.fragmentStack.peek().getClass().equals(fragment.getClass())) {
+                Log.d("MenuItemClick: ", "Same Item");
                 this.drawerLayout.closeDrawers();
                 return;
             } else {
                 // Remove previous menu item.
+                Log.d("MenuItemClick: ", "Remove previous item");
                 this.fragmentManager.popBackStack();
                 this.fragmentStack.pop();
             }
@@ -222,6 +238,10 @@ public class MainPageActivity extends AppCompatActivity {
                 .commit();
         this.fragmentStack.push(fragment);
         this.drawerLayout.closeDrawers();
+    }
+
+    public boolean hasUser() {
+        return this.user != null;
     }
 
     /**

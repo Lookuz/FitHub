@@ -91,8 +91,6 @@ public class FitUser implements Serializable {
         } else {
             this.favouritePosts.add(post);
             Log.d("User: ", "Post " + post.getTitle() + " added.");
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            databaseReference.child("users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(FitUser.this);
             return true;
         }
     }
