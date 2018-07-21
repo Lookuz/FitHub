@@ -34,7 +34,7 @@ public class FitInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         ((TextView) view.findViewById(R.id.info_window_address))
                 .setText(location.getLocationAddress());
         ((TextView) view.findViewById(R.id.info_window_phone)).setText(location.getPhoneNumber());
-        ((TextView) view.findViewById(R.id.info_window_website)).setText(location.getUrl());
+        ((TextView) view.findViewById(R.id.info_window_website)).setText(location.getWebsiteURL());
         return this.infoWindow;
     }
 

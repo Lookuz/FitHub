@@ -35,11 +35,14 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     private FloatingActionButton newPost;
     private FloatingActionButton filter;
     private Stack<Fragment> postStack;
+    private DatabaseReference postDB;
 
     @Override
     public void onCallBack(FitPost post) {
         if(post != null) {
             this.postList.add(0, post);
+            String postKey = this.postDB.push().getKey();
+            this.postDB.child(postKey).setValue(post);
             this.postAdapter.notifyAdapterSetDataChanged();
         }
     }
@@ -91,8 +94,8 @@ public class ForumFragment extends ListFragment implements PostCallBack {
         this.filter = view.findViewById(R.id.forum_filter_posts);
         this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
         this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("posts");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        this.postDB = FirebaseDatabase.getInstance().getReference("FitPosts");
+        this.postDB.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {

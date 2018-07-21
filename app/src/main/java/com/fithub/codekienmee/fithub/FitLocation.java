@@ -10,58 +10,95 @@ import java.util.Locale;
 /**
  * Class that encapsulates data for a fitness center identified by FitHub.
  */
-public class FitLocation extends Address implements Serializable {
-
-    private final static String LOCAL_COUNTRY_NAME = "Singapore";
-    private final static String LOCAL_COUNTRY_CODE = "+65";
+public class FitLocation implements Serializable {
 
     private String locationAddress;
+    private double latitude;
+    private double longitude;
+    private String locationName;
+    private String postalCode;
+    private String phoneNumber;
+    private String websiteURL;
 
-    public FitLocation(Locale locale, String name, String postalCode, String phoneNumber,
+    public FitLocation() {
+        // Default Constructor.
+    }
+
+    public FitLocation(String name, String postalCode, String phoneNumber,
                        double latitude, double longitude, String address, String website) {
-        super(locale);
-        super.setLatitude(latitude);
-        super.setLongitude(longitude);
-        super.setFeatureName(name);
-        super.setPostalCode(postalCode);
-        super.setPhone(phoneNumber);
-        super.setUrl(website);
-        super.setCountryCode(FitLocation.LOCAL_COUNTRY_CODE);
-        super.setCountryName(FitLocation.LOCAL_COUNTRY_NAME);
+
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.locationName = name;
+        this.postalCode = postalCode;
+        this.phoneNumber = phoneNumber;
+        this.websiteURL = website;
         this.locationAddress = address;
-    }
-
-    public static String getLocalCountryName() {
-        return LOCAL_COUNTRY_NAME;
-    }
-
-    public static String getLocalCountryCode() {
-        return LOCAL_COUNTRY_CODE;
     }
 
     public void setLocationAddress(String locationAddress) {
         this.locationAddress = locationAddress;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getWebsiteURL() {
+        return websiteURL;
+    }
+
+    public void setWebsiteURL(String websiteURL) {
+        this.websiteURL = websiteURL;
+    }
+
     public String getLocationName() {
-        return this.getFeatureName();
+        return this.locationName;
     }
 
     public LatLng getLocationCoordinates() {
-        return new LatLng(this.getLatitude(), this.getLongitude());
+        return new LatLng(this.latitude, this.longitude);
     }
 
     public String getLocationAddress() {
-        return this.locationAddress.concat("\n" + "Singapore " + this.getPostalCode());
+        return this.locationAddress;
     }
 
     public String getPhoneNumber() {
-        return this.getPhone();
+        return this.phoneNumber;
     }
 
     @Override
     public int hashCode() {
-        return Integer.parseInt(this.getPostalCode());
+        return Integer.parseInt(this.postalCode);
     }
 
     @Override
