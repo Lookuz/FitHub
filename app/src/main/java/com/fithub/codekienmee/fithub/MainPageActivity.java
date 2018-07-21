@@ -2,6 +2,7 @@ package com.fithub.codekienmee.fithub;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -116,6 +117,7 @@ public class MainPageActivity extends AppCompatActivity {
                     // Else pull information from DB.
                     user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
                     user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
+                    user.setTimeline(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getTimeline());
                     user.setFavouriteLocations(new ArrayList<FitLocation>());
                     user.setFavouritePosts(new ArrayList<FitPost>());
                     user.setUserSettings(new HashMap<String, Boolean>());
@@ -181,8 +183,8 @@ public class MainPageActivity extends AppCompatActivity {
                         case R.id.nav_favourites:
                             onMenuItemClick(FavouritesFragment.newInstance());
                             break;
-                        case R.id.nav_schedule:
-                            break;
+//                        case R.id.nav_schedule:
+//                            break;
                         case R.id.nav_settings:
                             onMenuItemClick(SettingsFragment.newInstance(user));
                             break;
@@ -191,7 +193,6 @@ public class MainPageActivity extends AppCompatActivity {
                             firebaseAuth.getInstance().signOut();
                             startActivity(new Intent(MainPageActivity.this, StartUpActivity.class));
                             finish();
-
                     }
                     return true;
                 }
@@ -241,5 +242,17 @@ public class MainPageActivity extends AppCompatActivity {
         if (this.togglebar.onOptionsItemSelected(item)) return true;
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        databaseReference.child("users").child(fbUser.getUid()).setValue(user);
+    }
+
+    @Override
+    protected void onDestroy() {
+        onPause();
+        super.onDestroy();
     }
 }

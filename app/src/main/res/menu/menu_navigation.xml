@@ -10,9 +10,9 @@
         android:icon="@drawable/ic_my_favourites"
         android:title="@string/nav_favourites"></item>
 
-    <item android:id="@+id/nav_schedule"
-        android:icon="@drawable/ic_my_schedules"
-        android:title="@string/nav_schedule"></item>
+    <!--<item android:id="@+id/nav_schedule"-->
+        <!--android:icon="@drawable/ic_my_schedules"-->
+        <!--android:title="@string/nav_schedule"></item>-->
 
     <item android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"

@@ -73,6 +73,15 @@ public class FavouritesFragment extends ListFragment {
                 .addToBackStack(null)
                 .commit();
         this.fragmentStack.push(commentsFragment);
+        onPause();
+    }
+
+    @Override
+    public void onResume() {
+        if (this.postAdapter != null) {
+            this.postAdapter.notifyAdapterSetDataChanged();
+        }
+        super.onResume();
     }
 
     public boolean onBackPressed() {

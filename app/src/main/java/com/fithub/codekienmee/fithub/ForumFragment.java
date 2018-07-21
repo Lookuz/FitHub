@@ -26,18 +26,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Stack;
 
 public class ForumFragment extends ListFragment implements PostCallBack {
 
     private static final String IS_COMMENT_KEY = "isComment";
 
-//    private RecyclerView postRecyclerView; //RecyclerView that handles displaying of posts
-//    private PostAdapter postAdapter;
-//    private List<FitPost> postList;
     private FloatingActionButton newPost;
     private FloatingActionButton filter;
     private Stack<Fragment> postStack;
@@ -45,7 +39,7 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     @Override
     public void onCallBack(FitPost post) {
         if(post != null) {
-            this.postList.add(post);
+            this.postList.add(0, post);
             this.postAdapter.notifyAdapterSetDataChanged();
         }
     }
@@ -53,63 +47,6 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     public Stack<Fragment> getPostStack() {
         return postStack;
     }
-
-//    /**
-//     * Inner class that extends the use of ViewHolder.
-//     * Holds the view for each post.
-//     */
-//    private class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-//
-//        private FitPost post;
-//
-//        private TextView title;
-//        private TextView author;
-//        private TextView date;
-//        private TextView numLikes;
-//        private TextView numDislikes;
-//        private ImageView thumbsUp;
-//        private ImageView thumbsDown;
-//
-//        public PostHolder(LayoutInflater inflater, ViewGroup parent) {
-//            super(inflater.inflate(R.layout.post_view_forum, parent, false));
-//
-//            this.title = (TextView) itemView.findViewById(R.id.post_forum_title);
-//            this.author = (TextView) itemView.findViewById(R.id.post_forum_author);
-//            this.date = (TextView) itemView.findViewById(R.id.post_forum_date);
-//            this.numLikes = (TextView) itemView.findViewById(R.id.post_forum_likesNum);
-//            this.numDislikes = (TextView) itemView.findViewById(R.id.post_forum_dislikesNum);
-//            this.thumbsUp = (ImageView) itemView.findViewById(R.id.post_forum_likesImg);
-//            this.thumbsDown = (ImageView) itemView.findViewById(R.id.post_forum_dislikesImg);
-//
-//            itemView.setOnClickListener(this);
-//        }
-//
-//        /**
-//         * Method that binds a FitPost and it's data to the current view holder.
-//         */
-//        public void bindPost(FitPost post) {
-//            this.post = post;
-//            this.title.setText(post.getTitle());
-//            this.author.setText(post.getAuthor());
-//            this.date.setText(post.getDate());
-//            this.numDislikes.setText(Integer.toString(post.getNumDislikes()));
-//            this.numLikes.setText(Integer.toString(post.getNumLikes()));
-//
-//            ForumFragment.setLikesColor(this.thumbsUp, this.thumbsDown,
-//                    this.post.getNumLikes(), this.post.getNumDislikes());
-//        }
-//
-//        @Override
-//        public void onClick(View v) {
-//            /**
-//             * Note that use of Slide Transition requires minimum API of 21.
-//             */
-//            CommentsFragment commentsFragment = CommentsFragment.newInstance(this.post);
-//            setSlideAnim(Gravity.RIGHT, commentsFragment);
-//            ((ContainerFragment) getParentFragment()).overlayFragment(commentsFragment);
-//            onPause();
-//        }
-//    }
 
     /**
      * Method to set the color of thumbs up and down image colors based dynamically based on the
@@ -128,48 +65,6 @@ public class ForumFragment extends ListFragment implements PostCallBack {
             thumbsDown.setImageResource(R.drawable.ic_thumb_down_grey);
         }
     }
-
-//    /**
-//     * Inner class that extends the use of Adapter.
-//     * Connects the respective ViewHolder class to the RecyclerView
-//     */
-//    private class PostAdapter extends RecyclerView.Adapter<PostHolder> {
-//
-//        private List<FitPost> postListInner;
-//
-//        public PostAdapter(List<FitPost> postList) {
-//            this.postListInner = postList;
-//        }
-//
-//        @Override
-//        public PostHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-//
-//            return new PostHolder(layoutInflater, parent);
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(PostHolder holder, int position) {
-//            FitPost post = this.postListInner.get(position);
-//            holder.bindPost(post);
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//            if (this.postListInner != null) {
-//                return postListInner.size();
-//            } else {
-//                return 0;
-//            }
-//        }
-//
-//        /**
-//         * Custom implementation of notifySetDataChanged() method.
-//         */
-//        private void notifyAdapterSetDataChanged() {
-//            this.notifyDataSetChanged();
-//        }
-//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -196,11 +91,11 @@ public class ForumFragment extends ListFragment implements PostCallBack {
         this.filter = view.findViewById(R.id.forum_filter_posts);
         this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
         this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("posts");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.child("posts").getChildren()) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     FitPost post = ds.getValue(FitPost.class);
                     postList.add(post);
                 }
@@ -241,19 +136,10 @@ public class ForumFragment extends ListFragment implements PostCallBack {
         });
     }
 
-//    /**
-//     * Method to set sliding animation for fragments.
-//     */
-//    public static void setSlideAnim(int resource, Fragment fragment) {
-//        Transition slideAnim = new Slide(resource).setDuration(200);
-//        fragment.setEnterTransition(slideAnim);
-//        fragment.setExitTransition(slideAnim);
-//    }
-
     @Override
     public void onStart() {
-        this.postAdapter = new PostAdapter(this.postList);
-        this.postRecyclerView.setAdapter(this.postAdapter);
+//        this.postAdapter = new PostAdapter(this.postList);
+//        this.postRecyclerView.setAdapter(this.postAdapter);
         super.onStart();
     }
 
@@ -268,7 +154,9 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     public void onResume() {
         this.newPost.show();
         this.filter.show();
-        this.postAdapter.notifyAdapterSetDataChanged();
+        if (this.postAdapter != null) {
+            this.postAdapter.notifyAdapterSetDataChanged();
+        }
         super.onResume();
     }
 

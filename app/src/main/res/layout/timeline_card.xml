@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/white">
+    <ImageView
+        android:id="@+id/timeline_icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/profile_background_circular"
+        android:scaleType="centerInside"
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_fithub_location_icon_monochrome"
+        android:elevation="4dp"
+        android:translationZ="4dp"/>
+    
+    <FrameLayout
+        android:layout_width="15dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp">
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/timeline_blip"
+            android:layout_gravity="center"
+            android:layout_marginTop="1dp"
+            android:elevation="1dp"/>
+        <LinearLayout
+            android:id="@+id/timeline_background_top"
+            android:layout_width="12dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center|top"></LinearLayout>
+        <LinearLayout
+            android:id="@+id/timeline_background_bottom"
+            android:layout_width="12dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="22.5dp"
+            android:layout_gravity="center|bottom"></LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_margin="10dp">
+        <TextView
+            android:id="@+id/timeline_log"
+            android:fontFamily="@font/lato_light"
+            android:textSize="14sp"
+            android:text="@string/start_up_loading_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

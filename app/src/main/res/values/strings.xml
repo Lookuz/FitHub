@@ -34,6 +34,9 @@
     <string name="nav_favourites">Favourites</string>
     <string name="nav_schedule">My Schedule</string>
     <string name="nav_settings">Settings</string>
+    <string name="profile_signed_up"> just joined FitHub!</string>
+    <string name="profile_created_post"> has just created a new post </string>
+    <string name="profile_check_in"> was at </string>
 
     <!--Maps-->
     <string name="maps_hint">Can\'t find what you\'re looking for?</string>
