@@ -15,6 +15,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.List;
 
 /**
@@ -178,6 +184,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                     }
                 });
             }
+            // Like Button
             likeImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -185,7 +192,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                     postAdapter.notifyDataSetChanged();
                 }
             });
-
+            // Dislike Button
             dislikeImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -229,13 +236,35 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     /**
      * Method to favourite post to user's list of posts.
      */
-    private void favouritePost(FitPost post) {
-        FitUser user = ((MainPageActivity) getActivity()).getUser();
+    private void favouritePost(final FitPost post) {
+        final FitUser user = ((MainPageActivity) getActivity()).getUser();
         if (user == null) {
-            Log.d("Favourite Post: ", "No User logged in");
             return;
         } else {
-            user.favouritePost(post);
+
+            if (user.favouritePost(post)) { // If post successfully added to
+                Query query = FirebaseDatabase.getInstance().getReference("FitPosts")
+                        .orderByChild("title")
+                        .equalTo(post.getTitle());
+
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                if (ds.getValue(FitPost.class).getTitle().equals(post.getTitle())) {
+                                    user.favouritePostKey(ds.getKey());
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
         }
     }
 

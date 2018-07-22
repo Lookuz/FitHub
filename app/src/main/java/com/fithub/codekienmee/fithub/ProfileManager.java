@@ -25,11 +25,12 @@ public class ProfileManager {
         String message = user.getName() + " " + context.getString(R.string.profile_created_post) + " "
                 + post.getTitle();
         user.getTimeline().add(0, message);
-        user.getPosts().add(0, post);
+        user.addPost(post);
+        user.updateStatistics();
     }
 
     /**
-     * Method to update user location uponing signing into a FitLocation.
+     * Method to update user location upon signing into a FitLocation.
      */
     public static void addLocation(Context context, FitUser user, FitLocation location) {
         String message = user.getName() + " " + context.getString(R.string.profile_check_in) + " "

@@ -28,7 +28,9 @@ public class FitUser implements Serializable {
 
     private List<String> timeline;
     private List<FitPost> posts;
+    private List<FitPost> postsKeys;
     private List<FitPost> favouritePosts;
+    private List<String> favouritePostKeys;
     private List<FitLocation> favouriteLocations;
     private Map<String, Boolean> userSettings;
 
@@ -37,6 +39,8 @@ public class FitUser implements Serializable {
         this.uid = FirebaseAuth.getInstance()
                 .getCurrentUser()
                 .getUid();
+        this.favouritePosts = new ArrayList<>();
+        this.favouriteLocations = new ArrayList<>();
     }
 
     public void setName(String name) {
@@ -83,6 +87,22 @@ public class FitUser implements Serializable {
         this.totalLikes = totalLikes;
     }
 
+    public List<FitPost> getPostsKeys() {
+        return postsKeys;
+    }
+
+    public void setPostsKeys(List<FitPost> postsKeys) {
+        this.postsKeys = postsKeys;
+    }
+
+    public List<String> getFavouritePostKeys() {
+        return favouritePostKeys;
+    }
+
+    public void setFavouritePostKeys(List<String> favouritePostKeys) {
+        this.favouritePostKeys = favouritePostKeys;
+    }
+
     public int getTotalShares() {
         return totalShares;
     }
@@ -127,9 +147,19 @@ public class FitUser implements Serializable {
             return false;
         } else {
             this.favouritePosts.add(post);
-            Log.d("User: ", "Post " + post.getTitle() + " added.");
             return true;
         }
+    }
+
+    /**
+     * Adds the key of the favourited post to user list.
+     */
+    public void favouritePostKey(String key) {
+        if (this.favouritePostKeys == null) {
+            this.favouritePostKeys = new ArrayList<>();
+        }
+
+        this.favouritePostKeys.add(key);
     }
 
     /**

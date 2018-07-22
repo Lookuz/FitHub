@@ -1,12 +1,14 @@
 package com.fithub.codekienmee.fithub;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -14,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +82,69 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private List<FitLocation> locationList;
     private DatabaseReference locationsDB;
     private FitUser user;
+    private SuggestionsAdapter suggestionsAdapter;
+
+    private class SyncLocations extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            // Read locations from DB.
+            locationsDB = FirebaseDatabase.getInstance().getReference("FitLocations");
+            locationsDB.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    List<FitLocation> locationList = new ArrayList<>();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        FitLocation location = ds.getValue(FitLocation.class);
+                        locationList.add(location);
+                        suggestionsAdapter.add(location);
+                    }
+                    MapsFragment.this.locationList = locationList;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            if (suggestionsAdapter != null) {
+                suggestionsAdapter.notifyDataSetChanged();
+            }
+
+            suggestionsAdapter.setNotifyOnChange(true);
+            searchBar.setAdapter(suggestionsAdapter);
+            searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    FitLocation location = suggestionsAdapter.getItem(position);
+                    if(location != null) {
+                        // Hide soft keyboard
+                        InputMethodManager manager = (InputMethodManager) getActivity()
+                                .getSystemService(Context.INPUT_METHOD_SERVICE);
+                        manager.hideSoftInputFromWindow(getActivity().getWindow()
+                                .getCurrentFocus().getWindowToken(), 0);
+                        Marker marker = locationHashMap.get(location);
+                        centerLocation(marker.getPosition(), 12);
+                        marker.showInfoWindow();
+                    }
+                }
+            });
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,25 +152,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         this.userPermission = false;
         this.user = ((MainPageActivity) getActivity()).getUser();
         this.locationHashMap = new HashMap<>();
-        this.locationList = new ArrayList<>(); // TODO: Initialize list with locations from DB.
+        this.locationList = new ArrayList<>();
+        this.suggestionsAdapter = new SuggestionsAdapter(getContext(),
+                this.locationList);
 
-        // Read locations from DB.
-        this.locationsDB = FirebaseDatabase.getInstance().getReference("FitLocations");
-        this.locationsDB.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<FitLocation> locationList = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    locationList.add(ds.getValue(FitLocation.class));
-                }
-                MapsFragment.this.locationList = locationList;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        new SyncLocations().execute();
 
         this.executorService = Executors.newFixedThreadPool(5);
         this.executorService.submit(new Runnable() {
@@ -124,7 +176,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         final View view = inflater.inflate(R.layout.fragment_maps_service,
                 container, false);
 
-        this.mapView = (MapView) view.findViewById(R.id.map_view);
+        this.mapView = view.findViewById(R.id.map_view);
         this.mapView.onCreate(savedInstanceState);
         this.mapView.getMapAsync(this); // Prepare map functions.
         this.initWidgets(view); // Initialize widgets on map.
@@ -191,33 +243,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      * Widgets used: AutoCompleteTextView search bar, ImageButton centerUserLocation.
      */
     private void initWidgets(View view) {
-        final SuggestionsAdapter suggestionsAdapter = new SuggestionsAdapter(getContext(),
-                this.locationList);
+        this.searchBar = view.findViewById(R.id.map_search_bar);
+        this.suggestionsAdapter.setNotifyOnChange(true);
 
-        this.searchBar = (AutoCompleteTextView) view.findViewById(R.id.map_search_bar);
-//        this.autocompleteAdapter = new PlaceAutocompleteAdapter(getActivity(), geoDataClient,
-//                LOCATION_BOUNDS, null);
-//        this.searchBar.setAdapter(this.autocompleteAdapter);
-        this.searchBar.setAdapter(suggestionsAdapter);
-        this.searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FitLocation location = suggestionsAdapter.getItem(position);
-                if(location != null) {
-                    // Hide soft keyboard
-                    InputMethodManager manager = (InputMethodManager) getActivity()
-                            .getSystemService(Context.INPUT_METHOD_SERVICE);
-                    manager.hideSoftInputFromWindow(getActivity().getWindow()
-                            .getCurrentFocus().getWindowToken(), 0);
-                    Marker marker = locationHashMap.get(location);
-                    centerLocation(marker.getPosition(), 12);
-                    marker.showInfoWindow();
-                }
-            }
-        });
         this.searchBar.setHint(R.string.maps_hint);
-        this.centerUserLocation = (ImageButton) view.findViewById(R.id.map_center_button);
-        this.favouriteLocation = (ImageButton) view.findViewById(R.id.map_favourites_button);
+        this.centerUserLocation = view.findViewById(R.id.map_center_button);
+        this.favouriteLocation = view.findViewById(R.id.map_favourites_button);
 
         this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,7 +288,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      * @param grantResults
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case MapsFragment.REQUEST_CODE: {
                 if (grantResults.length > 0) {

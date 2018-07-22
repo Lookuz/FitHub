@@ -1,6 +1,8 @@
 package com.fithub.codekienmee.fithub;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -47,6 +49,53 @@ public class MainPageActivity extends AppCompatActivity {
 
     public FitUser getUser() {
         return user;
+    }
+
+    private class SyncUser extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                    // If user not in Firebase DB, update.
+                    if (!dataSnapshot.child("users").hasChild(fbUser.getUid())) {
+                        user.setName(fbUser.getDisplayName());
+                        user.setEmail(fbUser.getEmail());
+                        ProfileManager.signedUp(MainPageActivity.this, user);
+                        databaseReference.child("users").child(fbUser.getUid()).setValue(user);
+                    } else {
+                        // Else pull information from DB.
+                        user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
+                        user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
+                        user.setTimeline(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getTimeline());
+                        user.setUserSettings(new HashMap<String, Boolean>());
+                        databaseReference.child("users").child(fbUser.getUid()).setValue(user);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
     }
 
     @Override
@@ -105,31 +154,7 @@ public class MainPageActivity extends AppCompatActivity {
         this.fbUser = this.firebaseAuth.getCurrentUser();
         this.firebaseDatabase = FirebaseDatabase.getInstance();
         this.databaseReference = this.firebaseDatabase.getReference();
-        this.databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // If user not in Firebase DB, update.
-                if (!dataSnapshot.child("users").hasChild(fbUser.getUid())) {
-                    user.setName(fbUser.getDisplayName());
-                    user.setEmail(fbUser.getEmail());
-                    databaseReference.child("users").child(fbUser.getUid()).setValue(user);
-                } else {
-                    // Else pull information from DB.
-                    user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
-                    user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
-                    user.setTimeline(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getTimeline());
-                    user.setFavouriteLocations(new ArrayList<FitLocation>());
-                    user.setFavouritePosts(new ArrayList<FitPost>());
-                    user.setUserSettings(new HashMap<String, Boolean>());
-                    databaseReference.child("users").child(fbUser.getUid()).setValue(user);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        new SyncUser().execute();
     }
 
     /**
@@ -247,7 +272,12 @@ public class MainPageActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        databaseReference.child("users").child(fbUser.getUid()).setValue(user);
+        databaseReference.child("users").child(fbUser.getUid()).child("timeline")
+                .setValue(user.getTimeline());
+        databaseReference.child("users").child(fbUser.getUid())
+                .child("postsKeys").setValue(user.getPostsKeys());
+        databaseReference.child("users").child(fbUser.getUid())
+                .child("favouritePostKeys").setValue(user.getFavouritePostKeys());
     }
 
     @Override

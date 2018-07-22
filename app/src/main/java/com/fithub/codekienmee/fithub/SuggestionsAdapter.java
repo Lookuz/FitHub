@@ -3,6 +3,7 @@ package com.fithub.codekienmee.fithub;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ public class SuggestionsAdapter extends ArrayAdapter<FitLocation> {
             List<FitLocation> suggestionsList = new ArrayList<>();
             FilterResults results = new FilterResults();
 
+            if (locationList == null || locationList.isEmpty())
+
             if(constraint == null || constraint.length() == 0) {
                 suggestionsList.addAll(locationList);
             }else {
@@ -34,11 +37,12 @@ public class SuggestionsAdapter extends ArrayAdapter<FitLocation> {
                         .toLowerCase()
                         .trim();
                 for (FitLocation location : locationList) {
-                    if (location.getLocationName().toString()
+                    if (location.getLocationName()
                             .toLowerCase()
                             .trim()
                             .contains(expression))
                         suggestionsList.add(location);
+                    Log.d("SuggestionsAdapter: ", "Adding Location " + location.getLocationName());
                 }
             }
             results.values = suggestionsList;
@@ -74,6 +78,7 @@ public class SuggestionsAdapter extends ArrayAdapter<FitLocation> {
             convertView = LayoutInflater.from(getContext())
                     .inflate(R.layout.suggestions_view , parent, false);
         }
+
         TextView locationTitle = (TextView) convertView.findViewById(R.id.suggestions_title);
         TextView locationContent = (TextView) convertView.findViewById(R.id.suggestions_content);
         FitLocation location = this.getItem(position);
@@ -90,5 +95,11 @@ public class SuggestionsAdapter extends ArrayAdapter<FitLocation> {
     @Override
     public Filter getFilter() {
         return this.locationFilter;
+    }
+
+    @Override
+    public void add(@Nullable FitLocation object) {
+        super.add(object);
+        this.locationList.add(object);
     }
 }

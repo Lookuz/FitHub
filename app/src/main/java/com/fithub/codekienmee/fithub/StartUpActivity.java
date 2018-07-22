@@ -397,7 +397,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         FirebaseUser user = firebaseAuth.getCurrentUser();
-                        showLoadingScreen(getString(R.string.start_up_logged_in).concat(user.getDisplayName()));
+                        showLoadingScreen(getString(R.string.start_up_logged_in).concat(" " + user.getDisplayName()));
                         startActivity(new Intent(StartUpActivity.this,
                                 MainPageActivity.class));
                         finish();

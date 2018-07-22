@@ -1,5 +1,7 @@
 package com.fithub.codekienmee.fithub;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -26,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class ForumFragment extends ListFragment implements PostCallBack {
@@ -36,6 +39,65 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     private FloatingActionButton filter;
     private Stack<Fragment> postStack;
     private DatabaseReference postDB;
+
+    private class SyncData extends AsyncTask<List, String, String> {
+
+        private final ProgressDialog progressDialog = new ProgressDialog(getContext());
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.progressDialog.setMessage("Loading, please wait..");
+            this.progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            this.progressDialog.setIndeterminate(true);
+
+            this.progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(List... lists) {
+
+            postDB.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        FitPost post = ds.getValue(FitPost.class);
+                        postList.add(post);
+                    }
+
+                    postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    postAdapter = new PostAdapter(postList);
+                    postRecyclerView.setAdapter(postAdapter);
+                    postAdapter.notifyAdapterSetDataChanged();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+//            postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//            postAdapter = new PostAdapter(postList);
+//            postRecyclerView.setAdapter(postAdapter);
+//            postAdapter.notifyAdapterSetDataChanged();
+            super.onPostExecute(s);
+
+            if(progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+    }
 
     @Override
     public void onCallBack(FitPost post) {
@@ -93,25 +155,7 @@ public class ForumFragment extends ListFragment implements PostCallBack {
         this.newPost = view.findViewById(R.id.forum_create_post);
         this.filter = view.findViewById(R.id.forum_filter_posts);
         this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
-        this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         this.postDB = FirebaseDatabase.getInstance().getReference("FitPosts");
-        this.postDB.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    FitPost post = ds.getValue(FitPost.class);
-                    postList.add(post);
-                }
-                    postAdapter = new PostAdapter(postList);
-                    postRecyclerView.setAdapter(postAdapter);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         if (((MainPageActivity) getActivity()).hasUser()){
             final PostCallBack callBack = this;
@@ -137,6 +181,12 @@ public class ForumFragment extends ListFragment implements PostCallBack {
                 // TODO: Add filter post functionality
             }
         });
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        new SyncData().execute();
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
