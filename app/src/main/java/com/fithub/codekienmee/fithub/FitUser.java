@@ -1,17 +1,11 @@
 package com.fithub.codekienmee.fithub;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +22,9 @@ public class FitUser implements Serializable {
 
     private List<String> timeline;
     private List<FitPost> posts;
-    private List<FitPost> postsKeys;
+    private List<String> postsKeys; // List that stores keys of posted content.
     private List<FitPost> favouritePosts;
-    private List<String> favouritePostKeys;
+    private List<String> favouritePostKeys; // List that stores keys of favourited posts.
     private List<FitLocation> favouriteLocations;
     private Map<String, Boolean> userSettings;
 
@@ -87,11 +81,11 @@ public class FitUser implements Serializable {
         this.totalLikes = totalLikes;
     }
 
-    public List<FitPost> getPostsKeys() {
+    public List<String> getPostsKeys() {
         return postsKeys;
     }
 
-    public void setPostsKeys(List<FitPost> postsKeys) {
+    public void setPostsKeys(List<String> postsKeys) {
         this.postsKeys = postsKeys;
     }
 
@@ -136,6 +130,16 @@ public class FitUser implements Serializable {
     }
 
     /**
+     * Method to update user timeline.
+     */
+    public void updateTimeline(String message) {
+        if (message == null || message.equals("")) {
+            return;
+        }
+        this.timeline.add(0, message);
+    }
+
+    /**
      * Method to add a post to User's list of favourite posts.
      */
     public boolean favouritePost(FitPost post) {
@@ -159,7 +163,9 @@ public class FitUser implements Serializable {
             this.favouritePostKeys = new ArrayList<>();
         }
 
-        this.favouritePostKeys.add(key);
+        this.favouritePostKeys.add(0, key);
+        for (String postkey : favouritePostKeys)
+            Log.d("FavouritePostKey: ", postkey);
     }
 
     /**

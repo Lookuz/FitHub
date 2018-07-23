@@ -37,6 +37,7 @@
     <string name="profile_signed_up"> just joined FitHub!</string>
     <string name="profile_created_post"> has just created a new post </string>
     <string name="profile_check_in"> was at </string>
+    <string name="profile_favourited_post"> has just favourited post </string>
 
     <!--Maps-->
     <string name="maps_hint">Can\'t find what you\'re looking for?</string>

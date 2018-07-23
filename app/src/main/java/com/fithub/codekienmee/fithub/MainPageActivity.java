@@ -1,10 +1,8 @@
 package com.fithub.codekienmee.fithub;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -17,7 +15,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +24,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -74,7 +70,10 @@ public class MainPageActivity extends AppCompatActivity {
                         user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
                         user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
                         user.setTimeline(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getTimeline());
-                        user.setUserSettings(new HashMap<String, Boolean>());
+                        user.setFavouritePostKeys(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getFavouritePostKeys());
+                        user.setPostsKeys(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getPostsKeys());
+                        user.setUserSettings(new HashMap<String, Boolean>()); // TODO: Create and load user settings.
+                        ProfileManager.loadPosts(user);
                         databaseReference.child("users").child(fbUser.getUid()).setValue(user);
                     }
                 }

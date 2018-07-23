@@ -241,35 +241,13 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         if (user == null) {
             return;
         } else {
-
-            if (user.favouritePost(post)) { // If post successfully added to
-                Query query = FirebaseDatabase.getInstance().getReference("FitPosts")
-                        .orderByChild("title")
-                        .equalTo(post.getTitle());
-
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                if (ds.getValue(FitPost.class).getTitle().equals(post.getTitle())) {
-                                    user.favouritePostKey(ds.getKey());
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
+            ProfileManager.favouritePost(getContext(), user, post);
         }
     }
 
     /**
      * Method to update the number of Likes and Dislikes in post.
+     * TODO: Set update likes everytime post is clicked/ like/ dislike button clicked.
      */
     private void updateLikes(FitPost parent, TextView likes, TextView dislikes) {
         likes.setText(parent.getNumLikes());

@@ -104,6 +104,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         FitLocation location = ds.getValue(FitLocation.class);
                         locationList.add(location);
                         suggestionsAdapter.add(location);
+                        Log.d("LocationList: ", locationList.size() + " elements");
+                        Log.d("SuggestionsList: ", suggestionsAdapter.getCount() + " elements");
                     }
                     MapsFragment.this.locationList = locationList;
                 }
@@ -127,6 +129,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
             suggestionsAdapter.setNotifyOnChange(true);
             searchBar.setAdapter(suggestionsAdapter);
+            Log.d("SuggestionsAdapter: ", "Set");
             searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -253,7 +256,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getCurrLocation(); // TODO: Animate centering back on device location.
+                getCurrLocation();
             }
         });
         this.favouriteLocation.setOnClickListener(new View.OnClickListener() {

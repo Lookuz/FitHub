@@ -28,11 +28,9 @@ public class SuggestionsAdapter extends ArrayAdapter<FitLocation> {
             List<FitLocation> suggestionsList = new ArrayList<>();
             FilterResults results = new FilterResults();
 
-            if (locationList == null || locationList.isEmpty())
-
             if(constraint == null || constraint.length() == 0) {
                 suggestionsList.addAll(locationList);
-            }else {
+            } else {
                 String expression = constraint.toString()
                         .toLowerCase()
                         .trim();
