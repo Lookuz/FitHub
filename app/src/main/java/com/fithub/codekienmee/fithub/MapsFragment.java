@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
@@ -49,9 +50,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -71,14 +75,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private AutoCompleteTextView searchBar;
     private ImageButton centerUserLocation; // Button to center back on user's location.
     private ImageButton favouriteLocation;
+    private ImageButton addFavouriteLocation;
     private ExecutorService executorService;
     private boolean userPermission;
     private FusedLocationProviderClient locationProviderClient; // Client that gets locations
-//     Adapter that sets autocomplete features and filters for Google Locations.
-//    private PlaceAutocompleteAdapter autocompleteAdapter;
-    // HashMap that maps each marker to it's respective FitLocation data.
-    private HashMap<FitLocation, Marker> locationHashMap;
-    // List that stores all the known available locations.
+    private HashMap<String, Marker> locationHashMap;
     private List<FitLocation> locationList;
     private DatabaseReference locationsDB;
     private FitUser user;
@@ -101,13 +102,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<FitLocation> locationList = new ArrayList<>();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        FitLocation location = ds.getValue(FitLocation.class);
+                        final FitLocation location = ds.getValue(FitLocation.class);
                         locationList.add(location);
                         suggestionsAdapter.add(location);
-                        Log.d("LocationList: ", locationList.size() + " elements");
-                        Log.d("SuggestionsList: ", suggestionsAdapter.getCount() + " elements");
+                        Log.d("Adding: ", location.getLocationName());
+                        Log.d("Location List Size: ", locationList.size() + "");
                     }
+
                     MapsFragment.this.locationList = locationList;
+                    Log.d("List size: ", MapsFragment.this.locationList.size() + "");
                 }
 
                 @Override
@@ -129,7 +132,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
             suggestionsAdapter.setNotifyOnChange(true);
             searchBar.setAdapter(suggestionsAdapter);
-            Log.d("SuggestionsAdapter: ", "Set");
             searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -140,12 +142,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                 .getSystemService(Context.INPUT_METHOD_SERVICE);
                         manager.hideSoftInputFromWindow(getActivity().getWindow()
                                 .getCurrentFocus().getWindowToken(), 0);
-                        Marker marker = locationHashMap.get(location);
+                        Marker marker = locationHashMap.get(location.getLocationKey());
                         centerLocation(marker.getPosition(), 12);
                         marker.showInfoWindow();
                     }
                 }
             });
+
+            displayLocations();
         }
     }
 
@@ -218,18 +222,46 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      * Method that displays markers of all allowed fitness centre locations.
      */
     private void displayLocations() {
-        for (FitLocation location : this.locationList) {
-            // Define settings for adding markers.
-            Marker marker = this.gMap.addMarker(new MarkerOptions()
-                    .position(location.getLocationCoordinates())
-                    .title(location.getLocationName())
-                    .zIndex(5)
-                    .icon(this.bitmapDescriptorFromVector(getContext(),
-                            R.drawable.ic_fithub_location_icon_monochrome)));
-            // Map a marker to it's respective FitLocation.
-            marker.setTag(location);
-            this.locationHashMap.put(location, marker);
-        }
+        Log.d("Displaying Locations: ", locationList.size() + " elements");
+
+        this.locationsDB.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    FitLocation location = ds.getValue(FitLocation.class);
+
+                    Marker marker = gMap.addMarker(new MarkerOptions()
+                            .position(location.getLocationCoordinates())
+                            .title(location.getLocationName())
+                            .zIndex(5)
+                            .icon(bitmapDescriptorFromVector(getContext(),
+                                    R.drawable.ic_fithub_location_icon_monochrome)));
+                    // Map a marker to it's respective FitLocation.
+                    marker.setTag(location); // TODO: Remotely pull location details on click.
+                    Log.d("Displaying location: ", location.getLocationName());
+                    locationHashMap.put(location.getLocationKey(), marker);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+//        for (FitLocation location : this.locationList) {
+//            // Define settings for adding markers.
+//            Marker marker = this.gMap.addMarker(new MarkerOptions()
+//                    .position(location.getLocationCoordinates())
+//                    .title(location.getLocationName())
+//                    .zIndex(5)
+//                    .icon(this.bitmapDescriptorFromVector(getContext(),
+//                            R.drawable.ic_fithub_location_icon_monochrome)));
+//            // Map a marker to it's respective FitLocation.
+//            marker.setTag(location);
+//            Log.d("Displaying location: ", location.getLocationName());
+//            this.locationHashMap.put(location, marker);
+//        }
     }
 
     /**
@@ -247,11 +279,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      */
     private void initWidgets(View view) {
         this.searchBar = view.findViewById(R.id.map_search_bar);
-        this.suggestionsAdapter.setNotifyOnChange(true);
 
         this.searchBar.setHint(R.string.maps_hint);
         this.centerUserLocation = view.findViewById(R.id.map_center_button);
         this.favouriteLocation = view.findViewById(R.id.map_favourites_button);
+        this.addFavouriteLocation = view.findViewById(R.id.maps_favourite_location);
 
         this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,11 +356,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
+
             this.gMap.setMyLocationEnabled(true);
             this.gMap.getUiSettings().setAllGesturesEnabled(true);
             this.gMap.getUiSettings().setMyLocationButtonEnabled(false);
-            this.gMap.setInfoWindowAdapter(new FitInfoWindowAdapter(getContext()));
-            this.displayLocations(); // Display available locations on map.
+            this.gMap.setInfoWindowAdapter(new FitInfoWindowAdapter(getActivity(), this.user));
         }
     }
 

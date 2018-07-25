@@ -241,7 +241,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         if (user == null) {
             return;
         } else {
-            ProfileManager.favouritePost(getContext(), user, post);
+            ProfileManager.favouritePost(getActivity(), user, post);
         }
     }
 

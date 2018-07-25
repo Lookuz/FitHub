@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -74,6 +75,7 @@ public class MainPageActivity extends AppCompatActivity {
                         user.setPostsKeys(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getPostsKeys());
                         user.setUserSettings(new HashMap<String, Boolean>()); // TODO: Create and load user settings.
                         ProfileManager.loadPosts(user);
+                        ProfileManager.loadLocations(user);
                         databaseReference.child("users").child(fbUser.getUid()).setValue(user);
                     }
                 }
@@ -266,6 +268,12 @@ public class MainPageActivity extends AppCompatActivity {
         if (this.togglebar.onOptionsItemSelected(item)) return true;
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void makeSnackBar(String message) {
+        // TODO: Style snackbar.
+        Snackbar.make(findViewById(R.id.main_page_activity), message, Snackbar.LENGTH_SHORT)
+                .show();
     }
 
     @Override

@@ -8,15 +8,18 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Class that manages updating the timeline for user profiles.
  */
 public class ProfileManager {
+
+    private static ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     /**
      * Method to register log for user that just joined FitHub.
@@ -35,6 +38,7 @@ public class ProfileManager {
                 + post.getTitle();
         user.updateTimeline(message);
         user.addPost(post);
+        user.addPostKey(post.getPostKey());
         user.updateStatistics();
     }
 
@@ -44,35 +48,21 @@ public class ProfileManager {
      */
     public static void favouritePost(Context context, final FitUser user, final FitPost post) {
 
-        if (user.favouritePost(post)) { // If post successfully added to
-            Query query = FirebaseDatabase.getInstance().getReference("FitPosts")
-                    .orderByChild("title")
-                    .equalTo(post.getTitle());
+        String message = user.getName() + " " + context.getString(R.string.profile_favourited_post) + " "
+                + post.getTitle();
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            if (ds.getValue(FitPost.class).getTitle().equals(post.getTitle())) {
-                                // TODO: Refine key fetching.
-                                Log.d("Post exists: ", "Favouriting posts");
-                                user.favouritePostKey(ds.getKey());
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-            String message = user.getName() + " " + context.getString(R.string.profile_favourited_post) + " "
-                    + post.getTitle();
-            user.updateTimeline(message);
+        if (user.favouritePost(post)) { // If post successfully added
+            ((MainPageActivity) context).makeSnackBar(
+                    post.getTitle() + " " + context.getString(R.string.profile_manager_favourited));
+            user.favouritePostKey(post.getPostKey());
+        } else {
+            ((MainPageActivity) context).makeSnackBar(
+                    post.getTitle() + " " + context.getString(R.string.profile_manager_unfavourited));
+            user.favouritePostKey(post.getPostKey());
+            user.unfavouritePostKey(post.getPostKey());
         }
+
+        user.updateTimeline(message);
     }
 
     /**
@@ -85,34 +75,88 @@ public class ProfileManager {
     }
 
     /**
+     * Method to add location into user's list of favourites.
+     */
+    public static void favouriteLocation(Context context, FitUser user, FitLocation location) {
+        if (user.favouriteLocation(location)) {
+            ((MainPageActivity) context).makeSnackBar(location.getLocationName() + " " +
+                    context.getString(R.string.profile_manager_favourited));
+            user.favouriteLocationKey(location.getLocationKey());
+        } else {
+            ((MainPageActivity) context).makeSnackBar(location.getLocationName() + " " +
+                    context.getString(R.string.profile_manager_unfavourited));
+            user.unfavouriteLocationKey(location.getLocationKey());
+        }
+    }
+
+    /**
      * Method to load all of the users posts and favourited posts on start.
      * TODO: Consider separate thread for this action?
      */
     public static void loadPosts(final FitUser user) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                 .getReference("FitPosts");
 
+        // TODO: Run async.
         if (user.getFavouritePostKeys() != null || user.getPostsKeys() != null) {
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            executorService.submit(new Runnable() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        if (user.getPostsKeys() != null && user.getPostsKeys().contains(ds.getKey())) {
-                            Log.d("Adding Post: ", ds.getKey());
-                            user.addPost(ds.getValue(FitPost.class));
+                public void run() {
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                if (user.getPostsKeys() != null && user.getPostsKeys().contains(ds.getKey())) {
+                                    Log.d("Adding Post: ", ds.getKey());
+                                    user.addPost(ds.getValue(FitPost.class));
+                                }
+
+                                if (user.getFavouritePostKeys() != null &&
+                                        user.getFavouritePostKeys().contains(ds.getKey())) {
+                                    Log.d("Favouriting Post: ", ds.getKey());
+                                    user.favouritePost(ds.getValue(FitPost.class));
+                                }
+                            }
                         }
 
-                        if (user.getFavouritePostKeys() != null &&
-                                user.getFavouritePostKeys().contains(ds.getKey())) {
-                            Log.d("Favouriting Post: ", ds.getKey());
-                            user.favouritePost(ds.getValue(FitPost.class));
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
                         }
-                    }
+                    });
                 }
+            });
+        }
+    }
 
+    /**
+     * Method to load user's list of favourite locations from the location keys.
+     */
+    public static void loadLocations(final FitUser user) {
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("FitLocations");
+
+        if (user.getFavouriteLocationsKey() != null) {
+
+            executorService.submit(new Runnable() {
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                public void run() {
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                if (user.getFavouriteLocationsKey().contains(ds.getKey())) {
+                                    user.favouriteLocation(ds.getValue(FitLocation.class));
+                                }
+                            }
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
             });
         }

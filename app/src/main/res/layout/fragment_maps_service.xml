@@ -19,7 +19,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"></com.google.android.gms.maps.MapView>
 
+        <ImageButton
+            android:id="@+id/maps_favourite_location"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="55dp"
+            android:src="@drawable/ic_favourites"
+            android:background="@color/transparent"
+            android:scaleType="center"
+            android:elevation="3dp"
+            android:translationZ="3dp"/>
+
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/search_bar_constraint"
             android:layout_width="match_parent"
             android:layout_height="50dp">
 

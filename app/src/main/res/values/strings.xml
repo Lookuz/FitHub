@@ -39,6 +39,9 @@
     <string name="profile_check_in"> was at </string>
     <string name="profile_favourited_post"> has just favourited post </string>
 
+    <string name="profile_manager_favourited">added to favourites</string>
+    <string name="profile_manager_unfavourited">removed from favourites</string>
+
     <!--Maps-->
     <string name="maps_hint">Can\'t find what you\'re looking for?</string>
 

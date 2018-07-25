@@ -27,6 +27,7 @@ public class FitPost implements PostCallBack, Serializable {
     private String date;
     private List<FitPost> comments;
     private Map<String, Boolean> likeMap; // HashMap that tracks if user has liked/disliked post.
+    private String postKey;
 
     public FitPost() {
         // Default Constructor
@@ -115,6 +116,14 @@ public class FitPost implements PostCallBack, Serializable {
 
     public void setLikeMap(Map<String, Boolean> likeMap) {
         this.likeMap = likeMap;
+    }
+
+    public String getPostKey() {
+        return postKey;
+    }
+
+    public void setPostKey(String postKey) {
+        this.postKey = postKey;
     }
 
     private void addComment(FitPost post) {

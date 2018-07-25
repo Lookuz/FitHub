@@ -19,6 +19,7 @@ public class FitLocation implements Serializable {
     private String postalCode;
     private String phoneNumber;
     private String websiteURL;
+    private String locationKey;
 
     public FitLocation() {
         // Default Constructor.
@@ -78,6 +79,14 @@ public class FitLocation implements Serializable {
 
     public void setWebsiteURL(String websiteURL) {
         this.websiteURL = websiteURL;
+    }
+
+    public void setLocationKey(String locationKey) {
+        this.locationKey = locationKey;
+    }
+
+    public String getLocationKey() {
+        return locationKey;
     }
 
     public String getLocationName() {

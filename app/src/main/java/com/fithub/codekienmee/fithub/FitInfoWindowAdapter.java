@@ -1,8 +1,10 @@
 package com.fithub.codekienmee.fithub;
 
 import android.content.Context;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -18,9 +20,13 @@ import java.util.HashMap;
 public class FitInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private final View infoWindow; // View to be displayed on infoWindow.
+    private Context context;
+    private FitUser user;
 
-    public FitInfoWindowAdapter(Context context) {
+    public FitInfoWindowAdapter(Context context, FitUser user) {
         this.infoWindow = LayoutInflater.from(context).inflate(R.layout.maps_info_window,null);
+        this.user = user;
+        this.context = context;
     }
 
     /**
@@ -28,13 +34,14 @@ public class FitInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
      */
     private View initInfoWindow(Marker marker, View view) {
 
-        FitLocation location = (FitLocation) marker.getTag();
+        final FitLocation location = (FitLocation) marker.getTag();
 
         ((TextView) view.findViewById(R.id.info_window_title)).setText(location.getLocationName());
         ((TextView) view.findViewById(R.id.info_window_address))
                 .setText(location.getLocationAddress());
         ((TextView) view.findViewById(R.id.info_window_phone)).setText(location.getPhoneNumber());
         ((TextView) view.findViewById(R.id.info_window_website)).setText(location.getWebsiteURL());
+
         return this.infoWindow;
     }
 

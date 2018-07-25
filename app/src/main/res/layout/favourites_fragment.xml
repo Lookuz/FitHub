@@ -79,7 +79,12 @@
                 android:layout_marginTop="40dp">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/favourites_recycler_view"
+                    android:id="@+id/favourites_posts_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/favourites_locations_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
             </ViewFlipper>

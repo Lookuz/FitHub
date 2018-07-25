@@ -97,11 +97,7 @@ public abstract class ListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            if (this.postListInner != null) {
-                return postListInner.size();
-            } else {
-                return 0;
-            }
+            return (this.postListInner == null) ? 0 : this.postListInner.size();
         }
 
         /**

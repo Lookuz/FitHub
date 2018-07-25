@@ -19,6 +19,7 @@ public class FitUser implements Serializable {
     private int totalLikes;
     private int totalShares;
     private final String uid;
+    private String bio; // TODO: set bio
 
     private List<String> timeline;
     private List<FitPost> posts;
@@ -26,6 +27,7 @@ public class FitUser implements Serializable {
     private List<FitPost> favouritePosts;
     private List<String> favouritePostKeys; // List that stores keys of favourited posts.
     private List<FitLocation> favouriteLocations;
+    private List<String> favouriteLocationsKey;
     private Map<String, Boolean> userSettings;
 
     public FitUser() {
@@ -129,6 +131,14 @@ public class FitUser implements Serializable {
         return userSettings;
     }
 
+    public List<String> getFavouriteLocationsKey() {
+        return favouriteLocationsKey;
+    }
+
+    public void setFavouriteLocationsKey(List<String> favouriteLocationsKey) {
+        this.favouriteLocationsKey = favouriteLocationsKey;
+    }
+
     /**
      * Method to update user timeline.
      */
@@ -136,7 +146,12 @@ public class FitUser implements Serializable {
         if (message == null || message.equals("")) {
             return;
         }
-        this.timeline.add(0, message);
+
+        if (this.timeline.contains(message)) {
+            this.timeline.remove(message);
+        } else {
+            this.timeline.add(0, message);
+        }
     }
 
     /**
@@ -148,6 +163,7 @@ public class FitUser implements Serializable {
         }
 
         if (this.favouritePosts.contains(post)) {
+            this.favouritePosts.remove(post);
             return false;
         } else {
             this.favouritePosts.add(post);
@@ -168,6 +184,12 @@ public class FitUser implements Serializable {
             Log.d("FavouritePostKey: ", postkey);
     }
 
+    public void unfavouritePostKey(String key) {
+        if (this.favouritePostKeys != null) {
+            this.favouritePostKeys.remove(key);
+        }
+    }
+
     /**
      * Method that adds a post to the list of posts by the user.
      */
@@ -178,6 +200,54 @@ public class FitUser implements Serializable {
 
         // Add to front.
         this.posts.add(0, post);
+    }
+
+    /**
+     * Method to add post key to user's list of posted keys
+     */
+    public void addPostKey(String postKey) {
+        if (this.postsKeys == null) {
+            this.postsKeys = new ArrayList<>();
+        }
+
+        // Add to front.
+        this.postsKeys.add(0, postKey);
+    }
+
+    public void removePostKey(String postKey) {
+        if (this.postsKeys != null) {
+            this.postsKeys.remove(postKey);
+        }
+    }
+
+    /**
+     * Method to favourite a location.
+     */
+    public boolean favouriteLocation(FitLocation location) {
+        if (this.favouriteLocations.contains(location)) {
+            this.favouriteLocations.remove(location);
+            return false;
+        } else {
+            this.favouriteLocations.add(location);
+            return true;
+        }
+    }
+
+    /**
+     * Method to add a location key to user's list of favourite locations keys.
+     * @param locationKey
+     */
+    public void favouriteLocationKey(String locationKey) {
+        if (this.favouriteLocationsKey == null) {
+            this.favouriteLocationsKey = new ArrayList<>();
+        }
+        this.favouriteLocationsKey.add(0, locationKey);
+    }
+
+    public void unfavouriteLocationKey(String locationKey) {
+        if (this.favouriteLocationsKey != null) {
+            this.favouriteLocationsKey.remove(locationKey);
+        }
     }
 
     /**

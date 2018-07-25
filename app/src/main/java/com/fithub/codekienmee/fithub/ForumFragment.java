@@ -25,6 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -61,7 +62,8 @@ public class ForumFragment extends ListFragment implements PostCallBack {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        FitPost post = ds.getValue(FitPost.class);
+                        final FitPost post = ds.getValue(FitPost.class);
+                        post.setPostKey(ds.getKey());
                         postList.add(post);
                     }
 
@@ -101,11 +103,16 @@ public class ForumFragment extends ListFragment implements PostCallBack {
 
     @Override
     public void onCallBack(FitPost post) {
+        FitUser user = ((MainPageActivity) getActivity()).getUser();
+
         if(post != null) {
             this.postList.add(0, post);
             String postKey = this.postDB.push().getKey();
+            post.setPostKey(postKey);
             this.postDB.child(postKey).setValue(post);
             this.postAdapter.notifyAdapterSetDataChanged();
+
+            ProfileManager.createPost(getContext(), user, post);
         }
     }
 
