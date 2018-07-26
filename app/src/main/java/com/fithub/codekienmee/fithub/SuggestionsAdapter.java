@@ -11,6 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.nio.file.attribute.DosFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,23 +32,45 @@ public class SuggestionsAdapter extends ArrayAdapter<FitLocation> {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
-            List<FitLocation> suggestionsList = new ArrayList<>();
+            final List<FitLocation> suggestionsList = new ArrayList<>();
             FilterResults results = new FilterResults();
 
             if(constraint == null || constraint.length() == 0) {
                 suggestionsList.addAll(locationList);
             } else {
-                String expression = constraint.toString()
+                final String expression = constraint.toString()
                         .toLowerCase()
                         .trim();
-                for (FitLocation location : locationList) {
-                    if (location.getLocationName()
-                            .toLowerCase()
-                            .trim()
-                            .contains(expression))
-                        suggestionsList.add(location);
-                    Log.d("SuggestionsAdapter: ", "Adding Location " + location.getLocationName());
-                }
+
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("FitLocations");
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            FitLocation location = ds.getValue(FitLocation.class);
+                            if (location.getLocationName()
+                                    .toLowerCase()
+                                    .trim()
+                                    .contains(expression)) {
+                                suggestionsList.add(ds.getValue(FitLocation.class));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+//                for (FitLocation location : locationList) {
+//                    if (location.getLocationName()
+//                            .toLowerCase()
+//                            .trim()
+//                            .contains(expression))
+//                        suggestionsList.add(location);
+//                    Log.d("SuggestionsAdapter: ", "Adding Location " + location.getLocationName());
+//                }
             }
             results.values = suggestionsList;
             results.count = suggestionsList.size();

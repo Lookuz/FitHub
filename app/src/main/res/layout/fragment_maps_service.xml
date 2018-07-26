@@ -69,7 +69,9 @@
                     android:id="@+id/map_search_bar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fontFamily="@font/lato_light" />
+                    android:fontFamily="@font/lato_light"
+                    android:inputType="text"
+                    android:singleLine="true"/>
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>
 

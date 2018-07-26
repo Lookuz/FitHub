@@ -44,24 +44,29 @@
 
     </FrameLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/favourites_card_location"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_margin="10dp"
             android:fontFamily="@font/lato_light"
             android:textSize="14sp"
             android:text="Location Name"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+            android:gravity="center" />
+        <ImageButton
+            android:id="@+id/favourites_card_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_delete"
+            android:background="@color/white"
+            android:layout_marginEnd="10dp"
+            android:scaleType="centerInside"/>
+    </LinearLayout>
 
 </LinearLayout>

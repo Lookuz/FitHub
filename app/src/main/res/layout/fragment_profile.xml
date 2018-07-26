@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:clickable="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,7 +27,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="25dp">
+            android:layout_marginTop="5dp">
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/profile_timeline"
                 android:layout_width="match_parent"
@@ -47,96 +49,117 @@
         android:elevation="3dp"
         android:translationZ="3dp"/>
 
-    <TextView
+    <EditText
         android:id="@+id/profile_user_name"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="120dp"
+        android:gravity="center"
         android:fontFamily="@font/lato_light"
+        android:textColor="@color/black_translucent"
+        android:editable="false"
+        android:inputType="text"
         android:text="Name"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:background="@color/transparent"/>
 
-    <TextView
+    <EditText
         android:id="@+id/profile_user_bios"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="160dp"
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
         android:fontFamily="@font/lato_light"
-        android:text="Bio"
-        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:text="@string/profile_bio"
+        android:background="@color/transparent"
+        android:editable="false"
+        android:maxLines="3"
+        android:inputType="textNoSuggestions|textMultiLine"
+        android:textSize="16sp"
+        android:imeOptions="actionDone"
+        android:gravity="center|top"
         android:theme="@style/Base.ThemeOverlay.AppCompat.Dark"/>
 
+    <ImageButton
+        android:id="@+id/profile_edit"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="right|top"
+        android:layout_marginTop="170dp"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/ic_edit"
+        android:background="@drawable/profile_background_circular"
+        android:scaleType="centerInside"
+        android:elevation="3dp"
+        android:translationZ="3dp"/>
+    
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
+        android:orientation="vertical">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_share"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/profile_num_posts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="0"
+            android:textSize="20sp"
+            android:fontFamily="@font/lato_light"
+            android:gravity="center|top"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="50dp"
-        android:layout_marginTop="205dp"
-        android:background="@drawable/post_view_background"
-        android:elevation="5dp"
-        android:translationZ="5dp">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:orientation="horizontal">
+        android:layout_marginTop="50dp"
+        android:orientation="vertical"
+        android:layout_gravity="right">
 
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_share"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </android.support.constraint.ConstraintLayout>
-            <TextView
-                android:id="@+id/profile_num_posts"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="0"
-                android:textSize="20sp"
-                android:fontFamily="@font/lato_light"
-                android:gravity="center|top"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="5dp">
-            <android.support.constraint.ConstraintLayout
+
+            <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_thumb_up_grey"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </android.support.constraint.ConstraintLayout>
-            <TextView
-                android:id="@+id/profile_num_likes"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="0"
-                android:textSize="20sp"
-                android:fontFamily="@font/lato_light"
-                android:gravity="center|top"/>
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_like_mono"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/profile_num_likes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="0"
+            android:textSize="20sp"
+            android:fontFamily="@font/lato_light"
+            android:gravity="center|top"/>
     </LinearLayout>
 
 </FrameLayout>

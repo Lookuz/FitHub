@@ -18,7 +18,6 @@ public class FitUser implements Serializable {
     private String email;
     private int totalLikes;
     private int totalShares;
-    private final String uid;
     private String bio; // TODO: set bio
 
     private List<String> timeline;
@@ -32,9 +31,6 @@ public class FitUser implements Serializable {
 
     public FitUser() {
         //Default Constructor
-        this.uid = FirebaseAuth.getInstance()
-                .getCurrentUser()
-                .getUid();
         this.favouritePosts = new ArrayList<>();
         this.favouriteLocations = new ArrayList<>();
     }
@@ -105,10 +101,6 @@ public class FitUser implements Serializable {
 
     public void setTotalShares(int totalShares) {
         this.totalShares = totalShares;
-    }
-
-    public String getUid() {
-        return uid;
     }
 
     public String getName() {

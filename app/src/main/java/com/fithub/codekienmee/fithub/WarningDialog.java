@@ -59,7 +59,7 @@ public class WarningDialog extends DialogFragment {
 
         this.message.setText(getString(this.type.getWarningMessage()));
         switch (this.type) {
-            case UNSAVED_POST:
+            case UNSAVED_POST: case REMOVE_LOCATION:
                 this.iniOptionalWarning(view);
                 break;
             case EMPTY_POST: case EMPTY_FIELDS: case INCORRECT_CRED:

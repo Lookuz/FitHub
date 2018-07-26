@@ -127,14 +127,14 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     public static void setLikesColor(ImageView thumbsUp, ImageView thumbsDown,
                                      int likes, int dislikes) {
         if (likes > dislikes) {
-            thumbsUp.setImageResource(R.drawable.ic_thumb_up_green);
-            thumbsDown.setImageResource(R.drawable.ic_thumb_down_grey);
+            thumbsUp.setImageResource(R.drawable.ic_like_green);
+            thumbsDown.setImageResource(R.drawable.ic_dislike_mono);
         } else if (likes < dislikes) {
-            thumbsUp.setImageResource(R.drawable.ic_thumb_up_grey);
-            thumbsDown.setImageResource(R.drawable.ic_thumb_down_red);
+            thumbsUp.setImageResource(R.drawable.ic_like_mono);
+            thumbsDown.setImageResource(R.drawable.ic_dislike_red);
         } else {
-            thumbsUp.setImageResource(R.drawable.ic_thumb_up_grey);
-            thumbsDown.setImageResource(R.drawable.ic_thumb_down_grey);
+            thumbsUp.setImageResource(R.drawable.ic_like_mono);
+            thumbsDown.setImageResource(R.drawable.ic_dislike_mono);
         }
     }
 

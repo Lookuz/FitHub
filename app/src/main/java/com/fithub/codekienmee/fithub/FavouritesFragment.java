@@ -1,6 +1,5 @@
 package com.fithub.codekienmee.fithub;
 
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -33,18 +33,20 @@ public class FavouritesFragment extends ListFragment {
     /**
      * Private class that displays information of a favourited location in a card.
      */
-    private class LocationsHolder extends RecyclerView.ViewHolder {
+    private class LocationsHolder extends RecyclerView.ViewHolder implements WarningCallBack {
 
         private FitLocation location;
 
         private ProgressBar crowdLevel;
         private TextView locationName;
+        private ImageButton deleteLocation;
 
         public LocationsHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.favourite_locations_card, parent, false));
 
             this.crowdLevel = itemView.findViewById(R.id.favourites_card_crowd_level);
             this.locationName = itemView.findViewById(R.id.favourites_card_location);
+            this.deleteLocation = itemView.findViewById(R.id.favourites_card_delete);
         }
 
         public void initView(FitLocation location) {
@@ -52,6 +54,25 @@ public class FavouritesFragment extends ListFragment {
 
             this.locationName.setText(location.getLocationName());
             // TODO: Set progress bar level.
+            this.deleteLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO: set delete location.
+                    WarningDialog warningDialog = WarningDialog.newInstance(
+                            WarningEnum.REMOVE_LOCATION, LocationsHolder.this);
+
+                    warningDialog.show(getFragmentManager(), "Removing Location");
+                }
+            });
+        }
+
+        @Override
+        public void onCallBack(boolean exit) {
+            if (exit) {
+                user.unfavouriteLocationKey(this.location.getLocationKey());
+                locationsAdapter.removeLocation(this.location);
+                locationsAdapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -82,6 +103,10 @@ public class FavouritesFragment extends ListFragment {
         @Override
         public int getItemCount() {
             return (this.locationList == null) ? 0 : this.locationList.size();
+        }
+
+        public void removeLocation(FitLocation location) {
+            this.locationList.remove(location);
         }
     }
 

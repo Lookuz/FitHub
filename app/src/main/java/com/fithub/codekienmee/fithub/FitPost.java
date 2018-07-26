@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -142,21 +143,25 @@ public class FitPost implements PostCallBack, Serializable {
             this.likeMap = new HashMap<>();
         }
 
-        if (this.likeMap.containsKey(user.getUid()) &&
-                this.likeMap.get(user.getUid()) != null) {
-            if (this.likeMap.get(user.getUid())) { // Already liked
+        String uid = FirebaseAuth.getInstance()
+                .getCurrentUser()
+                .getUid();
+
+        if (this.likeMap.containsKey(uid) &&
+                this.likeMap.get(uid) != null) {
+            if (this.likeMap.get(uid)) { // Already liked
                 Log.d("FitPost: ", "Already Liked");
-                this.likeMap.remove((user.getUid()));
+                this.likeMap.remove((uid));
                 this.numLikes--;
             } else { // Previously disliked
                 Log.d("FitPost: ", "Previously disliked");
-                this.likeMap.put(user.getUid(), true);
+                this.likeMap.put(uid, true);
                 this.numLikes++;
                 this.numDislikes--;
             }
         } else {
             Log.d("FitPost: ", "Never Liked");
-            this.likeMap.put(user.getUid(), true);
+            this.likeMap.put(uid, true);
             this.numLikes++;
         }
     }
@@ -169,21 +174,25 @@ public class FitPost implements PostCallBack, Serializable {
             this.likeMap = new HashMap<>();
         }
 
-        if (this.likeMap.containsKey(user.getUid()) &&
-                this.likeMap.get(user.getUid()) != null) {
-            if (!this.likeMap.get(user.getUid())) { // Already disliked
+        String uid = FirebaseAuth.getInstance()
+                .getCurrentUser()
+                .getUid();
+
+        if (this.likeMap.containsKey(uid) &&
+                this.likeMap.get(uid) != null) {
+            if (!this.likeMap.get(uid)) { // Already disliked
                 Log.d("FitPost: ", "Already Disliked");
-                this.likeMap.remove((user.getUid()));
+                this.likeMap.remove((uid));
                 this.numDislikes--;
             } else { // Previously Liked
                 Log.d("FitPost: ", "Previously Liked");
-                this.likeMap.put(user.getUid(), false);
+                this.likeMap.put(uid, false);
                 this.numLikes--;
                 this.numDislikes++;
             }
         } else {
             Log.d("FitPost: ", "Never Disliked");
-            this.likeMap.put(user.getUid(), false);
+            this.likeMap.put(uid, false);
             this.numDislikes++;
         }
     }

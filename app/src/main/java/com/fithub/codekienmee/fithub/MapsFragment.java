@@ -11,6 +11,7 @@ import android.location.Location;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -69,6 +70,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private final static LatLngBounds  LOCATION_BOUNDS= new LatLngBounds(
             new LatLng(-40, -168), new LatLng(71, 136));
 
+    private boolean userPermission;
+    private FitUser user;
+    private HashMap<String, Marker> locationHashMap;
+    private List<FitLocation> locationList;
+    private DatabaseReference locationsDB;
+    private SuggestionsAdapter suggestionsAdapter;
+    private Marker currMarker;
+
     private MapView mapView; // View that displays the map
     private GoogleMap gMap; // Google Maps
     private GeoDataClient geoDataClient;
@@ -77,13 +86,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private ImageButton favouriteLocation;
     private ImageButton addFavouriteLocation;
     private ExecutorService executorService;
-    private boolean userPermission;
     private FusedLocationProviderClient locationProviderClient; // Client that gets locations
-    private HashMap<String, Marker> locationHashMap;
-    private List<FitLocation> locationList;
-    private DatabaseReference locationsDB;
-    private FitUser user;
-    private SuggestionsAdapter suggestionsAdapter;
 
     private class SyncLocations extends AsyncTask<String, String, String> {
 
@@ -148,8 +151,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     }
                 }
             });
-
-            displayLocations();
         }
     }
 
@@ -248,20 +249,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
             }
         });
-
-//        for (FitLocation location : this.locationList) {
-//            // Define settings for adding markers.
-//            Marker marker = this.gMap.addMarker(new MarkerOptions()
-//                    .position(location.getLocationCoordinates())
-//                    .title(location.getLocationName())
-//                    .zIndex(5)
-//                    .icon(this.bitmapDescriptorFromVector(getContext(),
-//                            R.drawable.ic_fithub_location_icon_monochrome)));
-//            // Map a marker to it's respective FitLocation.
-//            marker.setTag(location);
-//            Log.d("Displaying location: ", location.getLocationName());
-//            this.locationHashMap.put(location, marker);
-//        }
     }
 
     /**
@@ -270,7 +257,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      * @param zoom zoom level of location.
      */
     private void centerLocation(LatLng latLng, float zoom) {
-        this.gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        this.gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
     /**
@@ -284,6 +271,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         this.centerUserLocation = view.findViewById(R.id.map_center_button);
         this.favouriteLocation = view.findViewById(R.id.map_favourites_button);
         this.addFavouriteLocation = view.findViewById(R.id.maps_favourite_location);
+        this.addFavouriteLocation.setVisibility(View.GONE);
 
         this.centerUserLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -361,6 +349,39 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             this.gMap.getUiSettings().setAllGesturesEnabled(true);
             this.gMap.getUiSettings().setMyLocationButtonEnabled(false);
             this.gMap.setInfoWindowAdapter(new FitInfoWindowAdapter(getActivity(), this.user));
+            this.gMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(final Marker marker) {
+
+                    if (currMarker != null && currMarker.equals(marker)) {
+                        marker.hideInfoWindow();
+                        addFavouriteLocation.setVisibility(View.GONE);
+                        currMarker = null;
+                    } else {
+                        LatLng coordinates = new LatLng(((FitLocation) marker.getTag()).getLatitude(),
+                                ((FitLocation) marker.getTag()).getLongitude());
+                        centerLocation(coordinates, DEFAULT_ZOOM);
+                        marker.showInfoWindow();
+                        addFavouriteLocation.setVisibility(View.VISIBLE);
+                        addFavouriteLocation.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                ProfileManager.favouriteLocation(getActivity(), user,
+                                        (FitLocation) marker.getTag());
+                            }
+                        });
+                        currMarker = marker;
+                    }
+
+                    return true;
+                }
+            });
+            this.executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    displayLocations();
+                }
+            });
         }
     }
 
