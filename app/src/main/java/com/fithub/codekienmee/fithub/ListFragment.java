@@ -1,5 +1,6 @@
 package com.fithub.codekienmee.fithub;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Slide;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ListFragment extends Fragment {
@@ -106,7 +108,47 @@ public abstract class ListFragment extends Fragment {
         protected void notifyAdapterSetDataChanged() {
             this.notifyDataSetChanged();
         }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public void addPost(FitPost post) {
+            if (!this.postListInner.contains(post)) {
+                this.postListInner.add(post);
+            }
+        }
+
     }
+//
+//    /**
+//     * Adapter for fetching posts from firebase database remotely.
+//     */
+//    protected class RemotePostAdapter extends FirebaseRecyclerAdapter<FitPost, PostHolder> {
+//
+//        public RemotePostAdapter(@NonNull FirebaseRecyclerOptions<FitPost> options) {
+//            super(options);
+//        }
+//
+//        @Override
+//        protected void onBindViewHolder(@NonNull PostHolder holder, int position, @NonNull FitPost model) {
+//            holder.bindPost(model);
+//        }
+//
+//        @NonNull
+//        @Override
+//        public PostHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+//
+//            return new PostHolder(layoutInflater, parent);
+//        }
+//    }
 
 
     /**

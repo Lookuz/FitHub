@@ -67,16 +67,17 @@ public class MainPageActivity extends AppCompatActivity {
                         ProfileManager.signedUp(MainPageActivity.this, user);
                         databaseReference.child("users").child(fbUser.getUid()).setValue(user);
                     } else {
-                        // Else pull information from DB.
-                        user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
-                        user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
-                        user.setTimeline(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getTimeline());
-                        user.setFavouritePostKeys(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getFavouritePostKeys());
-                        user.setPostsKeys(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getPostsKeys());
+                        // Else pull information from DB
+                        user = dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class);
+//                        user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
+//                        user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
+//                        user.setTimeline(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getTimeline());
+//                        user.setFavouritePostKeys(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getFavouritePostKeys());
+//                        user.setPostsKeys(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getPostsKeys());
                         user.setUserSettings(new HashMap<String, Boolean>()); // TODO: Create and load user settings.
-                        ProfileManager.loadPosts(user);
-                        ProfileManager.loadLocations(user);
-                        databaseReference.child("users").child(fbUser.getUid()).setValue(user);
+//                        ProfileManager.loadPosts(user);
+//                        ProfileManager.loadLocations(user);
+//                        databaseReference.child("users").child(fbUser.getUid()).setValue(user);
                     }
                 }
 
@@ -201,7 +202,6 @@ public class MainPageActivity extends AppCompatActivity {
                     new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    // TODO: Create Fragments for menu items.
                     switch ((item.getItemId())) {
                         case R.id.nav_account:
                             onMenuItemClick(ProfileFragment.newInstance(user));
@@ -285,6 +285,9 @@ public class MainPageActivity extends AppCompatActivity {
                 .child("postsKeys").setValue(user.getPostsKeys());
         databaseReference.child("users").child(fbUser.getUid())
                 .child("favouritePostKeys").setValue(user.getFavouritePostKeys());
+        databaseReference.child("users").child(fbUser.getUid())
+                .child("favouriteLocationKeys").setValue(user.getFavouriteLocationsKey());
+//        databaseReference.child("users").child(fbUser.getUid()).setValue(FitUser.class);
     }
 
     @Override

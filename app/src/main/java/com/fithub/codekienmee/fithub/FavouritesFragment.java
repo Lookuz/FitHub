@@ -1,5 +1,6 @@
 package com.fithub.codekienmee.fithub;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,6 +8,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -29,6 +38,81 @@ public class FavouritesFragment extends ListFragment {
     private LocationsAdapter locationsAdapter;
     private ConstraintLayout posts;
     private ConstraintLayout locations;
+
+    /**
+     * Asynchronously fetch favourites from Firebase DB.
+     */
+    private class SyncFavourites extends AsyncTask<String, String, String> {
+
+        private DatabaseReference databaseReference;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.databaseReference = FirebaseDatabase.getInstance().getReference();
+            locationsAdapter = new LocationsAdapter(user.getFavouriteLocations());
+            postAdapter = new PostAdapter(user.getFavouritePosts());
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            if (user.getFavouritePostKeys() != null &&
+                    user.getFavouritePosts().size() != user.getFavouritePostKeys().size()) {
+                this.databaseReference.child("FitPosts").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (user.getFavouritePostKeys() != null) {
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                if (user.getFavouritePostKeys().contains(ds.getKey())) {
+                                    postAdapter.addPost(ds.getValue(FitPost.class));
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            if (user.getFavouriteLocationsKey() != null &&
+                    user.getFavouriteLocations().size() != user.getFavouriteLocationsKey().size()) {
+                this.databaseReference.child("FitLocations").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (user.getFavouriteLocationsKey() != null) {
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                if (user.getFavouriteLocationsKey().contains(ds.getKey())) {
+                                    locationsAdapter.addLocation(ds.getValue(FitLocation.class));
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            postRecyclerView.setAdapter(postAdapter);
+
+            locationsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            locationsRecyclerView.setAdapter(locationsAdapter);
+        }
+    }
 
     /**
      * Private class that displays information of a favourited location in a card.
@@ -57,7 +141,6 @@ public class FavouritesFragment extends ListFragment {
             this.deleteLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO: set delete location.
                     WarningDialog warningDialog = WarningDialog.newInstance(
                             WarningEnum.REMOVE_LOCATION, LocationsHolder.this);
 
@@ -108,6 +191,10 @@ public class FavouritesFragment extends ListFragment {
         public void removeLocation(FitLocation location) {
             this.locationList.remove(location);
         }
+
+        public void addLocation(FitLocation location) {
+            this.locationList.add(location);
+        }
     }
 
     public static FavouritesFragment newInstance() {
@@ -123,8 +210,9 @@ public class FavouritesFragment extends ListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.user = ((MainPageActivity) getActivity()).getUser();
-        this.postList = user.getFavouritePosts();
+//        this.postList = user.getFavouritePosts();
         this.fragmentStack = new Stack<>();
+        new SyncFavourites().execute();
     }
 
     @Nullable
@@ -144,13 +232,13 @@ public class FavouritesFragment extends ListFragment {
         this.postRecyclerView = view.findViewById(R.id.favourites_posts_recycler_view);
         this.locationsRecyclerView = view.findViewById(R.id.favourites_locations_recycler_view);
 
-        this.postAdapter = new PostAdapter(this.postList);
-        this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.postRecyclerView.setAdapter(this.postAdapter);
-
-        this.locationsAdapter = new LocationsAdapter(user.getFavouriteLocations());
-        this.locationsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        this.locationsRecyclerView.setAdapter(this.locationsAdapter);
+//        this.postAdapter = new PostAdapter(this.postList);
+//        this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        this.postRecyclerView.setAdapter(this.postAdapter);
+//
+//        this.locationsAdapter = new LocationsAdapter(user.getFavouriteLocations());
+//        this.locationsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        this.locationsRecyclerView.setAdapter(this.locationsAdapter);
 
         this.posts.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,7 +281,7 @@ public class FavouritesFragment extends ListFragment {
     @Override
     public void onResume() {
         if (this.postAdapter != null) {
-            this.postAdapter.notifyAdapterSetDataChanged();
+            this.postAdapter.notifyDataSetChanged();
         }
         super.onResume();
     }
@@ -202,6 +290,7 @@ public class FavouritesFragment extends ListFragment {
         if (!this.fragmentStack.isEmpty()) {
             getFragmentManager().popBackStack();
             this.fragmentStack.pop();
+            this.onResume();
             return true;
         }
         return false;

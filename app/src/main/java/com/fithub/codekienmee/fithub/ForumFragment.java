@@ -43,16 +43,9 @@ public class ForumFragment extends ListFragment implements PostCallBack {
 
     private class SyncData extends AsyncTask<List, String, String> {
 
-        private final ProgressDialog progressDialog = new ProgressDialog(getContext());
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            this.progressDialog.setMessage("Loading, please wait..");
-            this.progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            this.progressDialog.setIndeterminate(true);
-
-            this.progressDialog.show();
         }
 
         @Override
@@ -89,10 +82,6 @@ public class ForumFragment extends ListFragment implements PostCallBack {
 //            postRecyclerView.setAdapter(postAdapter);
 //            postAdapter.notifyAdapterSetDataChanged();
             super.onPostExecute(s);
-
-            if(progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
         }
 
         @Override
@@ -193,6 +182,15 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         new SyncData().execute();
+//        postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        Query query = FirebaseDatabase.getInstance().getReference("FitPosts")
+//                .orderByKey();
+//        FirebaseRecyclerOptions<FitPost> options = new FirebaseRecyclerOptions.Builder<FitPost>()
+//                .setQuery(query, FitPost.class)
+//                .build();
+//        RemotePostAdapter remotePostAdapter = new RemotePostAdapter(options);
+//        postRecyclerView.setAdapter(remotePostAdapter);
+//        remotePostAdapter.startListening();
         super.onViewCreated(view, savedInstanceState);
     }
 

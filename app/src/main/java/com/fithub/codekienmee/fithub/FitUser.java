@@ -1,9 +1,5 @@
 package com.fithub.codekienmee.fithub;
 
-import android.util.Log;
-
-import com.google.firebase.auth.FirebaseAuth;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +14,10 @@ public class FitUser implements Serializable {
     private String email;
     private int totalLikes;
     private int totalShares;
-    private String bio; // TODO: set bio
+    private String bio;
 
     private List<String> timeline;
-    private List<FitPost> posts;
+//    private List<FitPost> posts;
     private List<String> postsKeys; // List that stores keys of posted content.
     private List<FitPost> favouritePosts;
     private List<String> favouritePostKeys; // List that stores keys of favourited posts.
@@ -43,14 +39,6 @@ public class FitUser implements Serializable {
         this.email = email;
     }
 
-    public void setFavouritePosts(List<FitPost> favouritePosts) {
-        this.favouritePosts = favouritePosts;
-    }
-
-    public void setFavouriteLocations(List<FitLocation> favouriteLocations) {
-        this.favouriteLocations = favouriteLocations;
-    }
-
     public void setUserSettings(Map<String, Boolean> userSettings) {
         this.userSettings = userSettings;
     }
@@ -61,14 +49,6 @@ public class FitUser implements Serializable {
 
     public void setTimeline(List<String> timeline) {
         this.timeline = timeline;
-    }
-
-    public List<FitPost> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<FitPost> posts) {
-        this.posts = posts;
     }
 
     public int getTotalLikes() {
@@ -95,6 +75,14 @@ public class FitUser implements Serializable {
         this.favouritePostKeys = favouritePostKeys;
     }
 
+    public List<FitPost> getFavouritePosts() {
+        return this.favouritePosts;
+    }
+
+    public List<FitLocation> getFavouriteLocations() {
+        return favouriteLocations;
+    }
+
     public int getTotalShares() {
         return totalShares;
     }
@@ -103,20 +91,20 @@ public class FitUser implements Serializable {
         this.totalShares = totalShares;
     }
 
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
     public String getName() {
         return name;
     }
 
     public String getEmail() {
         return email;
-    }
-
-    public List<FitPost> getFavouritePosts() {
-        return favouritePosts;
-    }
-
-    public List<FitLocation> getFavouriteLocations() {
-        return favouriteLocations;
     }
 
     public Map<String, Boolean> getUserSettings() {
@@ -149,17 +137,15 @@ public class FitUser implements Serializable {
     /**
      * Method to add a post to User's list of favourite posts.
      */
-    public boolean favouritePost(FitPost post) {
+    public void favouritePost(FitPost post) {
         if (this.favouritePosts == null ) {
             this.favouritePosts = new ArrayList<>();
         }
 
         if (this.favouritePosts.contains(post)) {
             this.favouritePosts.remove(post);
-            return false;
         } else {
             this.favouritePosts.add(post);
-            return true;
         }
     }
 
@@ -172,8 +158,6 @@ public class FitUser implements Serializable {
         }
 
         this.favouritePostKeys.add(0, key);
-        for (String postkey : favouritePostKeys)
-            Log.d("FavouritePostKey: ", postkey);
     }
 
     public void unfavouritePostKey(String key) {
@@ -181,18 +165,18 @@ public class FitUser implements Serializable {
             this.favouritePostKeys.remove(key);
         }
     }
-
-    /**
-     * Method that adds a post to the list of posts by the user.
-     */
-    public void addPost(FitPost post) {
-        if (this.posts == null) {
-            this.posts = new ArrayList<>();
-        }
-
-        // Add to front.
-        this.posts.add(0, post);
-    }
+//
+//    /**
+//     * Method that adds a post to the list of posts by the user.
+//     */
+//    public void addPost(FitPost post) {
+//        if (this.posts == null) {
+//            this.posts = new ArrayList<>();
+//        }
+//
+//        // Add to front.
+//        this.posts.add(0, post);
+//    }
 
     /**
      * Method to add post key to user's list of posted keys
@@ -242,20 +226,20 @@ public class FitUser implements Serializable {
         }
     }
 
-    /**
-     * Method to update user's numbers and stats.
-     */
-    public void updateStatistics() {
-        if (this.posts != null) {
-            int totalLikes = 0;
-            for (FitPost post : posts) {
-                totalLikes += post.getNumLikes();
-            }
-            this.totalLikes = totalLikes;
-            this.totalShares = this.posts.size();
-        } else {
-            this.totalShares = 0;
-            this.totalLikes = 0;
-        }
-    }
+//    /**
+//     * Method to update user's numbers and stats.
+//     */
+//    public void updateStatistics() {
+//        if (this.posts != null) {
+//            int totalLikes = 0;
+//            for (FitPost post : posts) {
+//                totalLikes += post.getNumLikes();
+//            }
+//            this.totalLikes = totalLikes;
+//            this.totalShares = this.posts.size();
+//        } else {
+//            this.totalShares = 0;
+//            this.totalLikes = 0;
+//        }
+//    }
 }

@@ -124,7 +124,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user.updateStatistics();
+//        user.updateStatistics();
     }
 
     @Nullable
@@ -148,7 +148,9 @@ public class ProfileFragment extends Fragment {
         this.timelineView.setAdapter(this.timelineAdapter);
 
         this.name.setText(user.getName());
-        // TODO: Set bio.
+        if (this.user.getBio() != null) {
+            this.bio.setText(this.user.getBio());
+        }
         this.name.setEnabled(false);
         this.bio.setEnabled(false);
         this.editProfile.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +163,7 @@ public class ProfileFragment extends Fragment {
                     bio.setEnabled(false);
                     bio.setTextColor(getResources().getColor(R.color.white));
                     bio.setBackground(getResources().getDrawable(R.color.transparent));
-                    // TODO: save name and bio changes
+                    ProfileManager.updateProfile(user, name.getText().toString(),bio.getText().toString());
                 } else {
                     name.setEnabled(true);
                     name.setBackground(getResources().getDrawable(R.drawable.post_view_background));
