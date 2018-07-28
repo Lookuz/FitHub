@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +12,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -24,7 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -32,12 +34,14 @@ public class FavouritesFragment extends ListFragment {
 
     private FitUser user;
     private Stack<Fragment> fragmentStack;
+    private boolean left;
 
     private ViewFlipper viewFlipper;
     private RecyclerView locationsRecyclerView;
     private LocationsAdapter locationsAdapter;
-    private ConstraintLayout posts;
-    private ConstraintLayout locations;
+    private Button posts;
+    private Button locations;
+    private LinearLayout favouritesTabBar;
 
     /**
      * Asynchronously fetch favourites from Firebase DB.
@@ -86,6 +90,7 @@ public class FavouritesFragment extends ListFragment {
                         if (user.getFavouriteLocationsKey() != null) {
                             for (DataSnapshot ds : dataSnapshot.getChildren()) {
                                 if (user.getFavouriteLocationsKey().contains(ds.getKey())) {
+                                    Log.d("Adding Location ", ds.getKey());
                                     locationsAdapter.addLocation(ds.getValue(FitLocation.class));
                                 }
                             }
@@ -212,6 +217,7 @@ public class FavouritesFragment extends ListFragment {
         this.user = ((MainPageActivity) getActivity()).getUser();
 //        this.postList = user.getFavouritePosts();
         this.fragmentStack = new Stack<>();
+        this.left = true;
         new SyncFavourites().execute();
     }
 
@@ -231,6 +237,7 @@ public class FavouritesFragment extends ListFragment {
         this.locations = view.findViewById(R.id.favourites_locations);
         this.postRecyclerView = view.findViewById(R.id.favourites_posts_recycler_view);
         this.locationsRecyclerView = view.findViewById(R.id.favourites_locations_recycler_view);
+        this.favouritesTabBar = view.findViewById(R.id.favourites_tab_bar);
 
 //        this.postAdapter = new PostAdapter(this.postList);
 //        this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -243,6 +250,9 @@ public class FavouritesFragment extends ListFragment {
         this.posts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!left) {
+                    animateBar();
+                }
                 if (viewFlipper.getDisplayedChild() != viewFlipper
                         .indexOfChild(view.findViewById(R.id.favourites_posts_recycler_view))) {
                     viewFlipper.setInAnimation(getActivity(), R.anim.slide_in_right);
@@ -255,6 +265,9 @@ public class FavouritesFragment extends ListFragment {
         this.locations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (left) {
+                    animateBar();
+                }
                 if (viewFlipper.getDisplayedChild() != viewFlipper
                         .indexOfChild(view.findViewById(R.id.favourites_locations_recycler_view))) {
                     viewFlipper.setInAnimation(getActivity(), R.anim.slide_in_left);
@@ -294,5 +307,18 @@ public class FavouritesFragment extends ListFragment {
             return true;
         }
         return false;
+    }
+
+    private void animateBar() {
+//        this.favouritesTabBar.animate().translationX(100);
+        if (this.left) {
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_right);
+            favouritesTabBar.startAnimation(animation);
+            this.left = false;
+        } else {
+            Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_left);
+            favouritesTabBar.startAnimation(animation);
+            this.left = true;
+        }
     }
 }

@@ -59,8 +59,8 @@ public class WarningDialog extends DialogFragment {
 
         this.message.setText(getString(this.type.getWarningMessage()));
         switch (this.type) {
-            case UNSAVED_POST: case REMOVE_LOCATION:
-                this.iniOptionalWarning(view);
+            case UNSAVED_POST: case REMOVE_LOCATION: case SAVE_CHANGES:
+                this.initOptionalWarning(view);
                 break;
             case EMPTY_POST: case EMPTY_FIELDS: case INCORRECT_CRED:
                 case FAILED_SIGN_IN: case EMPTY_SIGN_IN:
@@ -72,7 +72,7 @@ public class WarningDialog extends DialogFragment {
     /**
      * Initializes widgets for Unsaved Post Warning.
      */
-    private void iniOptionalWarning(View view) {
+    private void initOptionalWarning(View view) {
         view.findViewById(R.id.warning_empty_post_bar).setVisibility(View.GONE);
 
         this.cancel.setOnClickListener(new View.OnClickListener() {

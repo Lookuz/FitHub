@@ -1,33 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    android:clickable="true"
+    android:id="@+id/fragment_profile"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:clickable="true"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <LinearLayout
-            android:id="@+id/profile_background_top"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:background="@color/orange"
-            android:orientation="horizontal"></LinearLayout>
-        <LinearLayout
-            android:id="@+id/profile_background_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@color/black_translucent"
-            android:orientation="horizontal"></LinearLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:elevation="3dp"
+            android:translationZ="3dp">
+
+            <LinearLayout
+                android:id="@+id/profile_background_top"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="@color/google_red"
+                android:orientation="horizontal"></LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/profile_background_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@color/white"
+                android:orientation="horizontal"></LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="5dp">
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/profile_timeline"
                 android:layout_width="match_parent"
@@ -37,77 +50,78 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/profile_pic_display"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/ic_user"
-        android:background="@drawable/profile_background_circular"
-        android:scaleType="centerInside"
-        android:elevation="3dp"
-        android:translationZ="3dp"/>
+        android:layout_marginTop="100dp">
+        <ImageView
+            android:id="@+id/profile_pic_display"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100dp"
+            android:background="@drawable/profile_background_circular"
+            android:elevation="3dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_user"
+            android:translationZ="3dp" />
+    </LinearLayout>
 
-    <EditText
+    <TextView
         android:id="@+id/profile_user_name"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="120dp"
-        android:gravity="center"
-        android:fontFamily="@font/lato_light"
-        android:textColor="@color/black_translucent"
+        android:layout_marginTop="20dp"
+        android:background="@color/transparent"
         android:editable="false"
-        android:inputType="text"
+        android:fontFamily="@font/lato_light"
+        android:gravity="center"
         android:text="Name"
-        android:textSize="20sp"
-        android:background="@color/transparent"/>
+        android:textColor="@color/white"
+        android:textSize="24sp" />
 
-    <EditText
+    <TextView
+        android:id="@+id/profile_user_email"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:background="@color/transparent"
+        android:editable="false"
+        android:fontFamily="@font/lato_light"
+        android:gravity="center"
+        android:text="Email"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/profile_user_bios"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="160dp"
-        android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
-        android:fontFamily="@font/lato_light"
-        android:textColor="@color/white"
-        android:text="@string/profile_bio"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="190dp"
         android:background="@color/transparent"
         android:editable="false"
-        android:maxLines="3"
-        android:inputType="textNoSuggestions|textMultiLine"
-        android:textSize="16sp"
-        android:imeOptions="actionDone"
+        android:fontFamily="@font/lato_light"
         android:gravity="center|top"
-        android:theme="@style/Base.ThemeOverlay.AppCompat.Dark"/>
+        android:maxLines="3"
+        android:text="@string/profile_bio"
+        android:textSize="16sp" />
 
-    <ImageButton
-        android:id="@+id/profile_edit"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_gravity="right|top"
-        android:layout_marginTop="170dp"
-        android:layout_marginEnd="10dp"
-        android:src="@drawable/ic_edit"
-        android:background="@drawable/profile_background_circular"
-        android:scaleType="centerInside"
-        android:elevation="3dp"
-        android:translationZ="3dp"/>
-    
     <LinearLayout
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="50dp"
-        android:orientation="vertical">
+        android:layout_marginTop="120dp"
+        android:orientation="horizontal">
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp" >
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -117,31 +131,33 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:tint="@color/white"/>
         </android.support.constraint.ConstraintLayout>
+
         <TextView
             android:id="@+id/profile_num_posts"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="0"
-            android:textSize="20sp"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/lato_light"
-            android:gravity="center|top"/>
+            android:gravity="center|top"
+            android:text="0"
+            android:textSize="16sp"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/white"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="right"
         android:layout_marginEnd="50dp"
-        android:layout_marginTop="50dp"
-        android:orientation="vertical"
-        android:layout_gravity="right">
+        android:layout_marginTop="120dp"
+        android:orientation="horizontal">
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp">
-
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -150,16 +166,32 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:tint="@color/white"/>
         </android.support.constraint.ConstraintLayout>
+
         <TextView
             android:id="@+id/profile_num_likes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fontFamily="@font/lato_light"
+            android:gravity="center|top"
             android:text="0"
             android:textSize="20sp"
-            android:fontFamily="@font/lato_light"
-            android:gravity="center|top"/>
+            android:textColor="@color/white"
+            android:layout_marginStart="5dp"/>
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/profile_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_edit"
+        android:scaleType="centerInside"
+        android:layout_gravity="bottom|right"
+        android:backgroundTint="@color/white"
+        app:fabSize="normal"
+        app:borderWidth="0dp"
+        android:layout_margin="10dp"/>
 
 </FrameLayout>

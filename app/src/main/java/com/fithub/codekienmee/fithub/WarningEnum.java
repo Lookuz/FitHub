@@ -10,7 +10,8 @@ public enum WarningEnum {
     INCORRECT_CRED,
     EMPTY_SIGN_IN,
     FAILED_SIGN_IN,
-    REMOVE_LOCATION;
+    REMOVE_LOCATION,
+    SAVE_CHANGES;
 
     /**
      * Returns the respective string ID holding the warning message for each warning code.
@@ -31,6 +32,8 @@ public enum WarningEnum {
                 return R.string.failed_sign_in;
             case REMOVE_LOCATION:
                 return R.string.remove_location;
+            case SAVE_CHANGES:
+                return R.string.save_changes;
             default:
                 return 0;
         }

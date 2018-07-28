@@ -126,30 +126,6 @@ public abstract class ListFragment extends Fragment {
         }
 
     }
-//
-//    /**
-//     * Adapter for fetching posts from firebase database remotely.
-//     */
-//    protected class RemotePostAdapter extends FirebaseRecyclerAdapter<FitPost, PostHolder> {
-//
-//        public RemotePostAdapter(@NonNull FirebaseRecyclerOptions<FitPost> options) {
-//            super(options);
-//        }
-//
-//        @Override
-//        protected void onBindViewHolder(@NonNull PostHolder holder, int position, @NonNull FitPost model) {
-//            holder.bindPost(model);
-//        }
-//
-//        @NonNull
-//        @Override
-//        public PostHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-//
-//            return new PostHolder(layoutInflater, parent);
-//        }
-//    }
-
 
     /**
      * Method to set sliding animation for fragments.

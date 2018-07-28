@@ -38,7 +38,7 @@
     <string name="profile_created_post"> has just created a new post </string>
     <string name="profile_check_in"> was at </string>
     <string name="profile_favourited_post"> has just favourited post </string>
-    <string name="profile_bio">Why so secretive?</string>
+    <string name="profile_bio">User needs some time</string>
 
     <string name="profile_manager_favourited">added to favourites</string>
     <string name="profile_manager_unfavourited">removed from favourites</string>
@@ -59,6 +59,7 @@
     <string name="empty_sign_in">Please fill in all fields.</string>
     <string name="failed_sign_in">Sign up could not be processed.</string>
     <string name="remove_location">You\'re about to remove this location from your list of favourite locations. Continue?</string>
+    <string name="save_changes">Changes made will be saved to your profile. Continue?</string>
 
     <!--Forum-->
     <string name="forum_reply">Comment</string>

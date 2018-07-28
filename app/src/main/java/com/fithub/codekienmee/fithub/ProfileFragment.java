@@ -1,24 +1,23 @@
 package com.fithub.codekienmee.fithub;
 
-import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Fragment that displays the profile page of current signed in FitUser.
@@ -26,12 +25,23 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     
     private FitUser user;
+    private Stack<Fragment> fragmentStack;
 
-    private EditText name;
-    private EditText bio;
-    private ImageButton editProfile;
+    private TextView name;
+    private TextView email;
+    private TextView bio;
+    private FloatingActionButton editProfile;
     private RecyclerView timelineView;
     private TimelineAdapter timelineAdapter;
+
+    public boolean onBackPressed() {
+        if (!this.fragmentStack.isEmpty()) {
+            ((EditProfileFragment) this.fragmentStack.peek()).onBackPressed();
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * ViewHolder for loading each timeline card.
@@ -124,6 +134,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.fragmentStack = new Stack<>();
 //        user.updateStatistics();
     }
 
@@ -139,6 +150,7 @@ public class ProfileFragment extends Fragment {
 
     private void initView(View view) {
         this.name = view.findViewById(R.id.profile_user_name);
+        this.email = view.findViewById(R.id.profile_user_email);
         this.bio = view.findViewById(R.id.profile_user_bios);
         this.editProfile = view.findViewById(R.id.profile_edit);
 
@@ -148,31 +160,40 @@ public class ProfileFragment extends Fragment {
         this.timelineView.setAdapter(this.timelineAdapter);
 
         this.name.setText(user.getName());
-        if (this.user.getBio() != null) {
-            this.bio.setText(this.user.getBio());
-        }
-        this.name.setEnabled(false);
-        this.bio.setEnabled(false);
+        this.email.setText(user.getEmail());
         this.editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (name.isEnabled() && bio.isEnabled()) {
-                    name.setEnabled(false);
-                    name.setBackground(getResources().getDrawable(R.color.transparent));
-                    bio.setEnabled(false);
-                    bio.setTextColor(getResources().getColor(R.color.white));
-                    bio.setBackground(getResources().getDrawable(R.color.transparent));
-                    ProfileManager.updateProfile(user, name.getText().toString(),bio.getText().toString());
-                } else {
-                    name.setEnabled(true);
-                    name.setBackground(getResources().getDrawable(R.drawable.post_view_background));
-                    bio.setEnabled(true);
-                    bio.setTextColor(getResources().getColor(R.color.black_translucent));
-                    bio.setBackground(getResources().getDrawable(R.drawable.post_view_background));
-                    // TODO: bring up other fields for editting (password, etc)
-                }
+                editProfile();
             }
         });
+    }
+
+    private void editProfile() {
+        if (this.fragmentStack.isEmpty()) {
+            EditProfileFragment editProfileFragment = EditProfileFragment.newInstance(this);
+            ForumFragment.setSlideAnim(Gravity.BOTTOM, editProfileFragment);
+            getFragmentManager().beginTransaction()
+                    .add(R.id.fragment_profile, editProfileFragment)
+                    .addToBackStack(null)
+                    .commit();
+            this.fragmentStack.push(editProfileFragment);
+            this.onPause();
+        } else {
+            EditProfileFragment fragment = (EditProfileFragment) this.fragmentStack.peek();
+            fragment.applyChanges();
+        }
+    }
+
+    public void saveChanges() {
+        this.name.setText(user.getName());
+        this.bio.setText(user.getBio());
+        this.discardChanges();
+    }
+
+    public void discardChanges() {
+        getFragmentManager().popBackStack();
+        this.fragmentStack.pop();
+        this.onResume();
     }
 }

@@ -182,22 +182,11 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         new SyncData().execute();
-//        postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        Query query = FirebaseDatabase.getInstance().getReference("FitPosts")
-//                .orderByKey();
-//        FirebaseRecyclerOptions<FitPost> options = new FirebaseRecyclerOptions.Builder<FitPost>()
-//                .setQuery(query, FitPost.class)
-//                .build();
-//        RemotePostAdapter remotePostAdapter = new RemotePostAdapter(options);
-//        postRecyclerView.setAdapter(remotePostAdapter);
-//        remotePostAdapter.startListening();
         super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onStart() {
-//        this.postAdapter = new PostAdapter(this.postList);
-//        this.postRecyclerView.setAdapter(this.postAdapter);
         super.onStart();
     }
 
