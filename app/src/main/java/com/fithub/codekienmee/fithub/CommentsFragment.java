@@ -165,7 +165,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     /**
      * Method that initializes the like, dislike, favourite and comment button.
      */
-    private void initButtons(TextView reply, TextView favourite, ImageView likeImage,
+    private void initButtons(TextView reply, final TextView favourite, ImageView likeImage,
                              ImageView dislikeImage, final FitPost parent, final PostAdapter postAdapter) {
         if (((MainPageActivity) getActivity()).hasUser()) {
             reply.setOnClickListener(new View.OnClickListener() {
@@ -180,7 +180,9 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                 favourite.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        favouritePost(parent);
+                        if (favouritePost(parent)) {
+                            // TODO: change favourite icons.
+                        }
                     }
                 });
             }
@@ -236,12 +238,12 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     /**
      * Method to favourite post to user's list of posts.
      */
-    private void favouritePost(final FitPost post) {
+    private boolean favouritePost(final FitPost post) {
         final FitUser user = ((MainPageActivity) getActivity()).getUser();
         if (user == null) {
-            return;
+            return false;
         } else {
-            ProfileManager.favouritePost(getActivity(), user, post);
+            return ProfileManager.favouritePost(getActivity(), user, post);
         }
     }
 

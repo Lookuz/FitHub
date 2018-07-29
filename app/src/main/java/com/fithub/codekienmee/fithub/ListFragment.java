@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Slide;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +65,20 @@ public abstract class ListFragment extends Fragment {
 
             ForumFragment.setLikesColor(this.thumbsUp, this.thumbsDown,
                     this.post.getNumLikes(), this.post.getNumDislikes());
+
+            if (((MainPageActivity) getActivity()).hasUser()) {
+                FitUser user = ((MainPageActivity) getActivity()).getUser();
+
+                if (user.getFavouritePostKeys() != null &&
+                        user.getFavouritePostKeys().contains(post.getPostKey())) {
+                    Log.d("Favouriting: ", post.getTitle());
+                    ((ImageView) itemView.findViewById(R.id.post_forum_favourite_img))
+                            .setImageResource(R.drawable.ic_favourite_color);
+                } else {
+                    ((ImageView) itemView.findViewById(R.id.post_forum_favourite_img))
+                            .setImageResource(R.drawable.ic_favourites_mono);
+                }
+            }
         }
 
         @Override

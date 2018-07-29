@@ -46,24 +46,25 @@ public class ProfileManager {
     /**
      * Method to update user profile after favouriting post.
      */
-    public static void favouritePost(Context context, final FitUser user, final FitPost post) {
+    public static boolean favouritePost(Context context, final FitUser user, final FitPost post) {
 
         String message = user.getName() + " " + context.getString(R.string.profile_favourited_post) + " "
                 + post.getTitle();
+        user.favouritePost(post);
+        user.updateTimeline(message);
 
         if (user.getFavouritePostKeys() == null ||
                 !user.getFavouritePostKeys().contains(post.getPostKey())) {
             ((MainPageActivity) context).makeSnackBar(
                     post.getTitle() + " " + context.getString(R.string.profile_manager_favourited));
             user.favouritePostKey(post.getPostKey());
+            return true;
         } else {
             ((MainPageActivity) context).makeSnackBar(
                     post.getTitle() + " " + context.getString(R.string.profile_manager_unfavourited));
             user.unfavouritePostKey(post.getPostKey());
+            return false;
         }
-
-        user.favouritePost(post);
-        user.updateTimeline(message);
     }
 
     /**
@@ -93,8 +94,6 @@ public class ProfileManager {
 
         user.favouriteLocation(location);
     }
-
-    // TODO: Migrate loading of favourites to profile manager?
 
     /**
      * Method to update any changes made in updating user profile.

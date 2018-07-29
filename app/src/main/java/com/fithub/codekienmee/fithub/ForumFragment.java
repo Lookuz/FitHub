@@ -23,6 +23,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 
@@ -219,8 +221,6 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     private void initFilterOptions() {
         final Animation open = AnimationUtils.loadAnimation(getContext(), R.anim.floating_action_button_open);
         final Animation close = AnimationUtils.loadAnimation(getContext(), R.anim.floating_action_button_close);
-        final Animation rotateClockwise = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_clockwise);
-        final Animation rotateAntiClockwise = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_anticlockwise);
         this.filterOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,5 +241,45 @@ public class ForumFragment extends ListFragment implements PostCallBack {
                 }
             }
         });
+        this.alphabeticalOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortByAlphabetical();
+            }
+        });
+        this.topRated.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortByPopular();
+            }
+        });
+    }
+
+    private void sortByAlphabetical() {
+        Comparator<FitPost> comparator = new Comparator<FitPost>() {
+            @Override
+            public int compare(FitPost o1, FitPost o2) {
+                return o1.getTitle().compareTo(o2.getTitle());
+            }
+        };
+        Collections.sort(postList, comparator);
+        postAdapter.notifyDataSetChanged();
+    }
+
+    private void sortByPopular() {
+        Comparator<FitPost> comparator = new Comparator<FitPost>() {
+            @Override
+            public int compare(FitPost o1, FitPost o2) {
+                int likeDifference = o2.getNumLikes() - o1.getNumLikes();
+                if (likeDifference != 0) {
+                    return likeDifference;
+                } else {
+                    int dislikeDifference = o1.getNumDislikes() - o2.getNumDislikes();
+                    return dislikeDifference;
+                }
+            }
+        };
+        Collections.sort(postList, comparator);
+        postAdapter.notifyDataSetChanged();
     }
 }

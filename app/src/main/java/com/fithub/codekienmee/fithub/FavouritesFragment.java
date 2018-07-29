@@ -142,7 +142,6 @@ public class FavouritesFragment extends ListFragment {
             this.location = location;
 
             this.locationName.setText(location.getLocationName());
-            // TODO: Set progress bar level.
             this.deleteLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
