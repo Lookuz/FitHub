@@ -2,13 +2,19 @@ package com.fithub.codekienmee.fithub;
 
 import android.content.Context;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -41,6 +47,9 @@ public class FitInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
                 .setText(location.getLocationAddress());
         ((TextView) view.findViewById(R.id.info_window_phone)).setText(location.getPhoneNumber());
         ((TextView) view.findViewById(R.id.info_window_website)).setText(location.getWebsiteURL());
+        ProgressBar crowdLevel = view.findViewById(R.id.info_window_crowd_bar);
+        crowdLevel.setMax(location.getMaxCrowd());
+        crowdLevel.setProgress(location.getCurrCrowd());
 
         return this.infoWindow;
     }

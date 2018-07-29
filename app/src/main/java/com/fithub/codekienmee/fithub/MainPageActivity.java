@@ -217,9 +217,9 @@ public class MainPageActivity extends AppCompatActivity {
                             break;
                         case R.id.nav_exit:
                             Log.d("NavMenu", "Clicked");
-                            firebaseAuth.getInstance().signOut();
                             startActivity(new Intent(MainPageActivity.this, StartUpActivity.class));
                             finish();
+                            firebaseAuth.getInstance().signOut();
                     }
                     return true;
                 }

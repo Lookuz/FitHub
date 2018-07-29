@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -90,6 +91,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         setContentView(R.layout.activity_start_up_page);
         this.firebaseAuth = FirebaseAuth.getInstance();
         AppEventsLogger.activateApp(this);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         this.initView();
     }
@@ -247,7 +249,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
                     @Override
                     public void onError(FacebookException error) {
-                        // TODO: set onError
+                        onConnectionFailed(null);
                     }
                 });
             }
@@ -273,7 +275,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
                     @Override
                     public void failure(TwitterException exception) {
-                        // TODO: Handle Twitter log in failure.
+                        onConnectionFailed(null);
                     }
                 });
             }
@@ -424,6 +426,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // TODO: Handle connection failed.
+        Snackbar.make(findViewById(R.id.start_up_activity),
+                R.string.connection_failed, Snackbar.LENGTH_SHORT).show();;
     }
 }

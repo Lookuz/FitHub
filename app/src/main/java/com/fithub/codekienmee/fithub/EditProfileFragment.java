@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 public class EditProfileFragment extends Fragment implements WarningCallBack {
@@ -34,6 +35,7 @@ public class EditProfileFragment extends Fragment implements WarningCallBack {
         super.onCreate(savedInstanceState);
         this.user = ((MainPageActivity) getActivity()).getUser();
         this.isBack = false;
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
     @Nullable

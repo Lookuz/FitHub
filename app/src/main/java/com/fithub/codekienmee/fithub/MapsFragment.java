@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -98,18 +99,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         @Override
         protected String doInBackground(String... strings) {
 
+            final Random random = new Random(System.currentTimeMillis());
+
             // Read locations from DB.
             locationsDB = FirebaseDatabase.getInstance().getReference("FitLocations");
-            locationsDB.addValueEventListener(new ValueEventListener() {
+            locationsDB.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<FitLocation> locationList = new ArrayList<>();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         final FitLocation location = ds.getValue(FitLocation.class);
+                        Log.d(location.getLocationName(), " " + location.getCurrCrowd() + "/" + location.getMaxCrowd());
                         locationList.add(location);
                         suggestionsAdapter.add(location);
-                        Log.d("Adding: ", location.getLocationName());
-                        Log.d("Location List Size: ", locationList.size() + "");
                     }
 
                     MapsFragment.this.locationList = locationList;

@@ -1,8 +1,16 @@
 package com.fithub.codekienmee.fithub;
 
 import android.location.Address;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.Locale;
@@ -20,6 +28,8 @@ public class FitLocation implements Serializable {
     private String phoneNumber;
     private String websiteURL;
     private String locationKey;
+    private int maxCrowd;
+    private int currCrowd;
 
     public FitLocation() {
         // Default Constructor.
@@ -103,6 +113,22 @@ public class FitLocation implements Serializable {
 
     public String getPhoneNumber() {
         return this.phoneNumber;
+    }
+
+    public int getMaxCrowd() {
+        return maxCrowd;
+    }
+
+    public void setMaxCrowd(int maxCrowd) {
+        this.maxCrowd = maxCrowd;
+    }
+
+    public int getCurrCrowd() {
+        return currCrowd;
+    }
+
+    public void setCurrCrowd(int currCrowd) {
+        this.currCrowd = currCrowd;
     }
 
     @Override
