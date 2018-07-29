@@ -21,8 +21,9 @@
         android:src="@drawable/ic_create_post"
         android:layout_gravity="end|bottom"
         android:layout_margin="10dp"
-        android:elevation="5dp"
-        android:translationZ="5dp"/>
+        app:borderWidth="0dp"
+        android:backgroundTint="@color/google_red"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/forum_filter_posts"
         android:layout_width="wrap_content"
@@ -32,6 +33,53 @@
         android:src="@drawable/ic_forum_options"
         app:layout_anchor="@id/forum_create_post"
         app:layout_anchorGravity="top"
-        android:elevation="5dp"
-        android:translationZ="5dp" />
+        android:backgroundTint="@color/google_red"
+        app:borderWidth="0dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/forum_filter_most_recent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:src="@drawable/ic_filter_newest"
+        app:layout_anchor="@id/forum_filter_posts"
+        app:layout_anchorGravity="top"
+        android:layout_marginBottom="135dp"
+        android:backgroundTint="@color/white"
+        app:borderWidth="0dp"
+        android:elevation="0dp"
+        android:translationZ="0dp"
+        android:visibility="invisible"
+        android:clickable="false"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/forum_filter_alphabetical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:src="@drawable/ic_filter_alphabetical"
+        app:layout_anchor="@id/forum_filter_most_recent"
+        app:layout_anchorGravity="top"
+        android:backgroundTint="@color/white"
+        app:borderWidth="0dp"
+        android:elevation="0dp"
+        android:translationZ="0dp"
+        android:visibility="invisible"
+        android:clickable="false"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/forum_filter_top_rated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:src="@drawable/ic_filter_top_rated"
+        app:layout_anchor="@id/forum_filter_alphabetical"
+        app:layout_anchorGravity="top"
+        android:backgroundTint="@color/white"
+        app:borderWidth="0dp"
+        android:elevation="0dp"
+        android:translationZ="0dp"
+        android:visibility="invisible"
+        android:clickable="false"/>
+
 </android.support.design.widget.CoordinatorLayout>

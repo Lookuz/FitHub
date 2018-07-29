@@ -1,31 +1,25 @@
 package com.fithub.codekienmee.fithub;
 
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Slide;
-import android.transition.Transition;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -36,8 +30,13 @@ public class ForumFragment extends ListFragment implements PostCallBack {
 
     private static final String IS_COMMENT_KEY = "isComment";
 
+    private boolean isOpen;
+
     private FloatingActionButton newPost;
-    private FloatingActionButton filter;
+    private FloatingActionButton filterOptions;
+    private FloatingActionButton alphabeticalOrder;
+    private FloatingActionButton topRated;
+    private FloatingActionButton mostRecent;
     private Stack<Fragment> postStack;
     private DatabaseReference postDB;
 
@@ -132,6 +131,7 @@ public class ForumFragment extends ListFragment implements PostCallBack {
         super.onCreate(savedInstanceState);
         this.postList = new ArrayList<>();
         this.postStack = new Stack<>();
+        this.isOpen = false;
     }
 
     @Nullable
@@ -149,8 +149,11 @@ public class ForumFragment extends ListFragment implements PostCallBack {
      */
     private void initView(View view) {
         this.newPost = view.findViewById(R.id.forum_create_post);
-        this.filter = view.findViewById(R.id.forum_filter_posts);
-        this.postRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_forum_recycler_view);
+        this.filterOptions = view.findViewById(R.id.forum_filter_posts);
+        this.alphabeticalOrder = view.findViewById(R.id.forum_filter_alphabetical);
+        this.mostRecent = view.findViewById(R.id.forum_filter_most_recent);
+        this.topRated = view.findViewById(R.id.forum_filter_top_rated);
+        this.postRecyclerView = view.findViewById(R.id.fragment_forum_recycler_view);
         this.postDB = FirebaseDatabase.getInstance().getReference("FitPosts");
 
         if (((MainPageActivity) getActivity()).hasUser()){
@@ -171,12 +174,7 @@ public class ForumFragment extends ListFragment implements PostCallBack {
             // TODO: Gray out button.
         }
 
-        this.filter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: Add filter post functionality
-            }
-        });
+        initFilterOptions();
     }
 
     @Override
@@ -193,14 +191,14 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     @Override
     public void onPause() {
         this.newPost.hide();
-        this.filter.hide();
+        this.filterOptions.hide();
         super.onPause();
     }
 
     @Override
     public void onResume() {
         this.newPost.show();
-        this.filter.show();
+        this.filterOptions.show();
         if (this.postAdapter != null) {
             this.postAdapter.notifyAdapterSetDataChanged();
         }
@@ -216,5 +214,32 @@ public class ForumFragment extends ListFragment implements PostCallBack {
         setSlideAnim(Gravity.RIGHT, commentsFragment);
         ((ContainerFragment) getParentFragment()).overlayFragment(commentsFragment);
         onPause();
+    }
+
+    private void initFilterOptions() {
+        final Animation open = AnimationUtils.loadAnimation(getContext(), R.anim.floating_action_button_open);
+        final Animation close = AnimationUtils.loadAnimation(getContext(), R.anim.floating_action_button_close);
+        final Animation rotateClockwise = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_clockwise);
+        final Animation rotateAntiClockwise = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_anticlockwise);
+        this.filterOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isOpen) {
+                    mostRecent.startAnimation(close);
+                    alphabeticalOrder.startAnimation(close);
+                    topRated.startAnimation(close);
+                    mostRecent.setClickable(false);
+                    alphabeticalOrder.setClickable(false);
+                    isOpen = false;
+                } else {
+                    mostRecent.startAnimation(open);
+                    alphabeticalOrder.startAnimation(open);
+                    topRated.startAnimation(open);
+                    mostRecent.setClickable(true);
+                    alphabeticalOrder.setClickable(true);
+                    isOpen = true;
+                }
+            }
+        });
     }
 }
