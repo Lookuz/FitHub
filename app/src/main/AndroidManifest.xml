@@ -41,6 +41,7 @@
         <activity
             android:name=".MainPageActivity"
             android:label="@string/title_activity_main_page"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="com.fithub.codekienmee.fithub.MainPageActivity" />

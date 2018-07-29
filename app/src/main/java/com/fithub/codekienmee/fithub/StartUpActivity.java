@@ -227,11 +227,13 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
      */
     private void initLogInFacebook() {
 
-        this.callbackManager = CallbackManager.Factory.create();
+//        this.callbackManager = CallbackManager.Factory.create();
 
         this.signInFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                callbackManager = CallbackManager.Factory.create();
+
                 LoginManager.getInstance().logInWithReadPermissions(StartUpActivity.this,
                         Arrays.asList("email", "public_profile"));
 
@@ -261,11 +263,13 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
      */
     private void initLogInTwitter() {
 
-        this.twitterAuthClient = new TwitterAuthClient();
+//        this.twitterAuthClient = new TwitterAuthClient();
 
         this.signInTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                twitterAuthClient = new TwitterAuthClient();
+
                 twitterAuthClient.authorize(StartUpActivity.this,
                         new Callback<TwitterSession>() {
                     @Override
@@ -354,9 +358,13 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        this.callbackManager.onActivityResult(requestCode, resultCode, data);
-        this.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (this.callbackManager != null) {
+            this.callbackManager.onActivityResult(requestCode, resultCode, data);
+        } else if (this.twitterAuthClient != null) {
+            this.twitterAuthClient.onActivityResult(requestCode, resultCode, data);
+        }
 
         switch (requestCode) {
             case RC_SIGN_IN:

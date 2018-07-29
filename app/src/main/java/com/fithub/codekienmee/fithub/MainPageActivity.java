@@ -62,12 +62,14 @@ public class MainPageActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                     // If user not in Firebase DB, update.
                     if (!dataSnapshot.child("users").hasChild(fbUser.getUid())) {
+                        Log.d("Creating: ", "New User in Firebase Database");
                         user.setName(fbUser.getDisplayName());
                         user.setEmail(fbUser.getEmail());
                         ProfileManager.signedUp(MainPageActivity.this, user);
                         databaseReference.child("users").child(fbUser.getUid()).setValue(user);
                     } else {
                         // Else pull information from DB
+                        Log.d("Reading: ", " From Firebase Database");
 //                        user = dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class);
                         user.setName(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getName());
                         user.setEmail(dataSnapshot.child("users").child(fbUser.getUid()).getValue(FitUser.class).getEmail());
@@ -118,10 +120,10 @@ public class MainPageActivity extends AppCompatActivity {
 
         } else if (this.containerFragment != null) {
             if (!this.containerFragment.onPostBackPressed()) {
-                super.onBackPressed();
+                finish();
             }
         } else {
-            super.onBackPressed();
+            finish();
         }
     }
 
