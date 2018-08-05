@@ -55,32 +55,11 @@ public class FavouritesFragment extends ListFragment {
             super.onPreExecute();
             this.databaseReference = FirebaseDatabase.getInstance().getReference();
             locationsAdapter = new LocationsAdapter(user.getFavouriteLocations());
-            postAdapter = new PostAdapter(user.getFavouritePosts());
+            postAdapter = new PostAdapter(user.getFavouritePostKeys());
         }
 
         @Override
         protected String doInBackground(String... strings) {
-
-            if (user.getFavouritePostKeys() != null &&
-                    user.getFavouritePosts().size() != user.getFavouritePostKeys().size()) {
-                this.databaseReference.child("FitPosts").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (user.getFavouritePostKeys() != null) {
-                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                if (user.getFavouritePostKeys().contains(ds.getKey())) {
-                                    postAdapter.addPost(ds.getValue(FitPost.class));
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
 
             if (user.getFavouriteLocationsKey() != null &&
                     user.getFavouriteLocations().size() != user.getFavouriteLocationsKey().size()) {

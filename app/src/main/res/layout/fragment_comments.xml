@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_comments"
     android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -54,7 +55,7 @@
                 android:layout_weight="2">
                 <ImageView
                     android:id="@+id/comments_likesImg"
-                    android:src="@drawable/ic_thumb_up_grey"
+                    android:src="@drawable/ic_like_mono"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"/>
@@ -77,7 +78,7 @@
                 </android.support.constraint.ConstraintLayout>
                 <ImageView
                     android:id="@+id/comments_dislikesImg"
-                    android:src="@drawable/ic_thumb_down_grey"
+                    android:src="@drawable/ic_dislike_mono"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"/>
@@ -100,27 +101,23 @@
                 </android.support.constraint.ConstraintLayout>
             </LinearLayout>
 
-            <TextView
+            <ImageButton
                 android:id="@+id/comments_reply"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fontFamily="@font/lato_light"
-                android:gravity="center"
-                android:text="@string/forum_reply"
-                android:textSize="10sp"
-                android:visibility="visible" />
+                android:src="@drawable/ic_reply"
+                android:scaleType="centerInside"
+                android:background="@color/white" />
 
-            <TextView
+            <ImageButton
                 android:id="@+id/comments_favourite"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fontFamily="@font/lato_light"
-                android:gravity="center"
-                android:text="@string/forum_favourite"
-                android:textSize="10sp"
-                android:visibility="visible" />
+                android:src="@drawable/ic_favourites_mono"
+                android:scaleType="centerInside"
+                android:background="@color/white"  />
         </LinearLayout>
     </LinearLayout>
 

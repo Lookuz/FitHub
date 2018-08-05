@@ -295,6 +295,8 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         this.signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                viewFlipper.setInAnimation(StartUpActivity.this, R.anim.slide_in_left);
+                viewFlipper.setOutAnimation(StartUpActivity.this, R.anim.slide_out_left);
                 viewFlipper.showNext();
                 ImageButton submit = findViewById(R.id.sign_up_submit);
 
@@ -329,6 +331,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         // TODO: Show success(Tick?)
+                                        showLoadingScreen(getString(R.string.start_up_logging_in));
                                         TextView loadingMessage = findViewById(R.id.start_up_loading_message);
                                         loadingMessage.setText(getString(R.string.start_up_sign_up_success));
                                         // Update name.
@@ -337,7 +340,7 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
                                                 .setDisplayName(name)
                                                 .build());
 
-                                        showLoadingScreen(getString(R.string.start_up_logging_in));
+                                        showLoadingScreen(getString(R.string.start_up_logged_in).concat(" " + user.getDisplayName()));
                                         startActivity(new Intent(StartUpActivity.this,
                                                 MainPageActivity.class));
                                     } else {
@@ -436,5 +439,18 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Snackbar.make(findViewById(R.id.start_up_activity),
                 R.string.connection_failed, Snackbar.LENGTH_SHORT).show();;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (this.viewFlipper.getDisplayedChild() ==
+                this.viewFlipper.indexOfChild(findViewById(R.id.sign_up_screen))) {
+            this.viewFlipper.setInAnimation(StartUpActivity.this, R.anim.slide_in_right);
+            this.viewFlipper.setOutAnimation(StartUpActivity.this, R.anim.slide_out_right);
+            this.viewFlipper.setDisplayedChild(
+                    this.viewFlipper.indexOfChild(findViewById(R.id.log_in_screen)));
+        } else {
+            super.onBackPressed();
+        }
     }
 }

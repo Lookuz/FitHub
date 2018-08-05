@@ -65,6 +65,11 @@
     <!--Forum-->
     <string name="forum_reply">Comment</string>
     <string name="forum_favourite">Favourite!</string>
+    <string name="post_disabled">Please sign in to create a post.</string>
+    <string name="like_disabled">Please sign in to like post</string>
+    <string name="dislike_disabled">Please sign in to dislike post</string>
+    <string name="favourite_disabled">Please sign in to favourite post</string>
+    <string name="reply_disabled">Please sign in to reply to post</string>
 
     <!--Post-->
     <string name="post_title">Post Title</string>

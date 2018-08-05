@@ -2,12 +2,15 @@ package com.fithub.codekienmee.fithub;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -41,30 +45,31 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     private FloatingActionButton mostRecent;
     private Stack<Fragment> postStack;
     private DatabaseReference postDB;
+    private DatabaseReference keysDB;
 
     private class SyncData extends AsyncTask<List, String, String> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            postDB = FirebaseDatabase.getInstance().getReference("FitPosts");
+            keysDB = FirebaseDatabase.getInstance().getReference("FitPostKeys");
         }
 
         @Override
         protected String doInBackground(List... lists) {
 
-            postDB.addValueEventListener(new ValueEventListener() {
+            keysDB.addValueEventListener(new ValueEventListener() {
+
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        final FitPost post = ds.getValue(FitPost.class);
-                        post.setPostKey(ds.getKey());
-                        postList.add(post);
-                    }
 
-                    postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    postAdapter = new PostAdapter(postList);
+                    GenericTypeIndicator<List<String>>genericTypeIndicator = new GenericTypeIndicator<List<String>>() {};
+                    postKeyList = dataSnapshot.getValue(genericTypeIndicator);
+
+                    postAdapter = new PostAdapter(postKeyList);
                     postRecyclerView.setAdapter(postAdapter);
-                    postAdapter.notifyAdapterSetDataChanged();
+
                 }
 
                 @Override
@@ -78,10 +83,6 @@ public class ForumFragment extends ListFragment implements PostCallBack {
 
         @Override
         protected void onPostExecute(String s) {
-//            postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//            postAdapter = new PostAdapter(postList);
-//            postRecyclerView.setAdapter(postAdapter);
-//            postAdapter.notifyAdapterSetDataChanged();
             super.onPostExecute(s);
         }
 
@@ -96,10 +97,26 @@ public class ForumFragment extends ListFragment implements PostCallBack {
         FitUser user = ((MainPageActivity) getActivity()).getUser();
 
         if(post != null) {
-            this.postList.add(0, post);
-            String postKey = this.postDB.push().getKey();
-            post.setPostKey(postKey);
+            // TODO: Add to remote FitPostKeys, then remote pull changes again
+            final String postKey = this.postDB.push().getKey();
             this.postDB.child(postKey).setValue(post);
+            post.setPostKey(postKey);
+
+            this.keysDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    GenericTypeIndicator<List<String>>genericTypeIndicator = new GenericTypeIndicator<List<String>>() {};
+                    postKeyList = dataSnapshot.getValue(genericTypeIndicator);
+                    postKeyList.add(0, postKey);
+                    keysDB.setValue(postKeyList);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
             this.postAdapter.notifyAdapterSetDataChanged();
 
             ProfileManager.createPost(getContext(), user, post);
@@ -131,6 +148,8 @@ public class ForumFragment extends ListFragment implements PostCallBack {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        this.postDB = FirebaseDatabase.getInstance().getReference("FitPosts");
+//        this.keysDB = FirebaseDatabase.getInstance().getReference("FitPostKeys");
         this.postList = new ArrayList<>();
         this.postStack = new Stack<>();
         this.isOpen = false;
@@ -149,14 +168,14 @@ public class ForumFragment extends ListFragment implements PostCallBack {
      * Method to initialize the widgets of this fragment.
      * Widgets: New Post Button, Filter Button.
      */
-    private void initView(View view) {
+    private void initView(final View view) {
         this.newPost = view.findViewById(R.id.forum_create_post);
         this.filterOptions = view.findViewById(R.id.forum_filter_posts);
         this.alphabeticalOrder = view.findViewById(R.id.forum_filter_alphabetical);
         this.mostRecent = view.findViewById(R.id.forum_filter_most_recent);
         this.topRated = view.findViewById(R.id.forum_filter_top_rated);
         this.postRecyclerView = view.findViewById(R.id.fragment_forum_recycler_view);
-        this.postDB = FirebaseDatabase.getInstance().getReference("FitPosts");
+        this.postRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         if (((MainPageActivity) getActivity()).hasUser()){
             final PostCallBack callBack = this;
@@ -173,7 +192,13 @@ public class ForumFragment extends ListFragment implements PostCallBack {
                 }
             });
         } else {
-            // TODO: Gray out button.
+            this.newPost.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Snackbar.make(view.findViewById(R.id.fragment_forum),
+                            getString(R.string.post_disabled), Snackbar.LENGTH_SHORT);
+                }
+            });
         }
 
         initFilterOptions();
@@ -209,6 +234,9 @@ public class ForumFragment extends ListFragment implements PostCallBack {
 
     @Override
     public void onPostClick(FitPost post) {
+        if (this.isOpen) {
+            this.filterOptions.performClick();
+        }
         /**
          * Note that use of Slide Transition requires minimum API of 21.
          */

@@ -5,21 +5,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -85,8 +80,8 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         private void initView(View view, FitPost comment, PostAdapter postAdapterInner) {
             TextView poster = view.findViewById(R.id.comment_poster_name);
             TextView content = view.findViewById(R.id.comment_content);
-            TextView reply = view.findViewById(R.id.comment_reply);
-            TextView favourite = view.findViewById(R.id.comment_favourite);
+            ImageButton reply = view.findViewById(R.id.comment_reply);
+            ImageButton favourite = view.findViewById(R.id.comment_favourite);
             TextView numLikes = view.findViewById(R.id.comment_likesNum);
             TextView numDislikes = view.findViewById(R.id.comment_dislikesNum);
             ImageView likeImage = view.findViewById(R.id.comment_likesImg);
@@ -114,8 +109,8 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     private TextView title;
     private TextView content;
     private TextView author;
-    private TextView reply;
-    private TextView favourite;
+    private ImageButton reply;
+    private ImageButton favourite;
     private TextView numLikes;
     private TextView numDislikes;
     private ImageView likeImage;
@@ -165,7 +160,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     /**
      * Method that initializes the like, dislike, favourite and comment button.
      */
-    private void initButtons(TextView reply, final TextView favourite, ImageView likeImage,
+    private void initButtons(ImageButton reply, final ImageButton favourite, ImageView likeImage,
                              ImageView dislikeImage, final FitPost parent, final PostAdapter postAdapter) {
         if (((MainPageActivity) getActivity()).hasUser()) {
             reply.setOnClickListener(new View.OnClickListener() {
@@ -203,7 +198,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                 }
             });
         } else {
-            // TODO: Disable buttons.
+
         }
     }
 
@@ -211,6 +206,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         this.user= ((MainPageActivity) getActivity()).getUser();
         super.onCreate(savedInstanceState);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
     @Nullable

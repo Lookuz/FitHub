@@ -293,6 +293,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      * Method that requests user's permission for application to use location services.
      */
     private void requestUserPermission() {
+        Log.d("User Permission: ", "true");
 
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
         if ((ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
@@ -315,6 +316,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        Log.d("Permission Result: ", "true");
         switch (requestCode) {
             case MapsFragment.REQUEST_CODE: {
                 if (grantResults.length > 0) {
@@ -324,6 +326,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                             return;
                         }
                     this.userPermission = true;
+                }
+                if (this.gMap != null) {
+                    this.getCurrLocation();
                 }
             }
         }
@@ -336,6 +341,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.gMap = googleMap;
+        Log.d("User OnMapReady: ", "true");
 
         if (this.userPermission) {
             this.getCurrLocation();
@@ -378,6 +384,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     return true;
                 }
             });
+
             this.executorService.submit(new Runnable() {
                 @Override
                 public void run() {

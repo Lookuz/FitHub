@@ -1,19 +1,23 @@
 package com.fithub.codekienmee.fithub;
 
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Slide;
 import android.transition.Transition;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.List;
 
 public abstract class ListFragment extends Fragment {
@@ -21,6 +25,7 @@ public abstract class ListFragment extends Fragment {
     protected RecyclerView postRecyclerView; //RecyclerView that handles displaying of posts
     protected PostAdapter postAdapter;
     protected List<FitPost> postList;
+    protected List<String> postKeyList;
 
     /**
      * Inner class that extends the use of ViewHolder.
@@ -71,7 +76,6 @@ public abstract class ListFragment extends Fragment {
 
                 if (user.getFavouritePostKeys() != null &&
                         user.getFavouritePostKeys().contains(post.getPostKey())) {
-                    Log.d("Favouriting: ", post.getTitle());
                     ((ImageView) itemView.findViewById(R.id.post_forum_favourite_img))
                             .setImageResource(R.drawable.ic_favourite_color);
                 } else {
@@ -93,10 +97,13 @@ public abstract class ListFragment extends Fragment {
      */
     protected class PostAdapter extends RecyclerView.Adapter<PostHolder> {
 
-        private List<FitPost> postListInner;
+        private List<String> postKeyList; // Maintain list of keys
+        private DatabaseReference postDB;
 
-        public PostAdapter(List<FitPost> postList) {
-            this.postListInner = postList;
+        public PostAdapter(List<String> postKeyList) {
+            this.postKeyList = postKeyList;
+
+            this.postDB = FirebaseDatabase.getInstance().getReference("FitPosts");
         }
 
         @Override
@@ -107,14 +114,29 @@ public abstract class ListFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(PostHolder holder, int position) {
-            FitPost post = this.postListInner.get(position);
-            holder.bindPost(post);
+        public void onBindViewHolder(final PostHolder holder, final int position) {
+//            final FitPost post = this.postListInner.get(position);
+            if (this.postKeyList != null) {
+                String postKey = this.postKeyList.get(position);
+                this.postDB.child(postKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        FitPost post = dataSnapshot.getValue(FitPost.class);
+                        holder.bindPost(post);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
         }
 
         @Override
         public int getItemCount() {
-            return (this.postListInner == null) ? 0 : this.postListInner.size();
+            // TODO: Change size implementation.
+             return (this.postKeyList == null) ? 0 : this.postKeyList.size();
         }
 
         /**
@@ -132,12 +154,6 @@ public abstract class ListFragment extends Fragment {
         @Override
         public long getItemId(int position) {
             return position;
-        }
-
-        public void addPost(FitPost post) {
-            if (!this.postListInner.contains(post)) {
-                this.postListInner.add(post);
-            }
         }
 
     }

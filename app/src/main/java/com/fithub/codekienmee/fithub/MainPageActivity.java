@@ -166,8 +166,8 @@ public class MainPageActivity extends AppCompatActivity {
      * Private method that configures the DrawerLayout, NavigationView and navigation ActionBar.
      */
     private void configureMenu() {
-        Toolbar navHeader = (Toolbar) findViewById(R.id.main_tool_bar);
-        this.drawerLayout = (DrawerLayout) findViewById(R.id.main_page_activity);
+        Toolbar navHeader = findViewById(R.id.main_tool_bar);
+        this.drawerLayout = findViewById(R.id.main_page_activity);
         this.navigationView = findViewById(R.id.main_nav_view);
 
         setSupportActionBar(navHeader);
@@ -183,7 +183,7 @@ public class MainPageActivity extends AppCompatActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                drawerView.bringToFront();
+                navigationView.bringToFront();
                 drawerView.requestLayout();
             }
 
@@ -211,6 +211,7 @@ public class MainPageActivity extends AppCompatActivity {
                             break;
                         case R.id.nav_favourites:
                             onMenuItemClick(FavouritesFragment.newInstance());
+                            Log.d("FavouritesFragment: ", "OnClick");
                             break;
 //                        case R.id.nav_schedule:
 //                            break;
