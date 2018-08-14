@@ -97,10 +97,9 @@ public class ForumFragment extends ListFragment implements PostCallBack {
         FitUser user = ((MainPageActivity) getActivity()).getUser();
 
         if(post != null) {
-            // TODO: Add to remote FitPostKeys, then remote pull changes again
             final String postKey = this.postDB.push().getKey();
-            this.postDB.child(postKey).setValue(post);
             post.setPostKey(postKey);
+            this.postDB.child(postKey).setValue(post);
 
             this.keysDB.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

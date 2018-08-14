@@ -135,7 +135,6 @@ public abstract class ListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            // TODO: Change size implementation.
              return (this.postKeyList == null) ? 0 : this.postKeyList.size();
         }
 

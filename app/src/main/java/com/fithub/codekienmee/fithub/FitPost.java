@@ -2,16 +2,17 @@ package com.fithub.codekienmee.fithub;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +28,9 @@ public class FitPost implements PostCallBack, Serializable {
     private int numDislikes;
     private String date;
     private List<FitPost> comments;
-    private Map<String, Boolean> likeMap; // HashMap that tracks if user has liked/disliked post.
+    private Map<String, Object> likeMap; // HashMap that tracks if user has liked/disliked post.
     private String postKey;
+    private Boolean hasMap;
 
     public FitPost() {
         // Default Constructor
@@ -111,11 +113,11 @@ public class FitPost implements PostCallBack, Serializable {
         this.comments = comments;
     }
 
-    public Map<String, Boolean> getLikeMap() {
+    public Map<String, Object> getLikeMap() {
         return likeMap;
     }
 
-    public void setLikeMap(Map<String, Boolean> likeMap) {
+    public void setLikeMap(Map<String, Object> likeMap) {
         this.likeMap = likeMap;
     }
 
@@ -139,9 +141,6 @@ public class FitPost implements PostCallBack, Serializable {
      * Evaluates what happens when user likes post.
      */
     public void evalLike(FitUser user) {
-        if (this.likeMap == null) {
-            this.likeMap = new HashMap<>();
-        }
 
         String uid = FirebaseAuth.getInstance()
                 .getCurrentUser()
@@ -149,9 +148,9 @@ public class FitPost implements PostCallBack, Serializable {
 
         if (this.likeMap.containsKey(uid) &&
                 this.likeMap.get(uid) != null) {
-            if (this.likeMap.get(uid)) { // Already liked
+            if ((Boolean) this.likeMap.get(uid)) { // Already liked
                 Log.d("FitPost: ", "Already Liked");
-                this.likeMap.remove((uid));
+                this.likeMap.put(uid, null);
                 this.numLikes--;
             } else { // Previously disliked
                 Log.d("FitPost: ", "Previously disliked");
@@ -164,15 +163,14 @@ public class FitPost implements PostCallBack, Serializable {
             this.likeMap.put(uid, true);
             this.numLikes++;
         }
+
+        updateLikes();
     }
 
     /**
      * Evaluates what happens when user dislikes post.
      */
     public void evalDislike(FitUser user) {
-        if (this.likeMap == null) {
-            this.likeMap = new HashMap<>();
-        }
 
         String uid = FirebaseAuth.getInstance()
                 .getCurrentUser()
@@ -180,7 +178,7 @@ public class FitPost implements PostCallBack, Serializable {
 
         if (this.likeMap.containsKey(uid) &&
                 this.likeMap.get(uid) != null) {
-            if (!this.likeMap.get(uid)) { // Already disliked
+            if (!(Boolean) this.likeMap.get(uid)) { // Already disliked
                 Log.d("FitPost: ", "Already Disliked");
                 this.likeMap.remove((uid));
                 this.numDislikes--;
@@ -195,6 +193,8 @@ public class FitPost implements PostCallBack, Serializable {
             this.likeMap.put(uid, false);
             this.numDislikes++;
         }
+
+        updateLikes();
     }
 
     /**
@@ -203,5 +203,60 @@ public class FitPost implements PostCallBack, Serializable {
     @Override
     public void onCallBack(FitPost post) {
         this.addComment(post);
+    }
+
+    public void retrieveLikes() {
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("FitPosts");
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child(postKey)
+                        .child("likeMap").exists()) {
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator =
+                            new GenericTypeIndicator<Map<String, Object>>() {};
+                    setLikeMap(dataSnapshot.child(postKey).child("likeMap").getValue(genericTypeIndicator));
+                } else {
+                    setLikeMap(new HashMap<String, Object>());
+                }
+
+                try {
+                    setNumLikes(dataSnapshot.child(postKey).child("numLikes").getValue(Integer.class));
+                    setNumDislikes(dataSnapshot.child(postKey).child("numDislikes").getValue(Integer.class));
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void updateLikes() {
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("FitPosts")
+                .child(postKey);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("likeMap").exists()) {
+                    databaseReference.child("likeMap").updateChildren(likeMap);
+                } else {
+                    databaseReference.child("likeMap").setValue(likeMap);
+                }
+
+                databaseReference.child("numDislikes").setValue(numDislikes);
+                databaseReference.child("numLikes").setValue(numLikes);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

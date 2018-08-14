@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -93,7 +100,8 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
             numDislikes.setText(Integer.toString(comment.getNumDislikes()));
             ForumFragment.setLikesColor(likeImage, dislikeImage,
                     comment.getNumLikes(), comment.getNumDislikes());
-            initButtons(reply, favourite, likeImage, dislikeImage, comment, postAdapterInner);
+            initButtons(reply, favourite, likeImage, dislikeImage, comment, postAdapterInner,
+                    numLikes, numDislikes);
 
         }
 
@@ -154,14 +162,15 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         ForumFragment.setLikesColor(this.likeImage, this.dislikeImage,
                 this.post.getNumLikes(), this.post.getNumDislikes());
         initButtons(this.reply, this.favourite, this.likeImage, this.dislikeImage,
-                this.post, this.postAdapter);
+                this.post, this.postAdapter, this.numLikes, this.numDislikes);
     }
 
     /**
      * Method that initializes the like, dislike, favourite and comment button.
      */
     private void initButtons(ImageButton reply, final ImageButton favourite, ImageView likeImage,
-                             ImageView dislikeImage, final FitPost parent, final PostAdapter postAdapter) {
+                             ImageView dislikeImage, final FitPost parent, final PostAdapter postAdapter,
+                             final TextView likes, final TextView dislikes) {
         if (((MainPageActivity) getActivity()).hasUser()) {
             reply.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -186,7 +195,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                 @Override
                 public void onClick(View v) {
                     parent.evalLike(user);
-                    postAdapter.notifyDataSetChanged();
+//                    updateLikes(parent, likes, dislikes);
                 }
             });
             // Dislike Button
@@ -194,7 +203,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                 @Override
                 public void onClick(View v) {
                     parent.evalDislike(user);
-                    postAdapter.notifyDataSetChanged();
+//                    updateLikes(parent, likes, dislikes);
                 }
             });
         } else {
@@ -207,6 +216,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
         this.user= ((MainPageActivity) getActivity()).getUser();
         super.onCreate(savedInstanceState);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        this.post.retrieveLikes();
     }
 
     @Nullable

@@ -127,6 +127,7 @@ public class MainPageActivity extends AppCompatActivity {
         }
     }
 
+    // TODO: Create Settings.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
