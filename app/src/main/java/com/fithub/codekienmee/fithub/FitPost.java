@@ -180,7 +180,7 @@ public class FitPost implements PostCallBack, Serializable {
                 this.likeMap.get(uid) != null) {
             if (!(Boolean) this.likeMap.get(uid)) { // Already disliked
                 Log.d("FitPost: ", "Already Disliked");
-                this.likeMap.remove((uid));
+                this.likeMap.put(uid, null);
                 this.numDislikes--;
             } else { // Previously Liked
                 Log.d("FitPost: ", "Previously Liked");
