@@ -195,7 +195,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                 @Override
                 public void onClick(View v) {
                     parent.evalLike(user);
-//                    updateLikes(parent, likes, dislikes);
+                    updateLikes(parent, likes, dislikes);
                 }
             });
             // Dislike Button
@@ -203,7 +203,7 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
                 @Override
                 public void onClick(View v) {
                     parent.evalDislike(user);
-//                    updateLikes(parent, likes, dislikes);
+                    updateLikes(parent, likes, dislikes);
                 }
             });
         } else {
@@ -255,11 +255,12 @@ public class CommentsFragment extends Fragment implements OnPostBackPressed {
 
     /**
      * Method to update the number of Likes and Dislikes in post.
-     * TODO: Set update likes everytime post is clicked/ like/ dislike button clicked.
      */
     private void updateLikes(FitPost parent, TextView likes, TextView dislikes) {
-        likes.setText(parent.getNumLikes());
-        dislikes.setText(parent.getNumDislikes());
+        likes.setText(Integer.toString(parent.getNumLikes()));
+        dislikes.setText(Integer.toString(parent.getNumDislikes()));
+        ForumFragment.setLikesColor(this.likeImage, this.dislikeImage,
+                this.post.getNumLikes(), this.post.getNumDislikes());
     }
 
     @Override
