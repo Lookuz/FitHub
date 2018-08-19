@@ -104,7 +104,9 @@ public class ForumFragment extends ListFragment implements PostCallBack {
             this.keysDB.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    GenericTypeIndicator<List<String>>genericTypeIndicator = new GenericTypeIndicator<List<String>>() {};
+                    Log.d("Pulling keys: ", "now");
+                    GenericTypeIndicator<List<String>>genericTypeIndicator =
+                            new GenericTypeIndicator<List<String>>() {};
                     postKeyList = dataSnapshot.getValue(genericTypeIndicator);
                     postKeyList.add(0, postKey);
                     keysDB.setValue(postKeyList);

@@ -4,15 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -52,6 +56,7 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Class that displays start-up UI.
@@ -61,11 +66,41 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final int RC_SIGN_IN = 100;
+    private static final long CHANGE_INTERVAL = 10000;
+    private static final int images[] = {R.drawable.buff_man,
+            R.drawable.buff_lady};
+    private int imageIndex = 1;
+    private final Random rand = new Random(System.currentTimeMillis());
+    /**
+     * Runnable for periodically changing background image.
+     */
+    final Runnable imageChange = new Runnable() {
+        @Override
+        public void run() {
+            AlphaAnimation fadeAnim = new AlphaAnimation(0.0f, 1.0f);
+            fadeAnim.setDuration(3000);
+            ImageView startUpBackground = findViewById(R.id.start_up_background);
+            startUpBackground.startAnimation(fadeAnim);
+
+            int prevIndex = imageIndex;
+            imageIndex = Math.abs(rand.nextInt()) % images.length;
+            if (prevIndex == imageIndex) {
+                imageIndex = (imageIndex + 1) % images.length;
+            }
+            Log.d("Image Index: ", "" + imageIndex);
+            startUpBackground.setBackground(getResources().getDrawable(images[imageIndex]));
+//            if (imageIndex >= images.length) {
+//                imageIndex = 0;
+//            }
+            handler.postDelayed(imageChange, CHANGE_INTERVAL);
+        }
+    };
 
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
     private CallbackManager callbackManager;
     private TwitterAuthClient twitterAuthClient;
+    private Handler handler;
 
     private ViewFlipper viewFlipper;
     private ImageButton submit;
@@ -92,6 +127,12 @@ public class StartUpActivity extends AppCompatActivity implements WarningCallBac
         this.firebaseAuth = FirebaseAuth.getInstance();
         AppEventsLogger.activateApp(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        imageIndex = Math.abs(rand.nextInt()) % images.length;
+        ImageView startUpBackground = findViewById(R.id.start_up_background);
+        startUpBackground.setBackground(getDrawable(images[imageIndex]));
+        this.handler = new Handler();
+        this.handler.postDelayed(imageChange, CHANGE_INTERVAL);
 
         this.initView();
     }

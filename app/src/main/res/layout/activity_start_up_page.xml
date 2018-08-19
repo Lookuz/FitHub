@@ -1,50 +1,57 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/start_up_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
     tools:context="com.fithub.codekienmee.fithub.StartUpActivity">
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/start_up_logo"
-            android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="50dp"
-            android:background="@color/white"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_fithub_logo_slogan_main"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </android.support.constraint.ConstraintLayout>
-
-    <ViewFlipper
-        android:id="@+id/start_up_view_flipper"
+    <ImageView
+        android:id="@+id/start_up_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
-        <include
-            layout="@layout/log_in_screen">
-        </include>
+        android:background="@drawable/buff_man"
+        android:backgroundTint="#95000000"
+        android:backgroundTintMode="src_over"/>
 
-        <include
-            layout="@layout/sign_up_screen" >
-        </include>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <include
-            layout="@layout/start_up_loading_screen">
-        </include>
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="1dp"
+            android:translationZ="1dp">
 
-    </ViewFlipper>
+            <ImageView
+                android:id="@+id/start_up_logo"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:layout_marginTop="50dp"
+                android:background="@color/white"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_fithub_logo_slogan_main"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+
+        <ViewFlipper
+            android:id="@+id/start_up_view_flipper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:theme="@style/Base.ThemeOverlay.AppCompat.Dark">
+
+            <include layout="@layout/log_in_screen"></include>
+
+            <include layout="@layout/sign_up_screen"></include>
+
+            <include layout="@layout/start_up_loading_screen"></include>
+
+        </ViewFlipper>
+    </LinearLayout>
+
+</FrameLayout>

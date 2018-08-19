@@ -76,9 +76,7 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
                 android:src="@drawable/ic_arrow_forward"
-                android:background="@drawable/map_button_background"
-                android:elevation="4dp"
-                android:translationZ="4dp"/>
+                android:background="@drawable/map_button_background" />
         </LinearLayout>
 
         <LinearLayout
@@ -94,7 +92,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="20dp"
                 android:layout_weight="4"
-                android:background="@color/black_overlay"></LinearLayout>
+                android:background="@color/white"></LinearLayout>
 
             <TextView
                 android:id="@+id/start_up_or"
@@ -111,7 +109,7 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="20dp"
                 android:layout_weight="4"
-                android:background="@color/black_overlay"></LinearLayout>
+                android:background="@color/white"></LinearLayout>
         </LinearLayout>
 
         <LinearLayout

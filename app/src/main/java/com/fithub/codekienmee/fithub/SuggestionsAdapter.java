@@ -42,7 +42,8 @@ public class SuggestionsAdapter extends ArrayAdapter<FitLocation> {
                         .toLowerCase()
                         .trim();
 
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("FitLocations");
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                        .getReference("FitLocations");
                 databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -52,7 +53,7 @@ public class SuggestionsAdapter extends ArrayAdapter<FitLocation> {
                                     .toLowerCase()
                                     .trim()
                                     .contains(expression)) {
-                                suggestionsList.add(ds.getValue(FitLocation.class));
+                                suggestionsList.add(location);
                             }
                         }
                     }
